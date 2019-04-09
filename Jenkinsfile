@@ -1,5 +1,3 @@
-#!/usr/bin/env groovy
-echo 'pipeline not working'
 pipeline{
     agent { docker { image 'tiangolo/docker-with-compose' } }
     stages{
