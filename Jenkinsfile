@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 pipeline{
-    agent { dockerfile true }
+    agent { docker{image "tmaier:docker-compose" } }
     stages{
         stage("Bring down old images"){
             steps{
