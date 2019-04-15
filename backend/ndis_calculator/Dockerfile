@@ -10,4 +10,3 @@ COPY ./requirements.txt /app/ndis_calculator/requirements.txt
 RUN pip install -r requirements.txt
 
 EXPOSE 8000
-CMD ["ls","-lR"]
