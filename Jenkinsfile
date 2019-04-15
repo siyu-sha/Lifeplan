@@ -4,8 +4,7 @@ pipeline{
     stages{
         stage("Bring down old images"){
             steps{
-                sh "docker-compose -f docker-compose-CI.yml"
-                sh "docker-compose down"
+                sh "docker-compose -f docker-compose-CI.yml down"
             }
         }
         stage("Verify Directory"){
@@ -16,12 +15,12 @@ pipeline{
             }
         stage("Build"){
             steps{
-                sh "docker-compose build"
+                sh "docker-compose -f docker-compose-CI.yml build"
             }
         }
         stage("Run"){
             steps{
-                sh "docker-compose up"
+                sh "docker-compose -f docker-compose-CI.yml up"
             }
         }
     }
