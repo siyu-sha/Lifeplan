@@ -12,8 +12,8 @@ services:
       
   django:
     build: 
-	context: ./backend/ndis_calculator
-	dockerfile: Dockerfile-CI	
+        context: ./backend/ndis_calculator
+        dockerfile: Dockerfile-CI	
     ports:
       - "8000:8000"
     command: >
@@ -28,7 +28,7 @@ services:
       - db
   frontend:
     build: 
-	context: ./frontend
-	dockerfile: Dockerfile-CI
+        context: ./frontend
+        dockerfile: Dockerfile-CI
     ports:
       - "3000:3000"
