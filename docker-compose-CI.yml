@@ -11,12 +11,11 @@ services:
       MYSQL_ROOT_PASSWORD: ndisFP2019
       
   django:
-    build: ./backend/ndis_calculator
+    build: 
+	context: ./backend/ndis_calculator
+	dockerfile: Dockerfile-CI	
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend/ndis_calculator:/api
-    working_dir: /api
     command: >
       sh -c "pwd &&
              ls -lR &&
@@ -28,9 +27,8 @@ services:
     depends_on:
       - db
   frontend:
-    build: ./frontend
-    volumes:
-      - ./frontend:/app/frontend
-    working_dir: /app/frontend
+    build: 
+	context: ./frontend
+	dockerfile: Dockerfile-CI
     ports:
       - "3000:3000"
