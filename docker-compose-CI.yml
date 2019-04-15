@@ -15,9 +15,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/ndis_calculator:/app/ndis_calculator
-    working_dir: /app/ndis_calculator/
-
+      - ./backend/ndis_calculator:/api/backend/ndis_calculator
+    working_dir: /api/backend/ndis_calculator/
     command: sh entrypoint.sh
     depends_on:
       - db

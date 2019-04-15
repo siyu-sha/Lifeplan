@@ -15,12 +15,12 @@ pipeline{
             }
         stage("Build"){
             steps{
-                sh "docker-compose build"
+                sh "docker-compose build -f docker-compose-CI.yml"
             }
         }
         stage("Run"){
             steps{
-                sh "docker-compose up"
+                sh "docker-compose up -f docker-compose-CI.yml"
             }
         }
     }
