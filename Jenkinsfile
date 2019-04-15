@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 pipeline{
-    agent { docker{image "tmaier:docker-compose" } }
+    agent { docker{image "tmaier/docker-compose:latest" } }
     stages{
         stage("Bring down old images"){
             steps{
