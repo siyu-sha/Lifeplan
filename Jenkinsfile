@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 pipeline{
-    agent { any }
+    agent any
     stages{
         stage("Bring down old images"){
             steps{
