@@ -9,6 +9,7 @@ pipeline{
         }
         stage("Verify Directory"){
             steps{
+                sh "pwd"
                 sh "ls -lR"
                 } 
             }
