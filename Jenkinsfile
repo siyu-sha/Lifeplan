@@ -5,6 +5,7 @@ pipeline{
         stage("Bring down old images"){
             steps{
                 sh "docker-compose -f docker-compose-CI.yml down"
+		sh "docker-compose -version"
 		sh "pwd"
                 sh "ls -lR"
                 sh "docker-compose --verbose -f docker-compose-CI.yml build"

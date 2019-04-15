@@ -15,8 +15,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/ndis_calculator:/api/backend/ndis_calculator
-    working_dir: /api/backend/ndis_calculator
+      - ./backend/ndis_calculator:/api
+    working_dir: /api
     command: >
       sh -c "pwd &&
              ls -lR &&
