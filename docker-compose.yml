@@ -16,6 +16,8 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/ndis_calculator:/app/ndis_calculator
+    command: ["ls","-lR"]
+    command: ["pwd"]
     depends_on:
       - db
   frontend:
