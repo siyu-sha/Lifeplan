@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 pipeline{
-    agent { docker { image 'tiangolo/docker-with-compose' } }
+    agent { master }
     stages{
         stage("Bring down old images"){
             steps{
