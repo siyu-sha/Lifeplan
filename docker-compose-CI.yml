@@ -19,12 +19,10 @@ services:
     command: >
       sh -c "pwd &&
              ls -lR &&
-             python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
-    links:
-      - db
+             ./entrypoint.sh"
     depends_on:
       - db
+
   frontend:
     build: 
         context: ./frontend
