@@ -9,7 +9,7 @@ pipeline{
 		sh "pwd"
                 sh "ls -lR"
                 sh "docker-compose -f docker-compose-CI.yml build"
-                sh "docker-compose -f docker-compose-CI.yml up"
+                sh "docker-compose -f docker-compose-CI.yml up -d"
             }
         }
     }
