@@ -1,21 +1,15 @@
 #!/usr/bin/env groovy
 pipeline{
-    agent { docker { image 'tiangolo/docker-with-compose' } }
+    agent { docker{image "tmaier/docker-compose:latest" } }
     stages{
-        stage("Bring down old images"){
+        stage("Build and Run"){
             steps{
-                sh "docker-compose down"
-            }
-        }
-        stage("Verify Directory"){
-            steps{
+                sh "docker-compose -f docker-compose-CI.yml down"
+		sh "docker-compose -version"
+		sh "pwd"
                 sh "ls -lR"
-                } 
-            }
-        stage("Build"){
-            steps{
-                sh "docker-compose build"
-                sh "docker-compose up"
+                sh "docker-compose -f docker-compose-CI.yml build"
+                sh "docker-compose -f docker-compose-CI.yml up -d"
             }
         }
     }
