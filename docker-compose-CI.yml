@@ -15,7 +15,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/ndis_calculator:/api/backend/ndis_calculator
+      - backend/ndis_calculator:/api/backend/ndis_calculator
     working_dir: /api/backend/ndis_calculator/
     command: >
       sh -c "pwd
@@ -30,7 +30,7 @@ services:
   frontend:
     build: ./frontend
     volumes:
-      - ./frontend:/app/frontend
+      - frontend:/app/frontend
     working_dir: /app/frontend/
     ports:
       - "3000:3000"
