@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ndisFP2019
+      
+  django:
+    build: 
+        context: ./backend/ndis_calculator
+        dockerfile: Dockerfile-CI
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "pwd &&
+             ls -lR &&
+             ./entrypoint.sh"
+    depends_on:
+      - db
+
+  frontend:
+    build: 
+        context: ./frontend
+        dockerfile: Dockerfile-CI
+    ports:
+      - "3000:3000"
