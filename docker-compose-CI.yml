@@ -5,8 +5,6 @@ services:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    ports:
-      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ndisFP2019
       
@@ -15,7 +13,7 @@ services:
         context: ./backend/ndis_calculator
         dockerfile: Dockerfile-CI
     ports:
-      - "8000:8000"
+      - "8001:8000"
     command: >
       sh -c "pwd &&
              ls -lR &&
@@ -28,4 +26,4 @@ services:
         context: ./frontend
         dockerfile: Dockerfile-CI
     ports:
-      - "3000:3000"
+      - "3001:3000"
