@@ -13,7 +13,7 @@ services:
         context: ./backend/ndis_calculator
         dockerfile: Dockerfile-CI
     ports:
-      - "8001:8000"
+      - "8000:8000"
     command: >
       sh -c "pwd &&
              ls -lR &&
@@ -26,4 +26,4 @@ services:
         context: ./frontend
         dockerfile: Dockerfile-CI
     ports:
-      - "3001:3000"
+      - "3000:3000"
