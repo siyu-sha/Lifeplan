@@ -5,12 +5,20 @@ pipeline{
         stage("Build and Run"){
             steps{
                 sh "docker-compose -f docker-compose-CI.yml down"
-		sh "docker-compose -version"
-		sh "pwd"
+	        	sh "docker-compose -version"
+		        sh "pwd"
                 sh "ls -lR"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
+		        sh "sleep 600"
             }
         }
     }
+	post{
+        always{
+            steps{
+                sh "docker-compose -f docker-compose-CI.yml down"
+            }
+        }
+    }	
 }
