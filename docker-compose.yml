@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -9,7 +9,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ndisFP2019
-      
+
   django:
     build: ./backend/ndis_calculator
     ports:
@@ -17,14 +17,14 @@ services:
     volumes:
       - ./backend/ndis_calculator:/app/ndis_calculator
     working_dir: /app/ndis_calculator/
-
     command: sh entrypoint.sh
     depends_on:
       - db
+
   frontend:
     build: ./frontend
+    ports:
+      - "3000:3000"
     volumes:
       - ./frontend:/app/frontend
     working_dir: /app/frontend/
-    ports:
-      - "3000:3000"

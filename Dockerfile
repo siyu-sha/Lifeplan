@@ -1,4 +1,3 @@
-FROM docker:latest
+FROM tmaier/docker-compose:latest
 
-RUN apk add --no-cache py-pip
-RUN pip install docker-compose
+RUN apk add --no-cache curl

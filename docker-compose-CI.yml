@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -7,23 +7,23 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ndisFP2019
-      
+
   django:
-    build: 
-        context: ./backend/ndis_calculator
-        dockerfile: Dockerfile-CI
+    build:
+      context: ./backend/ndis_calculator
+      dockerfile: Dockerfile-CI
     ports:
-      - "8000:8000"
+      - "8002:8000"
     command: >
       sh -c "pwd &&
-             ls -lR &&
-             ./entrypoint.sh"
+          ls -lR &&
+          ./entrypoint.sh"
     depends_on:
       - db
 
   frontend:
-    build: 
-        context: ./frontend
-        dockerfile: Dockerfile-CI
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile-CI
     ports:
-      - "3000:3000"
+      - "3002:3000"

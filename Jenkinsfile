@@ -1,24 +1,33 @@
 #!/usr/bin/env groovy
 pipeline{
-    agent { docker{image "tmaier/docker-compose:latest" } }
+    agent {
+        dockerfile {
+            filename 'Dockerfile'
+            args '--network="host"'
+        }
+    }
     stages{
-        stage("Build and Run"){
+        stage("Bring Down Old Images"){
             steps{
                 sh "docker-compose -f docker-compose-CI.yml down"
-	        	sh "docker-compose -version"
-		        sh "pwd"
-                sh "ls -lR"
+            }
+        }
+        stage("Build and Run New Images"){
+            steps{
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
-		        sh "sleep 600"
+            }
+        }
+        stage("Run Health Check Script"){
+            steps{
+                sh "./healthCheck.sh"
+                sh "sleep 10"
             }
         }
     }
-	post{
+    post{
         always{
-            steps{
-                sh "docker-compose -f docker-compose-CI.yml down"
-            }
+            sh "docker-compose -f docker-compose-CI.yml down"
         }
-    }	
+    }
 }
