@@ -11,7 +11,7 @@ pipeline{
             agent{dockerfile {
 		filename 'Dockerfile'
                 dir 'frontend'
-		args '-d -e CI=true --entrypoint=""'
+		args '-e CI=true --entrypoint="" -w /app/frontend'
                 }
              }
             steps {
