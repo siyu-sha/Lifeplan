@@ -15,7 +15,9 @@ pipeline{
                 }
              }
             steps {
-               sh "npm test"
+	        sh "pwd"
+		sh "ls -lR"
+                sh "npm test"
             }
 
         }
