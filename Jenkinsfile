@@ -7,6 +7,18 @@ pipeline{
         }
     }
     stages{
+        stage("Node Tests"){
+            agent{dockerfile {
+                dir 'frontend'
+		args '-env CI=true'
+                }
+             }
+            steps {
+               sh "npm test"
+            }
+
+        }
+
         stage("Bring Down Old Images"){
             steps{
                 sh "docker-compose -f docker-compose-CI.yml down"
