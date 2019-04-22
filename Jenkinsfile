@@ -10,7 +10,7 @@ pipeline{
         stage("Node Tests"){
             agent{dockerfile {
                 dir 'frontend'
-		args '-env CI=true'
+		args '-e CI=true'
                 }
              }
             steps {
