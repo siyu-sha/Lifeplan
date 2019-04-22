@@ -1,5 +1,5 @@
 #Wait for django to start
-timeout -t 60 bash -c 'until echo > /dev/tcp/localhost/8002; do sleep 2; done'
+timeout -t 60 /bin/bash -c 'until echo > /dev/tcp/localhost/8002; do sleep 2; done'
 
 # ping django with HTTP GET
 status_code=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:8002/")
@@ -15,7 +15,7 @@ else
 fi
 
 #Wait for react to start
-timeout -t 60 bash -c 'until echo > /dev/tcp/localhost/3002; do sleep 2; done'
+timeout -t 60 /bin/bash -c 'until echo > /dev/tcp/localhost/3002; do sleep 2; done'
 
 # ping react with HTTP GET
 status_code_2=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:3002/")
