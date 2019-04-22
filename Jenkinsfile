@@ -9,6 +9,7 @@ pipeline{
     stages{
         stage("Node Tests"){
             agent{dockerfile {
+		filename 'Dockerfile-CI'
                 dir 'frontend'
 		args '-d -e CI=true --entrypoint=""'
                 }
