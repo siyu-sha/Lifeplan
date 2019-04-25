@@ -5,15 +5,22 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Theme from "./theme/Theme";
 
 import "./App.css";
+import NavBar from "./common/NavBar";
 
 class App extends Component {
   render() {
     return (
       <BrowserRouter>
         <MuiThemeProvider theme={CustomTheme}>
-          <Switch>
-            <Route exact path="/" component={Theme} />
-          </Switch>
+          <nav>
+            <NavBar />
+          </nav>
+
+          <main>
+            <Switch>
+              <Route exact path="/" component={Theme} />
+            </Switch>
+          </main>
         </MuiThemeProvider>
       </BrowserRouter>
     );
