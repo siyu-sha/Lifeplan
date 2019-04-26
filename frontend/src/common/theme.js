@@ -3,8 +3,6 @@ import { createMuiTheme } from "@material-ui/core/styles";
 export const DARK_BLUE = "#173e6c";
 export const LIGHT_BLUE = "#97c7ef";
 
-const WHITE = "#ffffff";
-
 export const NAV_BAR_HEIGHT = 64;
 
 export const CustomTheme = createMuiTheme({
