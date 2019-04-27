@@ -1,7 +1,7 @@
 #!/bin/bash
 #Wait for django to start
 timeout -t 90 /bin/bash -c 'until echo > /dev/tcp/localhost/8002; do sleep 2; done'
-echo  > /dev/tcp/localhost/8002
+cat  < /dev/tcp/localhost/8002
 
 # ping django with HTTP GET
 status_code=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:8002/")
