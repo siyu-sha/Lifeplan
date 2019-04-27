@@ -1,3 +1,4 @@
+#!/bin/bash
 #Wait for django to start
 timeout -t 90 /bin/bash -c 'until echo > /dev/tcp/localhost/8002; do sleep 2; done'
 echo  > /dev/tcp/localhost/8002
