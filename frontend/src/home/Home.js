@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/styles";
 import { DARK_BLUE, LIGHT_BLUE, NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
 import classNames from "classnames";
+import { palette } from "@material-ui/system";
 
 const useStyles = makeStyles({
   home: {
@@ -68,7 +69,11 @@ export default function Home() {
               </Grid>
 
               <Grid item>
-                <Card raised className={classes.cardContainer}>
+                <Card
+                  raised
+                  className={classes.cardContainer}
+                  onClick={() => (window.location.href = "/budget")}
+                >
                   <CardActionArea
                     className={classNames(
                       classes.budgetPageSelector,
