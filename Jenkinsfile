@@ -7,15 +7,10 @@ pipeline{
         }
     }
     stages{
-        stage("Bring Down Old Images, set up env Vars"){
+        stage("Setup Env Vars, Build and Run New Images"){
             steps{
-		sh "ls -lR"
-		sh "./setup-env.sh"
-                sh "docker-compose -f docker-compose-CI.yml down"
-            }
-        }
-        stage("Build and Run New Images"){
-            steps{
+                sh "./setup-env.sh"
+                sh "source ~/.bashrc"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
