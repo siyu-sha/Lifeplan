@@ -3,8 +3,8 @@ export $(egrep -v '^#' .env | xargs)
 echo "django-port: $DOCKER_DJANGO_PORT"
 echo "react-port: $DOCKER_REACT_PORT"
 
-#Sleep for 60s for django to start
-sleep 60
+#Sleep for 70s for django to start
+sleep 70
 
 # ping django with HTTP GET
 status_code=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:$DOCKER_DJANGO_PORT/")
