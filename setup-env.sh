@@ -1,4 +1,3 @@
 export DJANGO_PORT=$((($RANDOM % 999) + 8000))
-echo "django-port: $DJANGO_PORT"
 export REACT_PORT=$((($RANDOM % 999) + 3000))
-echo "react-port: $REACT_PORT"
+echo "DOCKER_DJANGO_PORT=$DJANGO_PORT\nDOCKER_REACT_PORT=$REACT_PORT" > ".env"
