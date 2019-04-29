@@ -13,7 +13,7 @@ services:
       context: ./backend/ndis_calculator
       dockerfile: Dockerfile-CI
     ports:
-      - "${DJANGO_PORT}:8000"
+      - "${DOCKER_DJANGO_PORT}:8000"
     command: >
       sh -c "pwd &&
           ls -lR &&
@@ -26,4 +26,4 @@ services:
       context: ./frontend
       dockerfile: Dockerfile-CI
     ports:
-      - "${REACT_PORT}:3000"
+      - "${DOCKER_REACT_PORT}:3000"
