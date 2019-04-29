@@ -7,8 +7,9 @@ pipeline{
         }
     }
     stages{
-        stage("Bring Down Old Images"){
+        stage("Bring Down Old Images, set up env Vars"){
             steps{
+		sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml down"
             }
         }
