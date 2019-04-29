@@ -1,5 +1,8 @@
-#Sleep for 70s for django to start
-sleep 70
+# Get ports from .env
+export $(egrep -v '^#' .env | xargs)
+
+#Sleep for 60s for django to start
+sleep 60
 
 # ping django with HTTP GET
 status_code=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:$DJANGO_PORT/")
