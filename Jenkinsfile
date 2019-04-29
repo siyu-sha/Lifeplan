@@ -10,7 +10,8 @@ pipeline{
         stage("Setup Env Vars, Build and Run New Images"){
             steps{
                 sh "./setup-env.sh"
-                sh "ls -l ~"
+                sh "export DJANGO_PORT=\$((($RANDOM % 999) + 8000))"
+                sh "export REACT_PORT=\$((($RANDOM % 999) + 3000))"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
