@@ -17,7 +17,6 @@ pipeline{
         stage("Run Health Check Script"){
             steps{
                 sh "./healthCheck.sh"
-                sh "sleep 10"
             }
         }
     }

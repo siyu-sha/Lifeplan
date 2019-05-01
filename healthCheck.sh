@@ -16,8 +16,12 @@ then
     echo `curl  "localhost:${DOCKER_DJANGO_PORT}/"`
     exit 1
 else
-    echo "Django Health check returned HTTP Response 200"
+    echo "Django Health Check returned HTTP Response 200"
 fi
+
+#Wait for react to start
+timeout -t 60 /bin/bash -c 'until echo > /dev/tcp/localhost/3002; do sleep 2; done'
+
 # ping react with HTTP GET
 status_code_2=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:${DOCKER_REACT_PORT}/")
 if [ "$status_code_2" -ne 200 ]
@@ -27,6 +31,5 @@ then
     echo `curl  "http://localhost:${DOCKER_REACT_PORT}/"`
     exit 1
 else
-    echo "React Health check returned HTTP Response 200"
+    echo "React Health Check returned HTTP Response 200"
 fi
-
