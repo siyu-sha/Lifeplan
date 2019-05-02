@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#! /usr/bin/env groovy
 pipeline{
     agent {
         dockerfile {
@@ -7,13 +7,9 @@ pipeline{
         }
     }
     stages{
-        stage("Bring Down Old Images"){
+        stage("Setup Env Vars, Build and Run New Images"){
             steps{
-                sh "docker-compose -f docker-compose-CI.yml down"
-            }
-        }
-        stage("Build and Run New Images"){
-            steps{
+                sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
