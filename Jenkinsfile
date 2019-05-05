@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#! /usr/bin/env groovy
 pipeline{
     agent {
         dockerfile {
@@ -7,28 +7,10 @@ pipeline{
         }
     }
     stages{
-        stage("Node Tests"){
-            agent{dockerfile {
-		filename 'Dockerfile'
-                dir 'frontend'
-		args '-e CI=true --entrypoint="" -w /app/frontend'
-                }
-             }
-            steps {
-	        sh "pwd"
-		sh "ls -lR"
-                sh "npm test"
-            }
 
-        }
-
-        stage("Bring Down Old Images"){
+        stage("Setup Env Vars, Build and Run New Images"){
             steps{
-                sh "docker-compose -f docker-compose-CI.yml down"
-            }
-        }
-        stage("Build and Run New Images"){
-            steps{
+                sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
@@ -36,7 +18,6 @@ pipeline{
         stage("Run Health Check Script"){
             steps{
                 sh "./healthCheck.sh"
-                sh "sleep 10"
             }
         }
     }
