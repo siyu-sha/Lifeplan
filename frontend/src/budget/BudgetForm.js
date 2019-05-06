@@ -117,6 +117,7 @@ class FormPersonalDetails extends React.Component {
         total += this.state[categories[i]];
       }
     }
+    total = Math.round(total * 100) / 100;
     return total;
   }
 
