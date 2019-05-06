@@ -13,8 +13,8 @@ const useStyles = makeStyles({
 export default function BudgetForm() {
   const classes = useStyles();
   return (
-    <Grid container className={classes.home}>
-      <Grid item xs={12}>
+    <Grid container className={classes.home} justify="center">
+      <Grid item xs={11} sm={5} lg={5}>
         <FormPersonalDetails />
       </Grid>
     </Grid>

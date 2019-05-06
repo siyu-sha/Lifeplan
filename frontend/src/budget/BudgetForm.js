@@ -13,7 +13,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 
 const styles = theme => ({
   paper: {
-    width: 600,
     marginLeft: "auto",
     marginRight: "auto",
     padding: 16
