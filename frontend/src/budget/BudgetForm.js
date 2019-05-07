@@ -7,6 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import precision from "../common/money";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -33,47 +34,47 @@ const styles = theme => ({
 });
 
 const core_categories = [
-  "assistance_daily",
+  "assistanceDaily",
   "transport",
   "consumables",
-  "assistance_social"
+  "assistanceSocial"
 ];
-const capital_categories = ["assistive_technology", "home_modifications"];
+const capital_categories = ["assistiveTechnology", "homeModifications"];
 const capacity_categories = [
-  "coordination_support",
+  "coordinationSupport",
   "employment",
-  "living_arrangements",
+  "livingArrangements",
   "relationships",
-  "health_wellbeing",
+  "healthWellbeing",
   "learning",
-  "life_choices",
-  "daily_living",
-  "community_participation"
+  "lifeChoices",
+  "dailyLiving",
+  "communityParticipation"
 ];
 
 class FormPersonalDetails extends React.Component {
   state = {
     postcode: "",
-    birth_year: "",
-    start_date: "",
-    assistance_daily: "",
+    birthYear: "",
+    startDate: "",
+    assistanceDaily: "",
     transport: "",
     consumables: "",
-    assistance_social: "",
-    assistive_technology: "",
-    home_modifications: "",
-    coordination_support: "",
-    living_arrangements: "",
-    community_participation: "",
+    assistanceSocial: "",
+    assistiveTechnology: "",
+    homeModifications: "",
+    coordinationSupport: "",
+    livingArrangements: "",
+    communityParticipation: "",
     employment: "",
     relationships: "",
-    health_wellbeing: "",
+    healthWellbeing: "",
     learning: "",
-    life_choices: "",
-    daily_living: "",
-    core_total: 0,
-    capital_total: 0,
-    capacity_total: 0
+    lifeChoices: "",
+    dailyLiving: "",
+    coreTotal: 0,
+    capitalTotal: 0,
+    capacityTotal: 0
   };
 
   handleChange = input => e => {
@@ -84,20 +85,23 @@ class FormPersonalDetails extends React.Component {
       this.setState({ [input]: "" });
       new_amount = 0;
     } else {
-      new_amount = Math.round(parseFloat(e.target.value) * 100) / 100;
+      new_amount = parseFloat(e.target.value);
+      if (precision(new_amount) > 2) {
+        return;
+      }
       this.setState({ [input]: new_amount });
     }
     if (core_categories.includes(input)) {
       this.setState({
-        core_total: this.addTotal(core_categories, new_amount, input)
+        coreTotal: this.addTotal(core_categories, new_amount, input)
       });
     } else if (capital_categories.includes(input)) {
       this.setState({
-        capital_total: this.addTotal(capital_categories, new_amount, input)
+        capitalTotal: this.addTotal(capital_categories, new_amount, input)
       });
     } else if (capacity_categories.includes(input)) {
       this.setState({
-        capacity_total: this.addTotal(capacity_categories, new_amount, input)
+        capacityTotal: this.addTotal(capacity_categories, new_amount, input)
       });
     }
   };
@@ -137,6 +141,7 @@ class FormPersonalDetails extends React.Component {
                   type="number"
                   label="Postcode"
                   onChange={this.handleChange("postcode")}
+                  value={this.state.postcode}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -145,7 +150,8 @@ class FormPersonalDetails extends React.Component {
                   required
                   type="number"
                   label="Year of Birth"
-                  onChange={this.handleChange("birth_year")}
+                  onChange={this.handleChange("birthYear")}
+                  value={this.state.birthYear}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -154,6 +160,8 @@ class FormPersonalDetails extends React.Component {
                   required
                   label="Start date"
                   type="date"
+                  onChange={this.handleChange("startDate")}
+                  value={this.state.startDate}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -171,7 +179,7 @@ class FormPersonalDetails extends React.Component {
               inline
             >
               {" "}
-              &nbsp;|&nbsp;Total: ${this.state.core_total}
+              &nbsp;|&nbsp;Total: ${this.state.coreTotal}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -183,8 +191,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("assistance_daily")}
-                  value={this.state.assistance_daily}
+                  onChange={this.handleChange("assistanceDaily")}
+                  value={this.state.assistanceDaily}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -227,8 +235,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("assistance_social")}
-                  value={this.state.assistance_social}
+                  onChange={this.handleChange("assistanceSocial")}
+                  value={this.state.assistanceSocial}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -248,7 +256,7 @@ class FormPersonalDetails extends React.Component {
               inline
             >
               {" "}
-              &nbsp;|&nbsp;Total: ${this.state.capital_total}
+              &nbsp;|&nbsp;Total: ${this.state.capitalTotal}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -258,8 +266,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("assistive_technology")}
-                  value={this.state.assistive_technology}
+                  onChange={this.handleChange("assistiveTechnology")}
+                  value={this.state.assistiveTechnology}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -272,8 +280,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("home_modifications")}
-                  value={this.state.home_modifications}
+                  onChange={this.handleChange("homeModifications")}
+                  value={this.state.homeModifications}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -293,7 +301,7 @@ class FormPersonalDetails extends React.Component {
               inline
             >
               {" "}
-              &nbsp;|&nbsp;Total: ${this.state.capacity_total}
+              &nbsp;|&nbsp;Total: ${this.state.capacityTotal}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -305,8 +313,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("coordination_support")}
-                  value={this.state.coordination_support}
+                  onChange={this.handleChange("coordinationSupport")}
+                  value={this.state.coordinationSupport}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -321,8 +329,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("living_arrangements")}
-                  value={this.state.living_arrangements}
+                  onChange={this.handleChange("livingArrangements")}
+                  value={this.state.livingArrangements}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -337,8 +345,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("community_participation")}
-                  value={this.state.community_participation}
+                  onChange={this.handleChange("communityParticipation")}
+                  value={this.state.communityParticipation}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -381,8 +389,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("health_wellbeing")}
-                  value={this.state.health_wellbeing}
+                  onChange={this.handleChange("healthWellbeing")}
+                  value={this.state.healthWellbeing}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -409,8 +417,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("life_choices")}
-                  value={this.state.life_choices}
+                  onChange={this.handleChange("lifeChoices")}
+                  value={this.state.lifeChoices}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
@@ -423,8 +431,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   type="number"
-                  onChange={this.handleChange("daily_living")}
-                  value={this.state.daily_living}
+                  onChange={this.handleChange("dailyLiving")}
+                  value={this.state.dailyLiving}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
