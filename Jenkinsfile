@@ -7,7 +7,11 @@ pipeline{
         }
     }
     stages{
-
+	stage("Frontend Tests"){
+		steps {
+		
+		}
+	}
         stage("Setup Env Vars, Build and Run New Images"){
             steps{
                 sh "./setup-env.sh"
