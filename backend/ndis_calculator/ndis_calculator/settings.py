@@ -83,7 +83,7 @@ AUTH_USER_MODEL = 'budgeting.CustomUser'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mysql',
+        'NAME': 'ndis',
         'USER': 'root',
         'PASSWORD': 'ndisFP2019',
         'HOST': 'db',
