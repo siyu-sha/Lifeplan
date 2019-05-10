@@ -1,12 +1,28 @@
+#! /usr/bin/env groovy
 pipeline{
-    agent { docker { image 'tiangolo/docker-with-compose' } }
+    agent {
+        dockerfile {
+            filename 'Dockerfile'
+            args '--network="host"'
+        }
+    }
     stages{
-        stage("Build"){
+        stage("Setup Env Vars, Build and Run New Images"){
             steps{
-                sh "docker-compose build"
-                sh "docker-compose up -d"
-                waitUntilServicesReady
+                sh "./setup-env.sh"
+                sh "docker-compose -f docker-compose-CI.yml build"
+                sh "docker-compose -f docker-compose-CI.yml up -d"
             }
+        }
+        stage("Run Health Check Script"){
+            steps{
+                sh "./healthCheck.sh"
+            }
+        }
+    }
+    post{
+        always{
+            sh "docker-compose -f docker-compose-CI.yml down"
         }
     }
 }
