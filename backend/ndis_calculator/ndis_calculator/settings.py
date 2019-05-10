@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Local
-    'budgeting.apps.UsersConfig',
+    'budgeting.apps.BudgetingConfig',
 ]
 
 MIDDLEWARE = [
