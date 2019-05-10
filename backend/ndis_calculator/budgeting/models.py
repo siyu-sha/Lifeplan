@@ -11,4 +11,4 @@ class CustomUser(AbstractUser):
 class Item(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    cost = models.DecimalField(decimal_places=15,max_digits=2)
+    cost = models.DecimalField(max_digits=15,decimal_places=2)
