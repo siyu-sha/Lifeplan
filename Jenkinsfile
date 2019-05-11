@@ -12,11 +12,12 @@ pipeline{
                     dockerfile{
                         filename 'Dockerfile-CI.test'
                         dir 'frontend'
+                        label 'frontend-tests'
                     }
                 }
     		steps {
                 sh "echo 'Beginning Frontend Tests'"
-                sh "npm test"    		
+                sh "npm test --exit"    		
     		}
     	}
         stage("Setup Env Vars, Build and Run New Images"){
@@ -35,6 +36,7 @@ pipeline{
     post{
         always{
             sh "docker-compose -f docker-compose-CI.yml down"
+            sh "docker rm frontend-tests"
         }
     }
 }
