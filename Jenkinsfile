@@ -12,7 +12,6 @@ pipeline{
                     dockerfile{
                         filename 'Dockerfile-CI.test'
                         dir 'frontend'
-                        label 'frontend-tests'
                     }
                 }
     		steps {
@@ -36,7 +35,6 @@ pipeline{
     post{
         always{
             sh "docker-compose -f docker-compose-CI.yml down"
-            sh "docker rm frontend-tests"
         }
     }
 }
