@@ -11,5 +11,5 @@ COPY . /app/frontend/
 
 ENV NODE_ENV test
 
-CMD ["npm", "test", "--exit"]
+ENTRYPOINT ["npm", "test", "--exit"]
 
