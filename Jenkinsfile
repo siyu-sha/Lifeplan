@@ -15,8 +15,8 @@ pipeline{
                     }
                 }
     		steps {
-                sh "ls -laRt"
-    		
+                sh "echo 'Beginning Frontend Tests'"
+                sh "npm test"    		
     		}
     	}
         stage("Setup Env Vars, Build and Run New Images"){
