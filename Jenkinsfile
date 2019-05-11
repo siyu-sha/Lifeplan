@@ -9,6 +9,12 @@ pipeline{
     stages{
 	stage("Frontend Tests"){
 		steps {
+            agent{
+                dockerfile{
+                    filename 'Dockerfile-CI.test'
+                    dir 'frontend'
+                }
+            }
 		
 		}
 	}
