@@ -7,6 +7,18 @@ pipeline{
         }
     }
     stages{
+    	stage("Frontend Tests"){
+            agent{
+                    dockerfile{
+                        filename 'Dockerfile-CI.test'
+                        dir 'frontend'
+                    }
+                }
+    		steps {
+                sh "echo 'Beginning Frontend Tests'"
+                sh "npm --prefix frontend/ test --exit"    		
+    		}
+    	}
         stage("Setup Env Vars, Build and Run New Images"){
             steps{
                 sh "./setup-env.sh"
