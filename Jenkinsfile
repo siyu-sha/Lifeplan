@@ -16,7 +16,7 @@ pipeline{
                 }
     		steps {
                 sh "echo 'Beginning Frontend Tests'"
-                sh "npm test --exit"    		
+                sh "npm --prefix frontend/ test --exit"    		
     		}
     	}
         stage("Setup Env Vars, Build and Run New Images"){
