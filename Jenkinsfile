@@ -7,17 +7,18 @@ pipeline{
         }
     }
     stages{
-	stage("Frontend Tests"){
-		steps {
+    	stage("Frontend Tests"){
             agent{
-                dockerfile{
-                    filename 'Dockerfile-CI.test'
-                    dir 'frontend'
+                    dockerfile{
+                        filename 'Dockerfile-CI.test'
+                        dir 'frontend'
+                    }
                 }
-            }
-		
-		}
-	}
+    		steps {
+                sh "ls -laRt"
+    		
+    		}
+    	}
         stage("Setup Env Vars, Build and Run New Images"){
             steps{
                 sh "./setup-env.sh"
