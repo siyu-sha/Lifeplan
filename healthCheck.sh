@@ -3,8 +3,8 @@ export $(egrep -v '^#' .env | xargs)
 echo "django-port: $DOCKER_DJANGO_PORT"
 echo "react-port: $DOCKER_REACT_PORT"
 
-#Sleep for 70s for django to start
-sleep 70
+# Wait for django to start
+timeout -t 120 /bin/bash -c 'until echo > /dev/tcp/localhost/${DOCKER_DJANGO_PORT}; do sleep 2; done'
 
 # ping django with HTTP GET
 status_code=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:${DOCKER_DJANGO_PORT}/")
@@ -13,13 +13,13 @@ if [ "$status_code" -ne 200 ]
 then
     echo "Django Health check returned HTTP Response other than 200"
     echo `curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:${DOCKER_DJANGO_PORT}/"`
-    echo `curl  "localhost:${DOCKER_DJANGO_PORT}/"`
+    echo `curl  "http://localhost:${DOCKER_DJANGO_PORT}/"`
     exit 1
 else
     echo "Django Health Check returned HTTP Response 200"
 fi
 
-#Wait for react to start
+# Wait for react to start
 timeout -t 60 /bin/bash -c 'until echo > /dev/tcp/localhost/${DOCKER_REACT_PORT}; do sleep 2; done'
 
 # ping react with HTTP GET
