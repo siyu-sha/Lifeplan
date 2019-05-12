@@ -8,7 +8,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "./backend/ndis_calculator/init.sql:/app/ndis_calculator/init.sql"
+      - ./backend/ndis_calculator/init.sql:/app/ndis_calculator/init.sql
+      - ndis-datavolume:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ndisFP2019
 
@@ -31,3 +32,6 @@ services:
       dockerfile: Dockerfile-CI
     ports:
       - "${DOCKER_REACT_PORT}:3000"
+
+volumes:
+  ndis-datavolume:
