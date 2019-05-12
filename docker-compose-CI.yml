@@ -28,4 +28,5 @@ services:
     ports:
       - "${DOCKER_REACT_PORT}:3000"
     volumes:
+      - ./frontend:/app/frontend
       - /app/frontend/node_modules
