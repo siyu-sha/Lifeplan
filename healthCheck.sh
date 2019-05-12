@@ -4,7 +4,7 @@ echo "django-port: $DOCKER_DJANGO_PORT"
 echo "react-port: $DOCKER_REACT_PORT"
 
 # Wait for django to start
-timeout -t 120 /bin/bash -c 'until echo > /dev/tcp/localhost/${DOCKER_DJANGO_PORT}; do sleep 2; done'
+timeout -t 120 /bin/bash -c 'until curl --output /dev/null --silent "http://localhost:/${DOCKER_DJANGO_PORT}"; do sleep 2; done'
 
 # ping django with HTTP GET
 status_code=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:${DOCKER_DJANGO_PORT}/")
