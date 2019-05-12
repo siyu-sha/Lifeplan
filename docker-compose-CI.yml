@@ -27,3 +27,5 @@ services:
       dockerfile: Dockerfile-CI
     ports:
       - "${DOCKER_REACT_PORT}:3000"
+    volumes:
+      - /app/frontend/node_modules
