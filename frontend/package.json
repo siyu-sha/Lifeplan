@@ -22,7 +22,7 @@
   "scripts": {
     "start": "nodemon -L --ignore node_modules --exec 'react-scripts start'",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "./node_modules/.bin/react-scripts test",
     "eject": "react-scripts eject",
     "start-dockerless": "react-scripts start"
   },
