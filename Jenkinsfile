@@ -7,6 +7,18 @@ pipeline{
         }
     }
     stages{
+        stage("Backend Tests"){
+            agent{
+                    dockerfile{
+                        filename 'Dockerfile-CI.test'
+                        dir 'backend/ndis_calculator'
+                    }
+                }
+            steps {
+                sh "echo 'Beginning Backend Tests'"
+                sh "./backend/ndis_calculator/manage.py test"         
+            }
+        }
         stage("Setup Env Vars, Build and Run New Images"){
             steps{
                 sh "./setup-env.sh"
