@@ -26,7 +26,7 @@ const styles = theme => ({
   },
 
   bottom: {
-    marginTop: 70,
+    marginTop: 65,
     marginLeft: 150
   }
 });
