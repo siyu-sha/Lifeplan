@@ -5,6 +5,7 @@ import Home from "./home/Home";
 
 import "./App.css";
 import NavBar from "./common/NavBar";
+import SignUp from "./authentication/SignUp";
 
 class App extends Component {
   render() {
@@ -18,6 +19,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/theme" component={Theme} />
+            <Route path="/authentication/signup" component={SignUp} />
           </Switch>
         </main>
       </BrowserRouter>
