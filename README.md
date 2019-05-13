@@ -10,6 +10,7 @@ Database - simple mysql container based on the official image. Further investiga
 `docker-compose build`
 followed by
 `docker-compose up`
+
 When complete ctrl-c to end process, 
 `docker-compose down`
 to remove containers and clean up. 
