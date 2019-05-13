@@ -3,6 +3,7 @@ This project is the brainchild of Capital Guardians: An intelligent estimator fo
 
 ## Technology Overview
 This is a containerised project aiming to achieve simple production deployment: Three containers are specified
+
 Database - simple mysql container based on the official image. Further investigation required, unlikely to be suitable for production.
 
 ## How to Run A Development build
