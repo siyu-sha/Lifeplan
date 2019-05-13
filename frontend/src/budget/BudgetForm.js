@@ -11,6 +11,7 @@ import precision from "../common/money";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import withStyles from "@material-ui/core/styles/withStyles";
+import ValidatedTextField from "../common/ValidatedTextField";
 
 const styles = theme => ({
   paper: {
@@ -106,6 +107,109 @@ class FormPersonalDetails extends React.Component {
     }
   };
 
+  validate = () => {
+    let errors = {
+      // postcode : "",
+      // start_date : "",
+      // birthYear : "",
+      // assistanceDaily : "",
+      // transport : "",
+      // consumables : "",
+      // assistanceSocial : "",
+      // assistiveTechnology : "",
+      // homeModifications : "",
+      // coordinationSupport : "",
+      // living_arrangements : "",
+      // community_participation : "",
+      // employment : "",
+      // relationships : "",
+      // health_wellbeing : "",
+      // learning : "",
+      // life_choices : "",
+      // daily_living : ""
+    };
+
+    if (this.state.postcode.toString().length !== 4) {
+      //this.log.console("postcode is not filled");
+      console.log(this.state.postcode);
+      errors.postcode = "Invalid Postcode";
+    }
+
+    if (this.state.birthYear < 1900 || this.state.birthYear > 2019) {
+      errors.birthYear = "Invalid Birth Year";
+    }
+
+    if (this.state.assistanceDaily < 0) {
+      errors.assistanceDaily = "Please Enter A Positive Number";
+    }
+
+    if (this.state.transport < 0) {
+      errors.transport = "Please Enter A Positive Number";
+    }
+
+    if (this.state.consumables < 0) {
+      errors.consumables = "Please Enter A Positive Number";
+    }
+
+    if (this.state.assistanceSocial < 0) {
+      errors.assistanceSocial = "Please Enter A Positive Number";
+    }
+
+    if (this.state.assistiveTechnology < 0) {
+      errors.assistiveTechnology = "Please Enter A Positive Number";
+    }
+
+    if (this.state.homeModifications < 0) {
+      errors.homeModifications = "Please Enter A Positive Number";
+    }
+
+    if (this.state.coordinationSupport < 0) {
+      errors.coordinationSupport = "Please Enter A Positive Number";
+    }
+
+    if (this.state.livingArrangements < 0) {
+      errors.livingArrangements = "Please Enter A Positive Number";
+    }
+
+    if (this.state.communityParticipation < 0) {
+      errors.communityParticipation = "Please Enter A Positive Number";
+    }
+
+    if (this.state.employment < 0) {
+      errors.employment = "Please Enter A Positive Number";
+    }
+
+    if (this.state.relationships < 0) {
+      errors.relationships = "Please Enter A Positive Number";
+    }
+
+    if (this.state.healthWellbeing < 0) {
+      errors.healthWellbeing = "Please Enter A Positive Number";
+    }
+
+    if (this.state.learning < 0) {
+      errors.learning = "Please Enter A Positive Number";
+    }
+
+    if (this.state.lifeChoices < 0) {
+      errors.lifeChoices = "Please Enter A Positive Number";
+    }
+
+    if (this.state.dailyLiving < 0) {
+      errors.dailyLiving = "Please Enter A Positive Number";
+    }
+
+    // if(this.state.start_date === null){
+    //  errors.start_date = "Invalid Start Date";
+    //}
+
+    // this.setState({
+    //   ...this.state,
+    //   ...errors
+    // })
+    return errors;
+  };
+
   handleNext = () => {
     /*go to next page*/
   };
@@ -126,6 +230,7 @@ class FormPersonalDetails extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const errors = this.validate();
     return (
       <Paper className={classes.paper}>
         <ExpansionPanel defaultExpanded>
@@ -135,23 +240,25 @@ class FormPersonalDetails extends React.Component {
           <ExpansionPanelDetails>
             <Grid container spacing={24}>
               <Grid item xs={12}>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   required
                   type="number"
                   label="Postcode"
                   onChange={this.handleChange("postcode")}
                   value={this.state.postcode}
+                  error={errors.postcode}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   required
                   type="number"
                   label="Year of Birth"
                   onChange={this.handleChange("birthYear")}
                   value={this.state.birthYear}
+                  error={errors.birthYear}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -188,7 +295,7 @@ class FormPersonalDetails extends React.Component {
                 <Typography variant="body1">
                   Assistance with daily life
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("assistanceDaily")}
@@ -198,11 +305,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.assistanceDaily}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">Transport</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("transport")}
@@ -212,11 +320,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.transport}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">Consumables</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("consumables")}
@@ -226,13 +335,14 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.consumables}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Assistance with social and community participation
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("assistanceSocial")}
@@ -242,6 +352,7 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.assistanceSocial}
                 />
               </Grid>
             </Grid>
@@ -263,7 +374,7 @@ class FormPersonalDetails extends React.Component {
             <Grid container spacing={24}>
               <Grid item xs={12}>
                 <Typography variant="body1">Assistive technology</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("assistiveTechnology")}
@@ -273,11 +384,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.assistiveTechnology}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">Home modifications</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("homeModifications")}
@@ -287,6 +399,7 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.homeModifications}
                 />
               </Grid>
             </Grid>
@@ -310,7 +423,7 @@ class FormPersonalDetails extends React.Component {
                 <Typography variant="body1">
                   Coordination of supports
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("coordinationSupport")}
@@ -320,13 +433,14 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.coordinationSupport}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Improved living arrangements
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("livingArrangements")}
@@ -336,13 +450,14 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.livingArrangements}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Increased social and community participation
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("communityParticipation")}
@@ -352,11 +467,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.communityParticipation}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">Find and keep a job</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("employment")}
@@ -366,11 +482,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.employment}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">Improved relationships</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("relationships")}
@@ -380,13 +497,14 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.relationships}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Improved health and wellbeing
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("healthWellbeing")}
@@ -396,11 +514,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.healthWellbeing}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">Improved learning</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("learning")}
@@ -410,11 +529,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.learning}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">Improved life choices</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("lifeChoices")}
@@ -424,11 +544,12 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.lifeChoices}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">Improved daily living</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   type="number"
                   onChange={this.handleChange("dailyLiving")}
@@ -438,6 +559,7 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.dailyLiving}
                 />
               </Grid>
             </Grid>
