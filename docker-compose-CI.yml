@@ -3,7 +3,7 @@ version: "3.7"
 services:
   db:
     image: mysql:8.0.16
-    command: --default-authentication-plugin=mysql_native_password && ls -lR /docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes:
       - ./backend/ndis_calculator/sql:/docker-entrypoint-initdb.d:ro
