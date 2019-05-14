@@ -5,6 +5,8 @@ services:
     image: mysql:8.0.16
     command: --default-authentication-plugin=mysql_native_password
     restart: always
+    volumes:
+      - db-data:/var/lib/mysql:rw
     ports:
       - "13306:3306"
     environment:
@@ -30,3 +32,6 @@ services:
       - ./frontend:/app/frontend
       - /app/frontend/node_modules
     working_dir: /app/frontend/
+
+volumes:
+  db-data: {}
