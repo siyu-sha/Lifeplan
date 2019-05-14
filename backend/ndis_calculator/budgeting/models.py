@@ -5,8 +5,8 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     # add additional fields here
-    address = models.CharField(max_length=255)
-    birthday = models.DateField()
+    address = models.CharField(max_length=255)  # change address to postcode, but table disappeared??
+    birthday = models.DateField()  # change birthday to yearOfBirth, but table disappeared??
 
 class Plan(models.Model):
     start_time = models.DateField()
