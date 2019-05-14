@@ -3,11 +3,11 @@ version: "3.7"
 services:
   db:
     image: mysql:8.0.16
-    command: --default-authentication-plugin=mysql_native_password --init-file /app/ndis_calculator/init.sql
+    command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes:
-      - ./backend/ndis_calculator/init.sql:/app/ndis_calculator/init.sql
-      - ndis-datavolume:/var/lib/mysql
+      - ./backend/ndis_calculator/sql:/docker-entrypoint-initdb.d/:ro
+      - db-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ndisFP2019
 
@@ -32,4 +32,4 @@ services:
       - "${DOCKER_REACT_PORT}:3000"
 
 volumes:
-  ndis-datavolume:
+  db-data: {}
