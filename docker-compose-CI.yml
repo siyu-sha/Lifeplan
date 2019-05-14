@@ -6,8 +6,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes:
-      - ./backend/ndis_calculator/sql:/docker-entrypoint-initdb.d/:ro
-      - db-data:/var/lib/mysql
+      - ./backend/ndis_calculator/sql:/docker-entrypoint-initdb.d:ro
+      - db-data:/var/lib/mysql:rw
     environment:
       MYSQL_ROOT_PASSWORD: ndisFP2019
 
