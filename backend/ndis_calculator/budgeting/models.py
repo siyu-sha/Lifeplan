@@ -6,8 +6,9 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     # add additional fields here
-    address = models.CharField(max_length=255)  # change address to postcode, but table disappeared??
-    birthday = models.DateField()  # change birthday to yearOfBirth, but table disappeared??
+    address = models.CharField(max_length=255)
+    birthday = models.DateField()
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -45,4 +46,3 @@ class Goal(models.Model):
     how_to_achieve = models.TextField()
     how_to_support = models.TextField()
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-
