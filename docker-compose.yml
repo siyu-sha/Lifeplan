@@ -6,7 +6,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
-      - "3306:3306"
+      - "13306:3306"
     environment:
       MYSQL_DATABASE: ndis
       MYSQL_ROOT_PASSWORD: ndisFP2019
