@@ -7,14 +7,14 @@ from django.db import models
 class CustomUser(AbstractUser):
     # add additional fields here
     address = models.CharField(max_length=255)
-    birthday = models.DateField()
+    birthday = models.DateField(null=True, blank=True)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
 
 
-class Item(models.Model):
+class SupportItem(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     cost = models.DecimalField(max_digits=15, decimal_places=2)
@@ -26,13 +26,13 @@ class Plan(models.Model):
     end_time = models.DateField()
     total_funds = models.IntegerField()
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    item = models.ManyToManyField(Item, through='Budgeting')
+    item = models.ManyToManyField(SupportItem, through='Budgeting')
 
 
 class Budgeting(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    count = models.IntegerField()
+    item = models.ForeignKey(SupportItem, on_delete=models.CASCADE)
+    numItems = models.IntegerField()
     cost_per_unit = models.IntegerField()
     weekday_7_7 = models.DecimalField(max_digits=15, decimal_places=2)
     after_hour_weekend = models.DecimalField(max_digits=15, decimal_places=2)
