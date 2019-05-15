@@ -7,7 +7,7 @@ pipeline{
         }
     }
     stages{
-    	stage("Frontend Tests"){
+        stage("Frontend Tests"){
             agent{
                     docker{
                         image 'node'
@@ -17,12 +17,21 @@ pipeline{
                 }
     		steps {
                 sh "npm --prefix frontend/ install"
-                sh "echo 'Beginning Frontend Tests'"
-		sh "pwd"
-		sh "ls -lR"	
                 sh "npm --prefix frontend/ test --exit"
-    		}
-    	}
+    		      }
+    	  }
+        stage("Backend Tests"){
+            agent{
+                    dockerfile{
+                        filename 'Dockerfile-CI.test'
+                        dir 'backend/ndis_calculator'
+                    }
+                }
+            steps {
+                sh "echo 'Beginning Backend Tests'"
+                sh "./backend/ndis_calculator/manage.py test"         
+            }
+        }
         stage("Setup Env Vars, Build and Run New Images"){
             steps{
                 sh "./setup-env.sh"
@@ -38,7 +47,7 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down"
+            sh "docker-compose -f docker-compose-CI.yml down -v"
         }
     }
 }
