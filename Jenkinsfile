@@ -9,13 +9,13 @@ pipeline{
     stages{
     	stage("Frontend Tests"){
             agent{
-                    dockerfile{
-                        filename 'Dockerfile-CI.test'
-                        dir 'frontend'
-			args '-v $(pwd)/frontend:/app/frontend/'
+                    docker{
+                        image 'node'
+
                     }
                 }
     		steps {
+                sh "npm --prefix frontend/ install"
                 sh "echo 'Beginning Frontend Tests'"
 		sh "pwd"
 		sh "ls -lR"	
