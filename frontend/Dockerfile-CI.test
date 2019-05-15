@@ -1,7 +1,0 @@
-FROM node
-
-WORKDIR /app/frontend
-
-RUN npm install
-
-ENV NODE_ENV test

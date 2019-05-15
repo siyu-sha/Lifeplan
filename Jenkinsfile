@@ -11,6 +11,7 @@ pipeline{
             agent{
                     docker{
                         image 'node'
+                        args '-e CI=true'
 
                     }
                 }
