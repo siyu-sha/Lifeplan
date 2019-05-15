@@ -10,7 +10,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ['email', 'first_name', 'last_name', 'address', 'birthday',]
+    list_display = ['email', 'first_name', 'last_name', 'address', 'birthday']
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
@@ -38,7 +38,7 @@ admin.site.register(Plan, PlanAdmin)
 
 
 class BudgetingAdmin(admin.ModelAdmin):
-    list_display = ['numItems', 'cost_per_unit', 'weekday_7_7',
+    list_display = ['num_item', 'cost_per_unit', 'weekday_7_7',
                     'after_hour_weekend', 'holiday_7_7', 'holiday_after_hour']
 
 
@@ -46,7 +46,8 @@ admin.site.register(Budgeting, BudgetingAdmin)
 
 
 class GoalAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'type', 'description', 'how_to_achieve', 'how_to_support']
+    list_display = ['customer', 'type', 'description',
+                    'how_to_achieve', 'how_to_support']
 
 
 admin.site.register(Goal, GoalAdmin)

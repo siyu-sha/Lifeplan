@@ -32,7 +32,7 @@ class Plan(models.Model):
 class Budgeting(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     item = models.ForeignKey(SupportItem, on_delete=models.CASCADE)
-    numItems = models.IntegerField()
+    num_item = models.IntegerField()
     cost_per_unit = models.IntegerField()
     weekday_7_7 = models.DecimalField(max_digits=15, decimal_places=2)
     after_hour_weekend = models.DecimalField(max_digits=15, decimal_places=2)
