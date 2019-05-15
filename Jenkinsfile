@@ -16,6 +16,8 @@ pipeline{
                 }
     		steps {
                 sh "echo 'Beginning Frontend Tests'"
+		sh "pwd"
+		sh "ls -lR"	
                 sh "npm --prefix frontend/ test --exit"
     		}
     	}
