@@ -1,11 +1,7 @@
 FROM node
 
 WORKDIR /app/frontend
-COPY ./package.json /app/frontend/package.json
-COPY ./package-lock.json /app/frontend/package-lock.json
 
 RUN npm install
-
-COPY . /app/frontend/
 
 ENV NODE_ENV test
