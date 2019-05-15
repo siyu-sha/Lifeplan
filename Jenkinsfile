@@ -12,7 +12,7 @@ pipeline{
                     dockerfile{
                         filename 'Dockerfile-CI.test'
                         dir 'frontend'
-			args '-v ./frontend:/app/frontend/'
+			args '-v $(pwd)/frontend:/app/frontend/'
                     }
                 }
     		steps {
