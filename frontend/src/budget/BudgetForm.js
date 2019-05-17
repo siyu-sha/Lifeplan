@@ -54,7 +54,8 @@ const capacity_categories = [
   "communityParticipation"
 ];
 
-var regex = new RegExp(/^-?\d*\.?\d{0,2}$/);
+var moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
+var postcodeRegex = new RegExp(/^\d{0,4}$/);
 
 // return date exactly a year from today's date
 function getYearFromToday() {
@@ -97,7 +98,7 @@ class FormPersonalDetails extends React.Component {
   // handle money input
   handleChange = input => e => {
     // check if input string is the correct format for money
-    if (regex.test(e.target.value)) {
+    if (moneyRegex.test(e.target.value)) {
       // set new amount
       var new_amount;
       if (e.target.value === "") {
@@ -121,6 +122,13 @@ class FormPersonalDetails extends React.Component {
           capacityTotal: this.addTotal(capacity_categories, new_amount, input)
         });
       }
+    }
+  };
+
+  // hnadle postcode input by limiting it to 4 digits (also works for year)
+  handlePostCodeChange = input => e => {
+    if (postcodeRegex.test(e.target.value)) {
+      this.setState({ [input]: e.target.value });
     }
   };
 
@@ -163,9 +171,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   required
-                  type="number"
                   label="Postcode"
-                  onChange={this.handleChange("postcode")}
+                  onChange={this.handlePostCodeChange("postcode")}
                   value={this.state.postcode}
                 />
               </Grid>
@@ -173,9 +180,8 @@ class FormPersonalDetails extends React.Component {
                 <TextField
                   className={classes.number}
                   required
-                  type="number"
                   label="Year of Birth"
-                  onChange={this.handleChange("birthYear")}
+                  onChange={this.handlePostCodeChange("birthYear")}
                   value={this.state.birthYear}
                 />
               </Grid>
@@ -224,7 +230,7 @@ class FormPersonalDetails extends React.Component {
             <Grid container spacing={24}>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Assistance with daily life
+                  Assistance with Daily Life
                 </Typography>
                 <TextField
                   className={classes.number}
