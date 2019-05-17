@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Local
+    'budgeting.apps.BudgetingConfig',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +75,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ndis_calculator.wsgi.application'
 
+AUTH_USER_MODEL = 'budgeting.CustomUser'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -79,7 +83,7 @@ WSGI_APPLICATION = 'ndis_calculator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mysql',
+        'NAME': 'ndis',
         'USER': 'root',
         'PASSWORD': 'ndisFP2019',
         'HOST': 'db',
