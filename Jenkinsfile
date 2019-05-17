@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#! /usr/bin/env groovy
 pipeline{
     agent {
         dockerfile {
@@ -7,13 +7,33 @@ pipeline{
         }
     }
     stages{
-        stage("Bring Down Old Images"){
-            steps{
-                sh "docker-compose -f docker-compose-CI.yml down"
+        stage("Frontend Tests"){
+            agent{
+                docker{
+                    image 'node'
+                    args '-e CI=true'
+                }
+            }
+            steps {
+                sh "npm --prefix frontend/ install"
+                sh "npm --prefix frontend/ test --exit"
             }
         }
-        stage("Build and Run New Images"){
+        stage("Backend Tests"){
+            agent{
+                dockerfile{
+                    filename 'Dockerfile-CI.test'
+                    dir 'backend/ndis_calculator'
+                }
+            }
+            steps {
+                sh "echo 'Beginning Backend Tests'"
+                sh "./backend/ndis_calculator/manage.py test"
+            }
+        }
+        stage("Setup Env Vars, Build and Run New Images"){
             steps{
+                sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
@@ -21,13 +41,12 @@ pipeline{
         stage("Run Health Check Script"){
             steps{
                 sh "./healthCheck.sh"
-                sh "sleep 10"
             }
         }
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down"
+            sh "docker-compose -f docker-compose-CI.yml down -v"
         }
     }
 }
