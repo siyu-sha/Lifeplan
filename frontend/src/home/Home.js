@@ -68,7 +68,11 @@ export default function Home() {
               </Grid>
 
               <Grid item>
-                <Card raised className={classes.cardContainer}>
+                <Card
+                  raised
+                  className={classes.cardContainer}
+                  onClick={() => (window.location.href = "/budget")}
+                >
                   <CardActionArea
                     className={classNames(
                       classes.budgetPageSelector,
