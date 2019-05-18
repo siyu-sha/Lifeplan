@@ -20,6 +20,7 @@ pipeline{
                         sh "npm --prefix frontend/ install"
                         sh "npm --prefix frontend/ test --exit"
                     }
+
                 }
                 stage("Backend Tests"){
                     agent{
@@ -31,6 +32,11 @@ pipeline{
                         sh "./setup-env.sh"
                         sh "docker-compose -f docker-compose-CI.test.yml build"
                         sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
+                    }
+                    post{
+                        always{
+                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
+                        }
                     }
                 }
             }
@@ -50,7 +56,6 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.test.yml down -v"
             sh "docker-compose -f docker-compose-CI.yml down -v"
         }
     }
