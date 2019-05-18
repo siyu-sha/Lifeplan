@@ -22,13 +22,13 @@ pipeline{
         stage("Backend Tests"){
             agent{
                 dockerfile{
-                    filename 'Dockerfile-CI.test'
-                    dir 'backend/ndis_calculator'
+                    filename 'Dockerfile'
                 }
             }
             steps {
-                sh "echo 'Beginning Backend Tests'"
-                sh "./backend/ndis_calculator/manage.py test"
+                sh "./setup-env.sh"
+                sh "docker-compose -f docker-compose-CI.test.yml build"
+                sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
             }
         }
         stage("Setup Env Vars, Build and Run New Images"){
@@ -46,6 +46,7 @@ pipeline{
     }
     post{
         always{
+            sh "docker-compose -f docker-compose-CI.test.yml down -v"
             sh "docker-compose -f docker-compose-CI.yml down -v"
         }
     }
