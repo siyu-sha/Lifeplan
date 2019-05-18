@@ -59,68 +59,76 @@ const styles = theme => ({
   }
 });
 
-function SignIn(props) {
-  const { classes } = props;
-  const email = "email";
-  const pwd = "password";
-  const margin_size = "normal";
+class SignIn extends React.Component {
+  state = {
+    emailAddress: "",
+    password: "",
+    rememberMe: false
+  };
 
-  return (
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component={"h1"} variant={"h5"}>
-          Sign in
-        </Typography>
-        <form className={classes.form}>
-          <FormControl margin={margin_size} required fullWidth>
-            <InputLabel htmlFor={email}>Email Address</InputLabel>
-            <Input id={email} name={email} autoComplete={email} autoFocus />
-          </FormControl>
-          <FormControl margin={margin_size} required fullWidth>
-            <InputLabel htmlFor={pwd} required fullWidth>
-              Password
-            </InputLabel>
-            <Input
-              name={pwd}
-              type={pwd}
-              id={pwd}
-              autoComplete="current-password"
-            />
-          </FormControl>
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submitBtn}
-          >
+  render() {
+    const { classes } = this.props;
+    const email = "email";
+    const pwd = "password";
+    const margin_size = "normal";
+
+    return (
+      <main className={classes.main}>
+        <CssBaseline />
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component={"h1"} variant={"h5"}>
             Sign in
+          </Typography>
+          <form className={classes.form}>
+            <FormControl margin={margin_size} required fullWidth>
+              <InputLabel htmlFor={email}>Email Address</InputLabel>
+              <Input id={email} name={email} autoComplete={email} autoFocus />
+            </FormControl>
+            <FormControl margin={margin_size} required fullWidth>
+              <InputLabel htmlFor={pwd} required fullWidth>
+                Password
+              </InputLabel>
+              <Input
+                name={pwd}
+                type={pwd}
+                id={pwd}
+                autoComplete="current-password"
+              />
+            </FormControl>
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submitBtn}
+            >
+              Sign in
+            </Button>
+          </form>
+        </Paper>
+        <Grid className={classes.registerStl}>
+          <Button
+            type="button"
+            color="secondary"
+            className={classes.registerBtn}
+            onClick={() => (window.location.href = "/authentication/signup")}
+          >
+            SignUp
           </Button>
-        </form>
-      </Paper>
-      <Grid className={classes.registerStl}>
-        <Button
-          type="button"
-          color="secondary"
-          className={classes.registerBtn}
-          onClick={() => (window.location.href = "/authentication/signup")}
-        >
-          SignUp
-        </Button>
-        <Typography component={"subtitle1"} className={classes.registerLabel}>
-          Don't have an account?
-        </Typography>
-      </Grid>
-    </main>
-  );
+          <Typography component={"subtitle1"} className={classes.registerLabel}>
+            Don't have an account?
+          </Typography>
+        </Grid>
+      </main>
+    );
+  }
 }
 
 export default withStyles(styles)(SignIn);

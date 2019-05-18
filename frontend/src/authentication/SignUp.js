@@ -11,7 +11,6 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
-import { Grid } from "@material-ui/core";
 
 const styles = theme => ({
   main: {
@@ -49,73 +48,83 @@ const styles = theme => ({
   }
 });
 
-function SignUp(props) {
-  const { classes } = props;
-  const email = "email";
-  const pwd = "password";
-  const marginSize = "normal";
-  const firstName = "firstName";
-  const lastName = "lastName";
+class SignUp extends React.Component {
+  state = {
+    firstName: "",
+    lastName: "",
+    emailAddress: "",
+    password: "",
+    acceptTermsAndConditions: true
+  };
 
-  return (
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component={"h1"} variant={"h5"}>
-          Sign Up
-        </Typography>
-        <form className={classes.form}>
-          <FormControl margin={marginSize} required fullWidth>
-            <InputLabel htmlFor={firstName}>First Name</InputLabel>
-            <Input id={firstName} name={firstName} autoFocus />
-          </FormControl>
-          <FormControl margin={marginSize} required fullWidth>
-            <InputLabel htmlFor={lastName}>Last Name</InputLabel>
-            <Input id={lastName} name={lastName} />
-          </FormControl>
-          <FormControl margin={marginSize} required fullWidth>
-            <InputLabel htmlFor={email}>Email Address</InputLabel>
-            <Input id={email} name={email} autoComplete={email} />
-          </FormControl>
-          <FormControl margin={marginSize} required fullWidth>
-            <InputLabel htmlFor={pwd} required fullWidth>
-              Password
-            </InputLabel>
-            <Input
-              name={pwd}
-              type={pwd}
-              id={pwd}
-              autoComplete="current-password"
-            />
-          </FormControl>
-          <FormControlLabel
-            control={<Checkbox value="accept" color="primary" />}
-            label="Click to accept our Terms & Conditions"
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className={classes.submitBtn}
-          >
+  render() {
+    const { classes } = this.props;
+    const email = "email";
+    const pwd = "password";
+    const marginSize = "normal";
+    const firstName = "firstName";
+    const lastName = "lastName";
+
+    return (
+      <main className={classes.main}>
+        <CssBaseline />
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component={"h1"} variant={"h5"}>
             Sign Up
-          </Button>
-          <Button
-            type="button"
-            variant="contained"
-            color="secondary"
-            className={classes.submitBtn}
-            onClick={() => (window.location.href = "/authentication/signin")}
-          >
-            Cancel
-          </Button>
-        </form>
-      </Paper>
-    </main>
-  );
+          </Typography>
+          <form className={classes.form}>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={firstName}>First Name</InputLabel>
+              <Input id={firstName} name={firstName} autoFocus />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={lastName}>Last Name</InputLabel>
+              <Input id={lastName} name={lastName} />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={email}>Email Address</InputLabel>
+              <Input id={email} name={email} autoComplete={email} />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={pwd} required fullWidth>
+                Password
+              </InputLabel>
+              <Input
+                name={pwd}
+                type={pwd}
+                id={pwd}
+                autoComplete="current-password"
+              />
+            </FormControl>
+            <FormControlLabel
+              control={<Checkbox value="accept" color="primary" />}
+              label="Click to accept our Terms & Conditions"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={classes.submitBtn}
+            >
+              Sign Up
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="secondary"
+              className={classes.submitBtn}
+              onClick={() => (window.location.href = "/authentication/signin")}
+            >
+              Cancel
+            </Button>
+          </form>
+        </Paper>
+      </main>
+    );
+  }
 }
 
 export default withStyles(styles)(SignUp);
