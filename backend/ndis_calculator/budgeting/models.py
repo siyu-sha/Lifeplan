@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from ndis_calculator import settings
 # Create your models here.
 
 
@@ -25,7 +25,7 @@ class Plan(models.Model):
     start_time = models.DateField()
     end_time = models.DateField()
     total_funds = models.IntegerField()
-    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     item = models.ManyToManyField(SupportItem, through='Budgeting')
 
 
@@ -45,4 +45,4 @@ class Goal(models.Model):
     description = models.TextField()
     how_to_achieve = models.TextField()
     how_to_support = models.TextField()
-    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
