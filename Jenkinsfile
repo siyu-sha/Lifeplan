@@ -20,7 +20,6 @@ pipeline{
                         sh "npm --prefix frontend/ install"
                         sh "npm --prefix frontend/ test --exit"
                     }
-
                 }
                 stage("Backend Tests"){
                     agent{
