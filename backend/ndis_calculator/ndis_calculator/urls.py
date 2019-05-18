@@ -17,8 +17,18 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import re_path
 from django.urls import include
+from rest_framework_simplejwt import views as jwt_views
+from budgeting import views
 
 urlpatterns = [
+    # Django admin
     path('admin/', admin.site.urls),
+
+    # JWT
+    path('api/auth/login/', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
+    path('api/auth/refresh/', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
+
+    # App
+    path('hello/', views.HelloView.as_view(), name='hello'),
     # re_path(r'api-auth/', include('rest_framework.urls')),
 ]
