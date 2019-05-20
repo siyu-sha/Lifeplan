@@ -5,8 +5,6 @@ services:
     image: mysql:8.0.16
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    volumes:
-      - db-data:/var/lib/mysql:rw
     environment:
       MYSQL_DATABASE: ndis
       MYSQL_ROOT_PASSWORD: ndisFP2019
@@ -14,22 +12,12 @@ services:
   django:
     build:
       context: ./backend/ndis_calculator
-      dockerfile: Dockerfile-CI
+      dockerfile: Dockerfile-CI.test
     ports:
       - "${DOCKER_DJANGO_PORT}:8000"
     command: >
       sh -c "pwd &&
           ls -lR &&
-          ./entrypoint.sh"
+          ./entrypoint-test.sh"
     depends_on:
       - db
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile-CI
-    ports:
-      - "${DOCKER_REACT_PORT}:3000"
-
-volumes:
-  db-data: {}

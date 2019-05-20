@@ -1,4 +1,4 @@
-#!/usr/bin/env groovy
+#! /usr/bin/env groovy
 pipeline{
     agent {
         dockerfile {
@@ -7,13 +7,42 @@ pipeline{
         }
     }
     stages{
-        stage("Bring Down Old Images"){
-            steps{
-                sh "docker-compose -f docker-compose-CI.yml down"
+        stage("Parallel Tests"){
+            parallel{
+                stage("Frontend Tests"){
+                    agent{
+                        docker{
+                            image 'node'
+                            args '-e CI=true'
+                        }
+                    }
+                    steps {
+                        sh "npm --prefix frontend/ install"
+                        sh "npm --prefix frontend/ test --exit"
+                    }
+                }
+                stage("Backend Tests"){
+                    agent{
+                        dockerfile{
+                            filename 'Dockerfile'
+                        }
+                    }
+                    steps {
+                        sh "./setup-env.sh"
+                        sh "docker-compose -f docker-compose-CI.test.yml build"
+                        sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
+                    }
+                    post{
+                        always{
+                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
+                        }
+                    }
+                }
             }
         }
-        stage("Build and Run New Images"){
+        stage("Setup Env Vars, Build and Run New Images"){
             steps{
+                sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
@@ -21,13 +50,12 @@ pipeline{
         stage("Run Health Check Script"){
             steps{
                 sh "./healthCheck.sh"
-                sh "sleep 10"
             }
         }
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down"
+            sh "docker-compose -f docker-compose-CI.yml down -v"
         }
     }
 }
