@@ -34,7 +34,7 @@ pipeline{
                     }
                     post{
                         always{
-                            sh "docker-compose -f docker-compose-CI.test.yml down"
+                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
                         }
                     }
                 }
