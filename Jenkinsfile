@@ -13,11 +13,10 @@ pipeline{
                     agent{
                         docker{
                             image 'node'
-                            args '-e CI=true'
+                            args '-v npm-cache:/root/.npm -e CI=true'
                         }
                     }
                     steps {
-                        sh "npm get cache"
                         sh "npm --prefix frontend/ install"
                         sh "npm --prefix frontend/ test --exit"
                     }
