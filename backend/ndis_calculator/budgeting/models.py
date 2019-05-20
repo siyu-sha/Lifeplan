@@ -6,8 +6,8 @@ from ndis_calculator import settings
 
 class CustomUser(AbstractUser):
     # add additional fields here
-    address = models.CharField(max_length=255)
-    birthday = models.DateField(null=True, blank=True)
+    postcode = models.IntegerField()
+    birth_year = models.IntegerField()
 
 
 class Category(models.Model):
