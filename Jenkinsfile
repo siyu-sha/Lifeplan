@@ -13,7 +13,7 @@ pipeline{
                     agent{
                         docker{
                             image 'node'
-                            args '-e CI=true'
+                            args '-v node_modules:/frontend/node_modules -e CI=true'
                         }
                     }
                     steps {
@@ -34,7 +34,7 @@ pipeline{
                     }
                     post{
                         always{
-                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
+                            sh "docker-compose -f docker-compose-CI.test.yml down"
                         }
                     }
                 }
