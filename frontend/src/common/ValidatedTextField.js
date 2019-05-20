@@ -5,11 +5,18 @@ import { TextField } from "@material-ui/core";
 
 export default class ValidatedTextField extends Component {
   state = {
-    clickedAway: false
+    clickedAway: false,
+    clicked: false
   };
 
   handleClickAway = () => {
-    this.setState({ clickedAway: true });
+    if (this.state.clicked) {
+      this.setState({ clickedAway: true });
+    }
+  };
+
+  handleClick = () => {
+    this.setState({ clicked: true });
   };
 
   render() {
@@ -17,6 +24,7 @@ export default class ValidatedTextField extends Component {
     return (
       <ClickAwayListener onClickAway={this.handleClickAway}>
         <TextField
+          onClick={this.handleClick}
           {...this.props}
           helperText={this.props.helperText || (showError && this.props.error)}
           error={showError}
