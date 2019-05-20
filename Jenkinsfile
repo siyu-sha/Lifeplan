@@ -17,7 +17,7 @@ pipeline{
                         }
                     }
                     steps {
-                        sh "npm --prefix frontend/ install"
+                        sh "npm --prefix frontend/ --verbose install"
                         sh "npm --prefix frontend/ test --exit"
                     }
                 }
