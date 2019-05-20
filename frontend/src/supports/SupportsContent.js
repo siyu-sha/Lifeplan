@@ -13,6 +13,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import AddIcon from "@material-ui/icons/Add";
 
 const useStyles = makeStyles({
   navBar: {
@@ -20,6 +21,17 @@ const useStyles = makeStyles({
   },
   grow: {
     flexGrow: 1
+  },
+  addButton: {
+    position: "fixed"
+  },
+  fab: {
+    margin: 0,
+    top: "auto",
+    right: 20,
+    bottom: 20,
+    left: "auto",
+    position: "fixed !important"
   }
 });
 
@@ -39,7 +51,19 @@ export default class SupportsContent extends React.Component {
       holiday: 0,
       holidayAfter: 2
     },
-    { name: "Wheelcair", cost: 160 }
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 },
+    { name: "Wheelchair", cost: 160 }
   ];
 
   handleClose = () => {};
@@ -53,16 +77,19 @@ export default class SupportsContent extends React.Component {
           </Typography>
         </Toolbar>
         <UserSupportsList supports={this.user_supports} total={this.total} />
-        <DialogActions>
-          <Button onClick={this.handleClose}> Save </Button>
-          <Button onClick={this.handleClose}> Cancel </Button>
-        </DialogActions>
       </Grid>
     );
   }
 }
 
-const StyledListItem = withStyles({
+const TotalListItem = withStyles({
+  root: {
+    backgroundColor: "#cccccc",
+    height: "36px"
+  }
+})(ListItem);
+
+const AddListItem = withStyles({
   root: {
     backgroundColor: "#cccccc",
     height: "36px"
@@ -70,30 +97,42 @@ const StyledListItem = withStyles({
 })(ListItem);
 
 function UserSupportsList(props) {
+  const classes = useStyles();
   let supportsList = [];
 
   for (let i = 0; i < props.supports.length; i++) {
     supportsList.push(
-      <ListItem button key={i} divider={true} className={useStyles.listItem}>
+      <ListItem button key={i} divider={true}>
         <ListItemText primary={props.supports[i]["name"]} />
+        <ListItemSecondaryAction>
+          <Typography inline variant="body1" align="right">
+            ${props.supports[i]["cost"]}
+          </Typography>
+        </ListItemSecondaryAction>
       </ListItem>
     );
   }
 
   return (
     <DialogContent id="assist-dialog-description">
-      <List className={useStyles.totalBar}>
-        <StyledListItem>
-          <Typography inline variant="h6" align="right">
+      <List>
+        <TotalListItem>
+          <Typography inline variant="body1">
             Total:
           </Typography>
           <ListItemSecondaryAction>
-            <Typography inline variant="h6" align="right">
+            <Typography inline variant="body1">
               ${props.total}
             </Typography>
           </ListItemSecondaryAction>
-        </StyledListItem>
+        </TotalListItem>
         {supportsList}
+        <AddListItem>
+          <ListItemIcon>
+            <AddIcon />
+          </ListItemIcon>
+          <Typography inline>Add new support</Typography>
+        </AddListItem>
       </List>
     </DialogContent>
   );
