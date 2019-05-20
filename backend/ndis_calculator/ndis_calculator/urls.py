@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/auth/refresh/', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
 
     # App
+    path('', views.DefaultView.as_view(), name='landing'),
     path('hello/', views.HelloView.as_view(), name='hello'),
     # re_path(r'api-auth/', include('rest_framework.urls')),
 ]
