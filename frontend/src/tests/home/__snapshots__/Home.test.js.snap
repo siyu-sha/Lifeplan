@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test home rendering 1`] = `
+<div
+  className="MuiGrid-container-1 MuiGrid-align-items-xs-center-9 Hook-home-r4jy4w"
+>
+  <div
+    className="MuiGrid-item-2 MuiGrid-grid-xs-12-41"
+  >
+    <div
+      className="MuiGrid-container-1"
+    >
+      <div
+        className="MuiGrid-item-2 MuiGrid-grid-xs-12-41"
+      >
+        <h5
+          className="MuiTypography-root-98 MuiTypography-h5-114 MuiTypography-alignCenter-121"
+        >
+          Welcome.
+          <br />
+          Please select the tool you wish to use:
+        </h5>
+      </div>
+      <div
+        className="MuiGrid-item-2 MuiGrid-grid-xs-12-41"
+      >
+        <div
+          className="MuiGrid-container-1 MuiGrid-justify-xs-center-18"
+        >
+          <div
+            className="MuiGrid-item-2"
+          >
+            <div
+              className="MuiPaper-root-135 MuiPaper-elevation8-145 MuiPaper-rounded-136 MuiCard-root-134 Hook-cardContainer-b6kkw2"
+            >
+              <button
+                className="MuiButtonBase-root-165 MuiCardActionArea-root-162 Hook-planPageSelector-1j9mpx1 Hook-pageSelector-1i75ui3"
+                onBlur={[Function]}
+                onContextMenu={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                onMouseDown={[Function]}
+                onMouseLeave={[Function]}
+                onMouseUp={[Function]}
+                onTouchEnd={[Function]}
+                onTouchMove={[Function]}
+                onTouchStart={[Function]}
+                tabIndex="0"
+                type="button"
+              >
+                <div
+                  className="MuiCardContent-root-168"
+                >
+                  <h6
+                    className="MuiTypography-root-98 MuiTypography-h6-115 MuiTypography-colorInherit-127 MuiTypography-alignCenter-121"
+                  >
+                    Plan Creator
+                  </h6>
+                </div>
+                <span
+                  className="MuiCardActionArea-focusHighlight-164"
+                />
+                <span
+                  className="MuiTouchRipple-root-169"
+                />
+              </button>
+            </div>
+          </div>
+          <div
+            className="MuiGrid-item-2"
+          >
+            <div
+              className="MuiPaper-root-135 MuiPaper-elevation8-145 MuiPaper-rounded-136 MuiCard-root-134 Hook-cardContainer-b6kkw2"
+              onClick={[Function]}
+            >
+              <button
+                className="MuiButtonBase-root-165 MuiCardActionArea-root-162 Hook-budgetPageSelector-pzgh98 Hook-pageSelector-1i75ui3"
+                onBlur={[Function]}
+                onContextMenu={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                onKeyUp={[Function]}
+                onMouseDown={[Function]}
+                onMouseLeave={[Function]}
+                onMouseUp={[Function]}
+                onTouchEnd={[Function]}
+                onTouchMove={[Function]}
+                onTouchStart={[Function]}
+                tabIndex="0"
+                type="button"
+              >
+                <div
+                  className="MuiCardContent-root-168"
+                >
+                  <h6
+                    className="MuiTypography-root-98 MuiTypography-h6-115 MuiTypography-colorInherit-127 MuiTypography-alignCenter-121"
+                  >
+                    Plan Budget Calculator
+                  </h6>
+                </div>
+                <span
+                  className="MuiCardActionArea-focusHighlight-164"
+                />
+                <span
+                  className="MuiTouchRipple-root-169"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
