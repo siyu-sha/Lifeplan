@@ -1,12 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
+from djangorestframework_camel_case.parser import CamelCaseJSONParser
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import CustomUser
 from .serializers import CustomUserSerializer
 
 # Create your views here.
@@ -27,13 +27,16 @@ class HelloView(APIView):
 
 class Authentication(APIView):
     permission_classes = (AllowAny,)
+    renderer_classes = (CamelCaseJSONRenderer,)
 
+    @api_view(['POST', ])
     @csrf_exempt
     def register(request):
         if request.method == 'POST':
-            data = JSONParser().parse(request)
+            data = CamelCaseJSONParser().parse(request)
+            data['username'] = data.get('email')
             serializer = CustomUserSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
-                return JsonResponse(serializer.data, status=200)
-            return JsonResponse(serializer.errors, status=422)
+                return Response(serializer.data)
+            return Response(serializer.errors)
