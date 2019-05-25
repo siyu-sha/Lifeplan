@@ -20,20 +20,20 @@ from budgeting import views
 
 api_patterns = [
     # JWT
-    path('auth/login/', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
-    path('auth/refresh/', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
+    path('auth/login', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
+    path('auth/refresh', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
     path('auth/register', views.Authentication.register, name='auth_register'),
 ]
 
 urlpatterns = [
     # Django admin
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
 
     # API
     path('api/v1/', include(api_patterns)),
 
     # App
     path('', views.DefaultView.as_view(), name='landing'),
-    path('hello/', views.HelloView.as_view(), name='hello'),
+    path('hello', views.HelloView.as_view(), name='hello'),
     # url(r'^api-auth/', include('rest_framework.urls'))
 ]

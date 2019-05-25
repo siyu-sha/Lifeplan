@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Local
-    'budgeting.apps.BudgetingConfig',
+    'budgeting',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +79,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ndis_calculator.wsgi.application'
 
 AUTH_USER_MODEL = 'budgeting.CustomUser'
+
+APPEND_SLASH = False
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
