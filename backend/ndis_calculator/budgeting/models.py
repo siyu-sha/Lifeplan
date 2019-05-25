@@ -8,6 +8,10 @@ class CustomUser(AbstractUser):
     # add additional fields here
     postcode = models.IntegerField()
     birth_year = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created',)
 
 
 class Category(models.Model):
