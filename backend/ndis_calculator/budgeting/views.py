@@ -53,3 +53,15 @@ class Authentication(APIView):
 
                 return Response(tokens)
             return Response(serializer.errors)
+
+
+class Participant(APIView):
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (CamelCaseJSONRenderer,)
+
+    @api_view(['GET', ])
+    @csrf_exempt
+    def id(request):
+        if request.method == 'GET':
+            serializer = CustomUserSerializer(request.user)
+            return Response(serializer.data)

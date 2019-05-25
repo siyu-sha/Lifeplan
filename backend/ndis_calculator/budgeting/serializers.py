@@ -4,11 +4,11 @@ from budgeting.models import CustomUser
 
 
 class CustomUserSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    username = serializers.CharField(write_only=True)
     email = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     first_name = serializers.CharField()
     last_name = serializers.CharField()
-    password = serializers.CharField()
+    password = serializers.CharField(write_only=True)
     postcode = serializers.IntegerField()
     birth_year = serializers.IntegerField()
 

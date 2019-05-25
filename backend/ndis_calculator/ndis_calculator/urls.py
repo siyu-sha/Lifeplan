@@ -23,6 +23,8 @@ api_patterns = [
     path('auth/login', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
     path('auth/refresh', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
     path('auth/register', views.Authentication.register, name='auth_register'),
+
+    path('participant/id', views.Participant.id, name='participant_id'),
 ]
 
 urlpatterns = [
