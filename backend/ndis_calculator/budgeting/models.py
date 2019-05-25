@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('id',)
 
 
 class Category(models.Model):

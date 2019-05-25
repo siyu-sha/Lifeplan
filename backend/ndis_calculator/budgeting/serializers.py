@@ -1,13 +1,14 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from budgeting.models import CustomUser
 
 
 class CustomUserSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    username = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     password = serializers.CharField()
-    email = serializers.CharField()
+    email = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     postcode = serializers.IntegerField()
     birth_year = serializers.IntegerField()
 
