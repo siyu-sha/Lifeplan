@@ -1,3 +1,4 @@
+import hashlib
 from django.http import HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -34,6 +35,8 @@ class Authentication(APIView):
     def register(request):
         if request.method == 'POST':
             data = CamelCaseJSONParser().parse(request)
+            plainpassw = data.get('password')
+            data['password'] = hashlib.sha256(plainpassw.encode('utf-8')).hexdigest()
             data['username'] = data.get('email')
             serializer = CustomUserSerializer(data=data)
             if serializer.is_valid():
