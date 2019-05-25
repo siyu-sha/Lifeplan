@@ -3,8 +3,8 @@ import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import DailyLivingChart from "./../Test/DailyLivingChart";
-import { Button } from "@material-ui/core";
+import { Button, CardActions } from "@material-ui/core";
+import Chartjs from "../Test/Chartjs";
 
 const styles = theme => ({
   card: {
@@ -15,7 +15,7 @@ const styles = theme => ({
   left: {
     display: "flex",
     flexDirection: "column",
-    width: 125,
+    width: 300,
     margin: 0
   },
 
@@ -26,7 +26,7 @@ const styles = theme => ({
   },
 
   bottom: {
-    marginTop: 65,
+    marginTop: 70,
     marginLeft: 150
   }
 });
@@ -37,20 +37,20 @@ function LeftCard(props) {
   return (
     <Card className={classes.card}>
       <div className={classes.left}>
-        <DailyLivingChart />
+        <Chartjs />
         <Typography color="textSecondary" fontSize="sm">
-          $2000.00 left
+          {props.amountLeft} left
         </Typography>
-        <Typography color="Black">Total: $8000.00</Typography>
+        <Typography color="Black">Total: {props.amoutTotal}</Typography>
       </div>
       <div className={classes.right}>
         <CardContent className={classes.content}>
           <Typography component="h1" variant="h6">
-            Assitance with daily living!
+            {props.title}
           </Typography>
-          <div className={classes.bottom}>
+          <CardActions className={classes.bottom}>
             <Button component="span">View</Button>
-          </div>
+          </CardActions>
         </CardContent>
       </div>
     </Card>

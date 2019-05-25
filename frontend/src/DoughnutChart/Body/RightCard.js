@@ -15,8 +15,8 @@ const styles = theme => ({
   left: {
     display: "flex",
     flexDirection: "column",
-    width: 125,
-    margin: 0
+    width: 150,
+    marginRight: 0
   },
 
   right: {
@@ -37,7 +37,6 @@ function RightCard(props) {
   return (
     <Card className={classes.card}>
       <div className={classes.left}>
-        <ConsumableChart />
         <Typography color="textSecondary" fontSize="sm">
           $2000.00 left
         </Typography>
