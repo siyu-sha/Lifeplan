@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import CustomUser
 from .serializers import CustomUserSerializer
 
 # Create your views here.
@@ -41,5 +43,13 @@ class Authentication(APIView):
             serializer = CustomUserSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+
+                user = CustomUser.objects.filter(email=data.get('email')).first()
+                refresh = RefreshToken.for_user(user)
+                tokens = {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                }
+
+                return Response(tokens)
             return Response(serializer.errors)
