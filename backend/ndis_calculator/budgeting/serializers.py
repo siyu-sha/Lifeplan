@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from budgeting.models import CustomUser
@@ -16,7 +17,16 @@ class CustomUserSerializer(serializers.Serializer):
         """
         Create and return a new `CustomUser` instance, given the validated data.
         """
-        return CustomUser.objects.create(**validated_data)
+        user = CustomUser.objects.create(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=make_password(validated_data['password']),
+                postcode=validated_data['postcode'],
+                birth_year=validated_data['birth_year']
+        )
+        return user
 
     def update(self, instance, validated_data):
         """
