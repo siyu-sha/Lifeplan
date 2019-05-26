@@ -12,7 +12,7 @@ import TextField from "@material-ui/core/TextField";
 import withStyles from "@material-ui/core/styles/withStyles";
 import ValidatedTextField from "../common/ValidatedTextField";
 import MomentUtils from "@date-io/moment";
-import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import { ChevronLeft, ChevronRight } from "@material-ui/icons";
 
 const styles = theme => ({
