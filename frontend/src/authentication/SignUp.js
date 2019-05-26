@@ -52,9 +52,32 @@ class SignUp extends React.Component {
   state = {
     firstName: "",
     lastName: "",
-    emailAddress: "",
+    email: "",
     password: "",
-    acceptTermsAndConditions: true
+    accept: false,
+    submitted: false
+  };
+
+  handleInput = event => {
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  };
+
+  handleSubmit = event => {
+    this.setState({ submitted: true });
+
+    event.preventDefault();
+
+    const { email, password, accept, firstName, lastName } = this.state;
+
+    console.log("I was triggered" + email + password + accept + "test");
+
+    // send email and password
   };
 
   render() {
@@ -64,6 +87,7 @@ class SignUp extends React.Component {
     const marginSize = "normal";
     const firstName = "firstName";
     const lastName = "lastName";
+    const accept = "accept";
 
     return (
       <main className={classes.main}>
@@ -75,18 +99,32 @@ class SignUp extends React.Component {
           <Typography component={"h1"} variant={"h5"}>
             Sign Up
           </Typography>
-          <form className={classes.form}>
+          <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={firstName}>First Name</InputLabel>
-              <Input id={firstName} name={firstName} autoFocus />
+              <Input
+                id={firstName}
+                name={firstName}
+                autoFocus
+                onChange={e => this.handleInput(e)}
+              />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={lastName}>Last Name</InputLabel>
-              <Input id={lastName} name={lastName} />
+              <Input
+                id={lastName}
+                name={lastName}
+                onChange={e => this.handleInput(e)}
+              />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={email}>Email Address</InputLabel>
-              <Input id={email} name={email} autoComplete={email} />
+              <Input
+                id={email}
+                name={email}
+                autoComplete={email}
+                onChange={e => this.handleInput(e)}
+              />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={pwd} required fullWidth>
@@ -97,10 +135,18 @@ class SignUp extends React.Component {
                 type={pwd}
                 id={pwd}
                 autoComplete="current-password"
+                onChange={e => this.handleInput(e)}
               />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="accept" color="primary" />}
+              control={
+                <Checkbox
+                  value={this.state.accept}
+                  name={accept}
+                  color="primary"
+                  onChange={e => this.handleInput(e)}
+                />
+              }
               label="Click to accept our Terms & Conditions"
             />
             <Button

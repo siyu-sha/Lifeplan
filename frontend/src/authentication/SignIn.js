@@ -61,9 +61,34 @@ const styles = theme => ({
 
 class SignIn extends React.Component {
   state = {
-    emailAddress: "",
+    email: "",
     password: "",
-    rememberMe: false
+    remember: false,
+    submitted: false
+  };
+
+  handleInput = event => {
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  };
+
+  handleSubmit = event => {
+    this.setState({ submitted: true });
+
+    event.preventDefault();
+
+    const { email, password, remember } = this.state;
+
+    console.log(
+      "I was triggered" + email + password + remember + "handleSubmit"
+    );
+
+    // send email and password
   };
 
   render() {
@@ -71,6 +96,7 @@ class SignIn extends React.Component {
     const email = "email";
     const pwd = "password";
     const margin_size = "normal";
+    const remember = "remember";
 
     return (
       <main className={classes.main}>
@@ -82,10 +108,16 @@ class SignIn extends React.Component {
           <Typography component={"h1"} variant={"h5"}>
             Sign in
           </Typography>
-          <form className={classes.form}>
+          <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={margin_size} required fullWidth>
               <InputLabel htmlFor={email}>Email Address</InputLabel>
-              <Input id={email} name={email} autoComplete={email} autoFocus />
+              <Input
+                id={email}
+                name={email}
+                autoComplete={email}
+                autoFocus
+                onChange={e => this.handleInput(e)}
+              />
             </FormControl>
             <FormControl margin={margin_size} required fullWidth>
               <InputLabel htmlFor={pwd} required fullWidth>
@@ -96,10 +128,18 @@ class SignIn extends React.Component {
                 type={pwd}
                 id={pwd}
                 autoComplete="current-password"
+                onChange={e => this.handleInput(e)}
               />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  value={this.state.remember}
+                  color="primary"
+                  name={remember}
+                  onChange={e => this.handleInput(e)}
+                />
+              }
               label="Remember me"
             />
             <Button
