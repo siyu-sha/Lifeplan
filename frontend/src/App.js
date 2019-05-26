@@ -5,7 +5,7 @@ import Home from "./home/Home";
 import Budget from "./budget/Budget.js";
 import "./App.css";
 import NavBar from "./common/NavBar";
-import DoughnutChart from "./DoughnutChart/Body/DoughnutChart";
+import DoughnutChartPage from "./DoughnutChart/Body/DoughnutChartPage";
 
 class App extends Component {
   render() {
@@ -22,7 +22,7 @@ class App extends Component {
             <Route path="/budget" component={Budget} />
             <Route
               path="/DoughnutChart/Body/DoughnutChart"
-              component={DoughnutChart}
+              component={DoughnutChartPage}
             />
           </Switch>
         </main>
