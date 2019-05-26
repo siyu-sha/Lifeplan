@@ -8,17 +8,17 @@ import { DARK_BLUE, LIGHT_BLUE, NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
 import classNames from "classnames";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   home: {
     height: `calc(100vh - ${NAV_BAR_HEIGHT}px)`
   },
   planPageSelector: {
-    backgroundColor: DARK_BLUE,
+    backgroundColor: theme.palette.primary.main,
     color: "white"
   },
   budgetPageSelector: {
-    background: LIGHT_BLUE,
-    color: DARK_BLUE
+    background: theme.palette.secondary.main,
+    color: theme.palette.primary.main
   },
   pageSelector: {
     width: 140,
@@ -32,7 +32,7 @@ const useStyles = makeStyles({
     marginLeft: "10vw",
     marginRight: "10vw"
   }
-});
+}));
 
 export default function Home() {
   const classes = useStyles();
@@ -71,7 +71,7 @@ export default function Home() {
                 <Card
                   raised
                   className={classes.cardContainer}
-                  onClick={() => (window.location.href = "/budget")}
+                  onClick={() => (window.location.href = "/budget/dashboard")}
                 >
                   <CardActionArea
                     className={classNames(

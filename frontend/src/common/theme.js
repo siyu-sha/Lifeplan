@@ -1,7 +1,7 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 
-export const DARK_BLUE = "#173e6c";
-export const LIGHT_BLUE = "#97c7ef";
+const DARK_BLUE = "#173e6c";
+const LIGHT_BLUE = "#97c7ef";
 
 export const NAV_BAR_HEIGHT = 64;
 

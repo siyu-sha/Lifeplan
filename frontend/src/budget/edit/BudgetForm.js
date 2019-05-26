@@ -1,19 +1,19 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import Button from "@material-ui/core/Button/index";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel/index";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary/index";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails/index";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment/index";
+import Grid from "@material-ui/core/Grid/index";
+import Paper from "@material-ui/core/Paper/index";
+import Typography from "@material-ui/core/Typography/index";
+import TextField from "@material-ui/core/TextField/index";
 import withStyles from "@material-ui/core/styles/withStyles";
-import ValidatedTextField from "../common/ValidatedTextField";
-import MomentUtils from "@date-io/moment";
+import ValidatedTextField from "../../common/ValidatedTextField";
+import MomentUtils from "@date-io/moment/build/index";
 import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
-import { ChevronLeft, ChevronRight } from "@material-ui/icons";
+import { ChevronLeft, ChevronRight } from "@material-ui/icons/index";
 
 const styles = theme => ({
   paper: {
