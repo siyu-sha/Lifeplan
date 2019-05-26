@@ -10,6 +10,10 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import withStyles from "@material-ui/core/styles/withStyles";
+import ValidatedTextField from "../common/ValidatedTextField";
+import MomentUtils from "@date-io/moment";
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
+import { ChevronLeft, ChevronRight } from "@material-ui/icons";
 
 const styles = theme => ({
   paper: {
@@ -33,77 +37,213 @@ const styles = theme => ({
 });
 
 const core_categories = [
-  "assistance_daily",
+  "assistanceDaily",
   "transport",
   "consumables",
-  "assistance_social"
+  "assistanceSocial"
 ];
-const capital_categories = ["assistive_technology", "home_modifications"];
+const capital_categories = ["assistiveTechnology", "homeModifications"];
 const capacity_categories = [
-  "coordination_support",
+  "coordinationSupport",
   "employment",
-  "living_arrangements",
+  "livingArrangements",
   "relationships",
-  "health_wellbeing",
+  "healthWellbeing",
   "learning",
-  "life_choices",
-  "daily_living",
-  "community_participation"
+  "lifeChoices",
+  "dailyLiving",
+  "communityParticipation"
 ];
+
+var moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
+var postcodeRegex = new RegExp(/^\d{0,4}$/);
+
+// return date exactly a year from today's date
+function getYearFromToday() {
+  var d = new Date();
+  var year = d.getFullYear();
+  var month = d.getMonth();
+  var day = d.getDate();
+  var c = new Date(year + 1, month, day);
+  return c;
+}
+
+MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 
 class FormPersonalDetails extends React.Component {
   state = {
     postcode: "",
-    birth_year: "",
-    start_date: "",
-    assistance_daily: "",
+    birthYear: "",
+    startDate: new Date(),
+    endDate: getYearFromToday(),
+    assistanceDaily: "",
     transport: "",
     consumables: "",
-    assistance_social: "",
-    assistive_technology: "",
-    home_modifications: "",
-    coordination_support: "",
-    living_arrangements: "",
-    community_participation: "",
+    assistanceSocial: "",
+    assistiveTechnology: "",
+    homeModifications: "",
+    coordinationSupport: "",
+    livingArrangements: "",
+    communityParticipation: "",
     employment: "",
     relationships: "",
-    health_wellbeing: "",
+    healthWellbeing: "",
     learning: "",
-    life_choices: "",
-    daily_living: "",
-    core_total: 0,
-    capital_total: 0,
-    capacity_total: 0
+    lifeChoices: "",
+    dailyLiving: "",
+    coreTotal: 0,
+    capitalTotal: 0,
+    capacityTotal: 0
   };
 
+  // handle money input
   handleChange = input => e => {
-    //this.setState({ [input]: e.target.value });
-    console.log();
-    var new_amount;
-    if (e.target.value === "") {
-      this.setState({ [input]: "" });
-      new_amount = 0;
-    } else {
-      new_amount = Math.round(parseFloat(e.target.value) * 100) / 100;
-      this.setState({ [input]: new_amount });
-    }
-    if (core_categories.includes(input)) {
-      this.setState({
-        core_total: this.addTotal(core_categories, new_amount, input)
-      });
-    } else if (capital_categories.includes(input)) {
-      this.setState({
-        capital_total: this.addTotal(capital_categories, new_amount, input)
-      });
-    } else if (capacity_categories.includes(input)) {
-      this.setState({
-        capacity_total: this.addTotal(capacity_categories, new_amount, input)
-      });
+    // check if input string is the correct format for money
+    if (moneyRegex.test(e.target.value)) {
+      // set new amount
+      var new_amount;
+      if (e.target.value === "") {
+        new_amount = 0;
+      } else {
+        new_amount = parseFloat(e.target.value);
+      }
+      this.setState({ [input]: e.target.value });
+
+      // update category total
+      if (core_categories.includes(input)) {
+        this.setState({
+          coreTotal: this.addTotal(core_categories, new_amount, input)
+        });
+      } else if (capital_categories.includes(input)) {
+        this.setState({
+          capitalTotal: this.addTotal(capital_categories, new_amount, input)
+        });
+      } else if (capacity_categories.includes(input)) {
+        this.setState({
+          capacityTotal: this.addTotal(capacity_categories, new_amount, input)
+        });
+      }
     }
   };
 
+  // hnadle postcode input by limiting it to 4 digits (also works for year)
+  handlePostCodeChange = input => e => {
+    if (postcodeRegex.test(e.target.value)) {
+      this.setState({ [input]: e.target.value });
+    }
+  };
+
+  validate = () => {
+    let errors = {
+      // postcode : "",
+      // start_date : "",
+      // birthYear : "",
+      // assistanceDaily : "",
+      // transport : "",
+      // consumables : "",
+      // assistanceSocial : "",
+      // assistiveTechnology : "",
+      // homeModifications : "",
+      // coordinationSupport : "",
+      // living_arrangements : "",
+      // community_participation : "",
+      // employment : "",
+      // relationships : "",
+      // health_wellbeing : "",
+      // learning : "",
+      // life_choices : "",
+      // daily_living : ""
+    };
+
+    if (this.state.postcode.toString().length !== 4) {
+      //this.log.console("postcode is not filled");
+      console.log(this.state.postcode);
+      errors.postcode = "Invalid Postcode";
+    }
+
+    if (this.state.birthYear < 1900 || this.state.birthYear > 2019) {
+      errors.birthYear = "Invalid Birth Year";
+    }
+
+    if (this.state.assistanceDaily < 0) {
+      errors.assistanceDaily = "Please Enter A Positive Number";
+    }
+
+    if (this.state.transport < 0) {
+      errors.transport = "Please Enter A Positive Number";
+    }
+
+    if (this.state.consumables < 0) {
+      errors.consumables = "Please Enter A Positive Number";
+    }
+
+    if (this.state.assistanceSocial < 0) {
+      errors.assistanceSocial = "Please Enter A Positive Number";
+    }
+
+    if (this.state.assistiveTechnology < 0) {
+      errors.assistiveTechnology = "Please Enter A Positive Number";
+    }
+
+    if (this.state.homeModifications < 0) {
+      errors.homeModifications = "Please Enter A Positive Number";
+    }
+
+    if (this.state.coordinationSupport < 0) {
+      errors.coordinationSupport = "Please Enter A Positive Number";
+    }
+
+    if (this.state.livingArrangements < 0) {
+      errors.livingArrangements = "Please Enter A Positive Number";
+    }
+
+    if (this.state.communityParticipation < 0) {
+      errors.communityParticipation = "Please Enter A Positive Number";
+    }
+
+    if (this.state.employment < 0) {
+      errors.employment = "Please Enter A Positive Number";
+    }
+
+    if (this.state.relationships < 0) {
+      errors.relationships = "Please Enter A Positive Number";
+    }
+
+    if (this.state.healthWellbeing < 0) {
+      errors.healthWellbeing = "Please Enter A Positive Number";
+    }
+
+    if (this.state.learning < 0) {
+      errors.learning = "Please Enter A Positive Number";
+    }
+
+    if (this.state.lifeChoices < 0) {
+      errors.lifeChoices = "Please Enter A Positive Number";
+    }
+
+    if (this.state.dailyLiving < 0) {
+      errors.dailyLiving = "Please Enter A Positive Number";
+    }
+
+    // if(this.state.start_date === null){
+    //  errors.start_date = "Invalid Start Date";
+    //}
+
+    // this.setState({
+    //   ...this.state,
+    //   ...errors
+    // })
+    return errors;
+  };
+
+  // go to next page
   handleNext = () => {
-    /*go to next page*/
+    /* not yet implemented */
+  };
+
+  // handle date input
+  handleDateChange = input => date => {
+    this.setState({ [input]: date });
   };
 
   //  adds up the total of a given budget section
@@ -113,52 +253,71 @@ class FormPersonalDetails extends React.Component {
       if (categories[i] === changed) {
         total += new_amount;
       } else if (this.state[categories[i]] !== "") {
-        total += this.state[categories[i]];
+        total += parseFloat(this.state[categories[i]]);
       }
     }
     total = Math.round(total * 100) / 100;
     return total;
   }
 
+  // render page
   render() {
     const { classes } = this.props;
+    const errors = this.validate();
     return (
       <Paper className={classes.paper}>
         <ExpansionPanel defaultExpanded>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Personally Details</Typography>
+            <Typography variant="h6">Personal Details</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={24}>
               <Grid item xs={12}>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   required
-                  type="number"
                   label="Postcode"
-                  onChange={this.handleChange("postcode")}
+                  onChange={this.handlePostCodeChange("postcode")}
+                  value={this.state.postcode}
+                  error={errors.postcode}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
                   required
-                  type="number"
                   label="Year of Birth"
-                  onChange={this.handleChange("birth_year")}
+                  onChange={this.handlePostCodeChange("birthYear")}
+                  value={this.state.birthYear}
+                  error={errors.birthYear}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  className={classes.number}
-                  required
-                  label="Start date"
-                  type="date"
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                />
-              </Grid>
+              <MuiPickersUtilsProvider utils={MomentUtils}>
+                <Grid item xs={12}>
+                  <DatePicker
+                    margin="normal"
+                    label="Plan Start Date"
+                    value={this.state.startDate}
+                    onChange={this.handleDateChange("startDate")}
+                    leftArrowIcon={<ChevronLeft />}
+                    rightArrowIcon={<ChevronRight />}
+                    required
+                    format="D MMMM Y"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <DatePicker
+                    margin="normal"
+                    label="Plan End Date"
+                    value={this.state.endDate}
+                    onChange={this.handleDateChange("endDate")}
+                    leftArrowIcon={<ChevronLeft />}
+                    rightArrowIcon={<ChevronRight />}
+                    required
+                    format="D MMMM Y"
+                  />
+                </Grid>
+              </MuiPickersUtilsProvider>
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -171,32 +330,31 @@ class FormPersonalDetails extends React.Component {
               inline
             >
               {" "}
-              &nbsp;|&nbsp;Total: ${this.state.core_total}
+              &nbsp;|&nbsp;Total: ${this.state.coreTotal}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={24}>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Assistance with daily life
+                  Assistance with Daily Life
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("assistance_daily")}
-                  value={this.state.assistance_daily}
+                  onChange={this.handleChange("assistanceDaily")}
+                  value={this.state.assistanceDaily}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.assistanceDaily}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">Transport</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
                   onChange={this.handleChange("transport")}
                   value={this.state.transport}
                   InputProps={{
@@ -204,13 +362,13 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.transport}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">Consumables</Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
                   onChange={this.handleChange("consumables")}
                   value={this.state.consumables}
                   InputProps={{
@@ -218,22 +376,23 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.consumables}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Assistance with social and community participation
+                  Assistance with Social and Community Participation
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("assistance_social")}
-                  value={this.state.assistance_social}
+                  onChange={this.handleChange("assistanceSocial")}
+                  value={this.state.assistanceSocial}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.assistanceSocial}
                 />
               </Grid>
             </Grid>
@@ -248,37 +407,37 @@ class FormPersonalDetails extends React.Component {
               inline
             >
               {" "}
-              &nbsp;|&nbsp;Total: ${this.state.capital_total}
+              &nbsp;|&nbsp;Total: ${this.state.capitalTotal}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={24}>
               <Grid item xs={12}>
-                <Typography variant="body1">Assistive technology</Typography>
-                <TextField
+                <Typography variant="body1">Assistive Technology</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("assistive_technology")}
-                  value={this.state.assistive_technology}
+                  onChange={this.handleChange("assistiveTechnology")}
+                  value={this.state.assistiveTechnology}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.assistiveTechnology}
                 />
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="body1">Home modifications</Typography>
-                <TextField
+                <Typography variant="body1">Home Modifications</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("home_modifications")}
-                  value={this.state.home_modifications}
+                  onChange={this.handleChange("homeModifications")}
+                  value={this.state.homeModifications}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.homeModifications}
                 />
               </Grid>
             </Grid>
@@ -293,64 +452,63 @@ class FormPersonalDetails extends React.Component {
               inline
             >
               {" "}
-              &nbsp;|&nbsp;Total: ${this.state.capacity_total}
+              &nbsp;|&nbsp;Total: ${this.state.capacityTotal}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={24}>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Coordination of supports
+                  Coordination of Supports
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("coordination_support")}
-                  value={this.state.coordination_support}
+                  onChange={this.handleChange("coordinationSupport")}
+                  value={this.state.coordinationSupport}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.coordinationSupport}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Improved living arrangements
+                  Improved Living Arrangements
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("living_arrangements")}
-                  value={this.state.living_arrangements}
+                  onChange={this.handleChange("livingArrangements")}
+                  value={this.state.livingArrangements}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.livingArrangements}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Increased social and community participation
+                  Increased Social and Community Participation
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("community_participation")}
-                  value={this.state.community_participation}
+                  onChange={this.handleChange("communityParticipation")}
+                  value={this.state.communityParticipation}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.communityParticipation}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
-                <Typography variant="body1">Find and keep a job</Typography>
-                <TextField
+                <Typography variant="body1">Find and Keep a Job</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
                   onChange={this.handleChange("employment")}
                   value={this.state.employment}
                   InputProps={{
@@ -358,13 +516,13 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.employment}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
-                <Typography variant="body1">Improved relationships</Typography>
-                <TextField
+                <Typography variant="body1">Improved Relationships</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
                   onChange={this.handleChange("relationships")}
                   value={this.state.relationships}
                   InputProps={{
@@ -372,29 +530,29 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.relationships}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  Improved health and wellbeing
+                  Improved Health and Wellbeing
                 </Typography>
-                <TextField
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("health_wellbeing")}
-                  value={this.state.health_wellbeing}
+                  onChange={this.handleChange("healthWellbeing")}
+                  value={this.state.healthWellbeing}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.healthWellbeing}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
-                <Typography variant="body1">Improved learning</Typography>
-                <TextField
+                <Typography variant="body1">Improved Learning</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
                   onChange={this.handleChange("learning")}
                   value={this.state.learning}
                   InputProps={{
@@ -402,34 +560,35 @@ class FormPersonalDetails extends React.Component {
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.learning}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
-                <Typography variant="body1">Improved life choices</Typography>
-                <TextField
+                <Typography variant="body1">Improved Life Choices</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("life_choices")}
-                  value={this.state.life_choices}
+                  onChange={this.handleChange("lifeChoices")}
+                  value={this.state.lifeChoices}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.lifeChoices}
                 />
               </Grid>{" "}
               <Grid item xs={12}>
-                <Typography variant="body1">Improved daily living</Typography>
-                <TextField
+                <Typography variant="body1">Improved Daily Living</Typography>
+                <ValidatedTextField
                   className={classes.number}
-                  type="number"
-                  onChange={this.handleChange("daily_living")}
-                  value={this.state.daily_living}
+                  onChange={this.handleChange("dailyLiving")}
+                  value={this.state.dailyLiving}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">$</InputAdornment>
                     )
                   }}
+                  error={errors.dailyLiving}
                 />
               </Grid>
             </Grid>
