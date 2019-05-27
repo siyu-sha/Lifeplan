@@ -42,7 +42,7 @@ const useStyles = makeStyles({
   }
 });
 
-var hoursRegex = new RegExp(/^-?\d*\.?\d$/);
+var hoursRegex = new RegExp(/^-?\d*\.?\d*$/);
 
 export default class SupportsContent extends React.Component {
   state = {
@@ -70,7 +70,7 @@ export default class SupportsContent extends React.Component {
         isLabor: false
       }
     ],
-    selectedSupport: ""
+    selectedSupport: 0
   };
 
   category = "Core Supports";
@@ -86,7 +86,7 @@ export default class SupportsContent extends React.Component {
 
   // click on an item from the list of user's items and load SingleSupport component
   clickOnItem = index => {
-    this.setState({ selectedSupport: this.state.userSupports[index] });
+    this.setState({ selectedSupport: index });
     this.goToPage("singleSupport");
   };
 
@@ -96,25 +96,32 @@ export default class SupportsContent extends React.Component {
     let result = this.state.allSupports.filter(obj => {
       return obj.name === nameQuery;
     });
+    var copy = Object.assign({}, result[0]);
+    this.state.selectedSupport = this.state.userSupports.length;
+    this.state.userSupports.push(copy);
     if (result[0].isLabor) {
-      var copy = Object.assign({}, result[0]);
-      this.setState({ selectedSupport: copy });
       this.goToPage("editSupport");
     } else {
-      this.state.userSupports.push(result[0]);
-      var newUserSupports = this.state.userSupports;
-      newUserSupports[this.state.userSupports.length - 1]["cost"] =
+      this.state.userSupports[this.state.selectedSupport].cost =
         result[0].price;
-      this.setState({ userSupports: newUserSupports });
       this.goToPage("userSupportsList");
     }
   };
 
   // update one of the four hours fields for a given support
   updateHours = fieldType => e => {
+    console.log("updateHours");
     if (hoursRegex.test(e.target.value)) {
-      this.state.selectedSupport[fieldType] = e.target.value;
+      console.log("passTest");
+      console.log(e.target.value);
+      this.state.userSupports[this.state.selectedSupport][fieldType] =
+        e.target.value;
+      console.log(this.state.userSupports[this.state.selectedSupport]);
     }
+  };
+
+  getSelectedSupport = () => {
+    return this.state.userSupports[this.state.selectedSupport];
   };
 
   // calculate the total cost of labour for the selected support
@@ -122,52 +129,40 @@ export default class SupportsContent extends React.Component {
   doneUpdatingHours = () => {
     var cost = 0;
     var next = "";
-    next = this.state.selectedSupport["weekday"];
+    next = this.state.userSupports[this.state.selectedSupport].weekday;
     if (next && next !== "") {
       cost += parseFloat(next);
     }
-    next = this.state.selectedSupport["weekend"];
+    next = this.state.userSupports[this.state.selectedSupport].weekend;
     if (next && next !== "") {
       cost += next * 1.3;
     }
-    next = this.state.selectedSupport["holiday"];
+    next = this.state.userSupports[this.state.selectedSupport].holiday;
     if (next && next !== "") {
       cost += next * 1.5;
     }
-    next = this.state.selectedSupport["holidayAfter"];
+    next = this.state.userSupports[this.state.selectedSupport].holidayAfter;
     if (next && next !== "") {
       cost += next * 2;
     }
-    cost = cost * this.state.selectedSupport["price"];
+    cost = cost * this.state.userSupports[this.state.selectedSupport].price;
     cost = Math.round(cost * 100) / 100;
-    var newSelectedSupport = this.state.selectedSupport;
-    newSelectedSupport["cost"] = cost;
-    this.setState({ selectedSupport: newSelectedSupport });
-    this.state.userSupports.push(this.state.selectedSupport);
+    this.state.userSupports[this.state.selectedSupport]["cost"] = cost;
     this.goToPage("userSupportsList");
   };
 
   totalOfUserSupports = () => {
     var total = 0;
-    // count elements
-    let len = 0;
-    for (var i = 0; i < this.state.userSupports.length; i++) {
-      if (this.state.userSupports[i] !== undefined) {
-        len++;
-      }
-    }
-    for (var i = 0; i < len; i++) {
-      total += parseFloat(this.state.userSupports[i]["cost"]);
+    let keys = Object.keys(this.state.userSupports);
+    for (var key of keys) {
+      total += parseFloat(this.state.userSupports[key]["cost"]);
     }
     total = Math.round(total * 100) / 100;
     return total;
   };
 
   deleteSelectedSupport = () => {
-    var index = this.state.userSupports.indexOf(this.state.selectedSupport);
-    var newUserSupports = this.state.userSupports;
-    delete newUserSupports[index];
-    this.setState({ userSupports: newUserSupports });
+    delete this.state.userSupports[this.state.selectedSupport];
     this.goToPage("userSupportsList");
   };
 
@@ -197,13 +192,16 @@ export default class SupportsContent extends React.Component {
           doneUpdatingHours={this.doneUpdatingHours}
           total={this.total}
           goToPage={this.goToPage}
+          userSupports={this.state.userSupports}
           selectedSupport={this.state.selectedSupport}
+          getSelectedSupport={this.getSelectedSupport}
         />
       );
     } else if (this.state.currentPage === "singleSupport") {
       content = (
         <SingleSupport
           goToPage={this.goToPage}
+          userSupports={this.state.userSupports}
           selectedSupport={this.state.selectedSupport}
           deleteSelectedSupport={this.deleteSelectedSupport}
         />
@@ -230,28 +228,22 @@ export default class SupportsContent extends React.Component {
 function UserSupportsList(props) {
   let supportsList = [];
 
-  // count elements
-  let len = 0;
-  for (var i = 0; i < props.userSupports.length; i++) {
-    if (props.userSupports[i] !== undefined) {
-      len++;
-    }
-  }
   // create list of user supports
-  for (let i = 0; i < len; i++) {
+  let keys = Object.keys(props.userSupports);
+  for (var key of keys) {
     supportsList.push(
       <ListItem
         button
-        key={i}
+        key={key}
         divider={true}
         onClick={function() {
-          props.clickOnItem(i);
+          props.clickOnItem(key);
         }}
       >
-        <ListItemText primary={props.userSupports[i]["name"]} />
+        <ListItemText primary={props.userSupports[key]["name"]} />
         <ListItemSecondaryAction>
           <Typography inline variant="body1" align="right">
-            ${props.userSupports[i]["cost"]}
+            ${props.userSupports[key]["cost"]}
           </Typography>
         </ListItemSecondaryAction>
       </ListItem>
@@ -295,7 +287,14 @@ function ChooseNewSupport(props) {
   // create list of all supports
   for (let i = 0; i < props.allSupports.length; i++) {
     supportsList.push(
-      <ListItem button key={i} divider={true}>
+      <ListItem
+        button
+        key={i}
+        divider={true}
+        onClick={function() {
+          props.addSupport(props.allSupports[i]["name"]);
+        }}
+      >
         <ListItemText primary={props.allSupports[i]["name"]} />
         <ListItemSecondaryAction>
           <Typography variant="body1" p={16} inline>
@@ -347,7 +346,7 @@ function EditSupport(props) {
       <Grid container spacing={16}>
         <Grid item xs={12}>
           <Typography variant="h6" align="center">
-            {props.selectedSupport.name}:
+            {props.userSupports[props.selectedSupport].name}:
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -361,7 +360,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("weekday")}
-            value={props.selectedSupport["weekday"]}
+            value={props.userSupports[props.selectedSupport].weekday}
           />
         </Grid>
         <Grid item xs={6} m={2}>
@@ -370,7 +369,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("weekend")}
-            value={props.selectedSupport["weekend"]}
+            value={props.userSupports[props.selectedSupport].weekend}
           />
         </Grid>
         <Grid item xs={6}>
@@ -379,7 +378,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("holiday")}
-            value={props.selectedSupport["holiday"]}
+            value={props.userSupports[props.selectedSupport].holiday}
           />
         </Grid>
         <Grid item xs={6}>
@@ -388,7 +387,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("holidayAfter")}
-            value={props.selectedSupport["holidayAfter"]}
+            value={props.userSupports[props.selectedSupport].holidayAfter}
           />
         </Grid>
         <Grid item xs={12} align="center">
@@ -426,11 +425,11 @@ function SingleSupport(props) {
         </ListItem>
         <ListItem>
           <Typography inline variant="body1" align="center">
-            {props.selectedSupport.name}
+            {props.userSupports[props.selectedSupport].name}
           </Typography>
           <ListItemSecondaryAction>
             <Typography inline variant="body1" align="left">
-              {props.selectedSupport.cost}
+              {props.userSupports[props.selectedSupport].cost}
             </Typography>
           </ListItemSecondaryAction>
         </ListItem>
@@ -455,17 +454,21 @@ function SingleSupport(props) {
             Save
             <SaveIcon className={classes.rightIcon} />
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={function() {
-              props.goToPage("editSupport");
-            }}
-          >
-            Edit
-            <EditIcon className={classes.rightIcon} />
-          </Button>
+          {props.userSupports[props.selectedSupport].isLabor ? (
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={function() {
+                props.goToPage("editSupport");
+              }}
+            >
+              Edit
+              <EditIcon className={classes.rightIcon} />
+            </Button>
+          ) : (
+            ""
+          )}
         </ListItem>
       </List>
     </DialogContent>
