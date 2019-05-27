@@ -12,6 +12,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 //import AddIcon from "@material-ui/icons/Add";
 import TextField from "@material-ui/core/TextField";
+import DeleteIcon from "@material-ui/icons/Delete";
+import SaveIcon from "@material-ui/icons/Save";
+import EditIcon from "@material-ui/icons/Edit";
 
 const useStyles = makeStyles({
   navBar: {
@@ -19,6 +22,23 @@ const useStyles = makeStyles({
   },
   grow: {
     flexGrow: 1
+  },
+  addButton: {
+    position: "fixed"
+  },
+  fab: {
+    margin: 0,
+    top: "auto",
+    right: 20,
+    bottom: 20,
+    left: "auto",
+    position: "fixed !important"
+  },
+  leftIcon: {
+    marginRight: 24
+  },
+  rightIcon: {
+    marginLeft: 24
   }
 });
 
@@ -64,6 +84,12 @@ export default class SupportsContent extends React.Component {
     this.setState({ currentPage: page });
   };
 
+  // click on an item from the list of user's items and load SingleSupport component
+  clickOnItem = index => {
+    this.setState({ selectedSupport: this.state.userSupports[index] });
+    this.goToPage("singleSupport");
+  };
+
   // add the support of given name to the user's list of supports
   // return to user supports list
   addSupport = nameQuery => {
@@ -88,9 +114,6 @@ export default class SupportsContent extends React.Component {
   updateHours = fieldType => e => {
     if (hoursRegex.test(e.target.value)) {
       this.state.selectedSupport[fieldType] = e.target.value;
-      //var newSelectedSupport = this.state.selectedSupport;
-      //newSelectedSupport[fieldType] = parseFloat(e.target.value);
-      //this.setState({selectedSupport: newSelectedSupport})
     }
   };
 
@@ -126,11 +149,26 @@ export default class SupportsContent extends React.Component {
 
   totalOfUserSupports = () => {
     var total = 0;
+    // count elements
+    let len = 0;
     for (var i = 0; i < this.state.userSupports.length; i++) {
+      if (this.state.userSupports[i] !== undefined) {
+        len++;
+      }
+    }
+    for (var i = 0; i < len; i++) {
       total += parseFloat(this.state.userSupports[i]["cost"]);
     }
     total = Math.round(total * 100) / 100;
     return total;
+  };
+
+  deleteSelectedSupport = () => {
+    var index = this.state.userSupports.indexOf(this.state.selectedSupport);
+    var newUserSupports = this.state.userSupports;
+    delete newUserSupports[index];
+    this.setState({ userSupports: newUserSupports });
+    this.goToPage("userSupportsList");
   };
 
   render() {
@@ -141,6 +179,7 @@ export default class SupportsContent extends React.Component {
           userSupports={this.state.userSupports}
           totalOfUserSupports={this.totalOfUserSupports}
           goToPage={this.goToPage}
+          clickOnItem={this.clickOnItem}
         />
       );
     } else if (this.state.currentPage === "chooseNewSupport") {
@@ -159,6 +198,14 @@ export default class SupportsContent extends React.Component {
           total={this.total}
           goToPage={this.goToPage}
           selectedSupport={this.state.selectedSupport}
+        />
+      );
+    } else if (this.state.currentPage === "singleSupport") {
+      content = (
+        <SingleSupport
+          goToPage={this.goToPage}
+          selectedSupport={this.state.selectedSupport}
+          deleteSelectedSupport={this.deleteSelectedSupport}
         />
       );
     }
@@ -183,10 +230,24 @@ export default class SupportsContent extends React.Component {
 function UserSupportsList(props) {
   let supportsList = [];
 
+  // count elements
+  let len = 0;
+  for (var i = 0; i < props.userSupports.length; i++) {
+    if (props.userSupports[i] !== undefined) {
+      len++;
+    }
+  }
   // create list of user supports
-  for (let i = 0; i < props.userSupports.length; i++) {
+  for (let i = 0; i < len; i++) {
     supportsList.push(
-      <ListItem button key={i} divider={true}>
+      <ListItem
+        button
+        key={i}
+        divider={true}
+        onClick={function() {
+          props.clickOnItem(i);
+        }}
+      >
         <ListItemText primary={props.userSupports[i]["name"]} />
         <ListItemSecondaryAction>
           <Typography inline variant="body1" align="right">
@@ -343,6 +404,70 @@ function EditSupport(props) {
           </Button>
         </Grid>
       </Grid>
+    </DialogContent>
+  );
+}
+
+function SingleSupport(props) {
+  const classes = useStyles();
+
+  return (
+    <DialogContent id="assist-dialog-description">
+      <List>
+        <ListItem divider={true}>
+          <Typography inline variant="body1" align="center">
+            Support Name
+          </Typography>
+          <ListItemSecondaryAction>
+            <Typography inline variant="body1" align="left">
+              Cost
+            </Typography>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <Typography inline variant="body1" align="center">
+            {props.selectedSupport.name}
+          </Typography>
+          <ListItemSecondaryAction>
+            <Typography inline variant="body1" align="left">
+              {props.selectedSupport.cost}
+            </Typography>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={props.deleteSelectedSupport}
+          >
+            Delete
+            <DeleteIcon className={classes.rightIcon} />
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={function() {
+              props.goToPage("userSupportsList");
+            }}
+          >
+            Save
+            <SaveIcon className={classes.rightIcon} />
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={function() {
+              props.goToPage("editSupport");
+            }}
+          >
+            Edit
+            <EditIcon className={classes.rightIcon} />
+          </Button>
+        </ListItem>
+      </List>
     </DialogContent>
   );
 }
