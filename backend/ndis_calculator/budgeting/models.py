@@ -6,8 +6,8 @@ from ndis_calculator import settings
 
 class CustomUser(AbstractUser):
     # add additional fields here
-    postcode = models.IntegerField()
-    birth_year = models.IntegerField()
+    postcode = models.IntegerField(null=True)
+    birth_year = models.IntegerField(null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
