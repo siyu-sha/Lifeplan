@@ -65,7 +65,9 @@ class Participant(APIView):
     def id(request):
         if request.method == 'GET':
             serializer = CustomUserSerializer(request.user)
-            return Response(serializer.data)
+            data = serializer.data
+            data['id'] = request.user.id
+            return Response(data)
 
     @api_view(['PUT', ])
     @csrf_exempt
