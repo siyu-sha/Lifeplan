@@ -29,19 +29,19 @@ class HelloView(APIView):
 
 class Authentication(APIView):
     permission_classes = (AllowAny,)
+    parser_classes = (CamelCaseJSONParser,)
     renderer_classes = (CamelCaseJSONRenderer,)
 
     @api_view(['POST', ])
     @csrf_exempt
     def register(request):
         if request.method == 'POST':
-            data = CamelCaseJSONParser().parse(request)
-            data['username'] = data.get('email')
+            request.data['username'] = request.data.get('email')
             serializer = CustomUserSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
 
-                user = CustomUser.objects.filter(email=data.get('email')).first()
+                user = CustomUser.objects.filter(email=request.data.get('email')).first()
                 refresh = RefreshToken.for_user(user)
                 tokens = {
                     'refresh': str(refresh),
