@@ -57,6 +57,7 @@ class Authentication(APIView):
 
 class Participant(APIView):
     permission_classes = (IsAuthenticated,)
+    parser_classes = (CamelCaseJSONParser,)
     renderer_classes = (CamelCaseJSONRenderer,)
 
     @api_view(['GET', ])
@@ -65,3 +66,19 @@ class Participant(APIView):
         if request.method == 'GET':
             serializer = CustomUserSerializer(request.user)
             return Response(serializer.data)
+
+    @api_view(['PUT', ])
+    @csrf_exempt
+    def update(request, pk):
+        try:
+            user = CustomUser.objects.get(pk=pk)
+        except CustomUser.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == 'PUT':
+            request.data['username'] = request.data.get('email')
+            serializer = CustomUserSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors)
