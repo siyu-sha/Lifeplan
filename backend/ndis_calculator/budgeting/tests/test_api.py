@@ -100,5 +100,6 @@ class ParticipantApiTests(APITestCase):
                 'first_name': 'IJN',
                 'last_name': 'Ayanami',
                 'postcode': 3000,
-                'birth_year': 1945
+                'birth_year': 1945,
+                'id': 4
             })

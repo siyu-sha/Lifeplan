@@ -37,7 +37,7 @@ class Authentication(APIView):
     def register(request):
         if request.method == 'POST':
             request.data['username'] = request.data.get('email')
-            serializer = CustomUserSerializer(data=data)
+            serializer = CustomUserSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
 
