@@ -7,28 +7,37 @@ pipeline{
         }
     }
     stages{
-        stage("Frontend Tests"){
-            agent{
-                docker{
-                    image 'node'
-                    args '-e CI=true'
+        stage("Parallel Tests"){
+            parallel{
+                stage("Frontend Tests"){
+                    agent{
+                        docker{
+                            image 'node'
+                            args '-v npm-cache:/root/.npm -e CI=true'
+                        }
+                    }
+                    steps {
+                        sh "npm --prefix frontend/ --verbose install"
+                        sh "npm --prefix frontend/ test --exit"
+                    }
                 }
-            }
-            steps {
-                sh "npm --prefix frontend/ install"
-                sh "npm --prefix frontend/ test --exit"
-            }
-        }
-        stage("Backend Tests"){
-            agent{
-                dockerfile{
-                    filename 'Dockerfile-CI.test'
-                    dir 'backend/ndis_calculator'
+                stage("Backend Tests"){
+                    agent{
+                        dockerfile{
+                            filename 'Dockerfile'
+                        }
+                    }
+                    steps {
+                        sh "./setup-env.sh"
+                        sh "docker-compose -f docker-compose-CI.test.yml build"
+                        sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
+                    }
+                    post{
+                        always{
+                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
+                        }
+                    }
                 }
-            }
-            steps {
-                sh "echo 'Beginning Backend Tests'"
-                sh "./backend/ndis_calculator/manage.py test"
             }
         }
         stage("Setup Env Vars, Build and Run New Images"){

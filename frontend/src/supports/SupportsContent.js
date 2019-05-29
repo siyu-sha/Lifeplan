@@ -10,7 +10,6 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-//import AddIcon from "@material-ui/icons/Add";
 import TextField from "@material-ui/core/TextField";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from "@material-ui/icons/Save";
@@ -42,7 +41,7 @@ const useStyles = makeStyles({
   }
 });
 
-var hoursRegex = new RegExp(/^-?\d*\.?\d*$/);
+const hoursRegex = new RegExp(/^-?\d*\.?\d*$/);
 
 export default class SupportsContent extends React.Component {
   state = {
@@ -77,7 +76,7 @@ export default class SupportsContent extends React.Component {
 
   total = 1000;
 
-  handleClose = () => {};
+  //handleClose = () => {};
 
   // switch content page
   goToPage = page => {
@@ -96,7 +95,7 @@ export default class SupportsContent extends React.Component {
     let result = this.state.allSupports.filter(obj => {
       return obj.name === nameQuery;
     });
-    var copy = Object.assign({}, result[0]);
+    const copy = Object.assign({}, result[0]);
     this.state.selectedSupport = this.state.userSupports.length;
     this.state.userSupports.push(copy);
     if (result[0].isLabor) {
@@ -127,9 +126,8 @@ export default class SupportsContent extends React.Component {
   // calculate the total cost of labour for the selected support
   // update the user support array with the edited item after clicking done on edit page
   doneUpdatingHours = () => {
-    var cost = 0;
-    var next = "";
-    next = this.state.userSupports[this.state.selectedSupport].weekday;
+    let cost = 0;
+    let next = this.state.userSupports[this.state.selectedSupport].weekday;
     if (next && next !== "") {
       cost += parseFloat(next);
     }
@@ -152,9 +150,9 @@ export default class SupportsContent extends React.Component {
   };
 
   totalOfUserSupports = () => {
-    var total = 0;
+    let total = 0;
     let keys = Object.keys(this.state.userSupports);
-    for (var key of keys) {
+    for (let key of keys) {
       total += parseFloat(this.state.userSupports[key]["cost"]);
     }
     total = Math.round(total * 100) / 100;
@@ -230,7 +228,7 @@ function UserSupportsList(props) {
 
   // create list of user supports
   let keys = Object.keys(props.userSupports);
-  for (var key of keys) {
+  for (let key of keys) {
     supportsList.push(
       <ListItem
         button
@@ -242,7 +240,7 @@ function UserSupportsList(props) {
       >
         <ListItemText primary={props.userSupports[key]["name"]} />
         <ListItemSecondaryAction>
-          <Typography inline variant="body1" align="right">
+          <Typography display="inline" variant="body1" align="right">
             ${props.userSupports[key]["cost"]}
           </Typography>
         </ListItemSecondaryAction>
@@ -254,11 +252,11 @@ function UserSupportsList(props) {
     <DialogContent id="assist-dialog-description">
       <List>
         <TotalListItem>
-          <Typography inline variant="body1">
+          <Typography display="inline" variant="body1">
             Total:
           </Typography>
           <ListItemSecondaryAction>
-            <Typography inline variant="body1">
+            <Typography display="inline" variant="body1">
               ${props.totalOfUserSupports()}
             </Typography>
           </ListItemSecondaryAction>
@@ -271,7 +269,7 @@ function UserSupportsList(props) {
           }}
         >
           <Typography className="material-icons">add</Typography>
-          <Typography inline variant="body1">
+          <Typography display="inline" variant="body1">
             Add new support
           </Typography>
         </AddListItem>
@@ -297,10 +295,10 @@ function ChooseNewSupport(props) {
       >
         <ListItemText primary={props.allSupports[i]["name"]} />
         <ListItemSecondaryAction>
-          <Typography variant="body1" p={16} inline>
+          <Typography variant="body1" p={16} display="inline">
             ${props.allSupports[i]["price"]}
           </Typography>
-          <Typography variant="body1" inline>
+          <Typography variant="body1" display="inline">
             {props.allSupports[i]["isLabor"] ? "/hour" : "/each"}
           </Typography>
           <Button
@@ -320,7 +318,7 @@ function ChooseNewSupport(props) {
   return (
     <DialogContent>
       <Grid container justify="space-between" alignItems="center">
-        <Typography inline variant="body1" align="left">
+        <Typography display="inline" variant="body1" align="left">
           Choose New Support:
         </Typography>
         <Button
@@ -341,9 +339,10 @@ function ChooseNewSupport(props) {
 // Page where user changes the hours of their labour support
 function EditSupport(props) {
   const classes = useStyles();
+  const { weekend } = props.userSupports[props.selectedSupport];
   return (
     <DialogContent>
-      <Grid container spacing={16}>
+      <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="h6" align="center">
             {props.userSupports[props.selectedSupport].name}:
@@ -354,7 +353,7 @@ function EditSupport(props) {
             Enter hours per week:
           </Typography>
         </Grid>
-        <Grid item xs={6} m={2}>
+        <Grid item xs={6}>
           <Typography variant="caption">weekday</Typography>
           <Typography variant="caption">7am-7pm</Typography>
           <TextField
@@ -363,13 +362,13 @@ function EditSupport(props) {
             value={props.userSupports[props.selectedSupport].weekday}
           />
         </Grid>
-        <Grid item xs={6} m={2}>
+        <Grid item xs={6}>
           <Typography variant="caption">after hours</Typography>
           <Typography variant="caption">weekend</Typography>
           <TextField
             className={classes.number}
             onChange={props.updateHours("weekend")}
-            value={props.userSupports[props.selectedSupport].weekend}
+            value={weekend}
           />
         </Grid>
         <Grid item xs={6}>
@@ -414,21 +413,21 @@ function SingleSupport(props) {
     <DialogContent id="assist-dialog-description">
       <List>
         <ListItem divider={true}>
-          <Typography inline variant="body1" align="center">
+          <Typography display="inline" variant="body1" align="center">
             Support Name
           </Typography>
           <ListItemSecondaryAction>
-            <Typography inline variant="body1" align="left">
+            <Typography display="inline" variant="body1" align="left">
               Cost
             </Typography>
           </ListItemSecondaryAction>
         </ListItem>
         <ListItem>
-          <Typography inline variant="body1" align="center">
+          <Typography display="inline" variant="body1" align="center">
             {props.userSupports[props.selectedSupport].name}
           </Typography>
           <ListItemSecondaryAction>
-            <Typography inline variant="body1" align="left">
+            <Typography display="inline" variant="body1" align="left">
               {props.userSupports[props.selectedSupport].cost}
             </Typography>
           </ListItemSecondaryAction>
