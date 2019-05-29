@@ -54,6 +54,8 @@ class SignUp extends React.Component {
     lastName: "",
     email: "",
     password: "",
+    postCode: "",
+    birthYear: "",
     accept: false,
     submitted: false
   };
@@ -87,6 +89,8 @@ class SignUp extends React.Component {
     const marginSize = "normal";
     const firstName = "firstName";
     const lastName = "lastName";
+    const postCode = "postCode";
+    const birthYear = "birthYear";
     const accept = "accept";
 
     return (
@@ -101,28 +105,12 @@ class SignUp extends React.Component {
           </Typography>
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={marginSize} required fullWidth>
-              <InputLabel htmlFor={firstName}>First Name</InputLabel>
-              <Input
-                id={firstName}
-                name={firstName}
-                autoFocus
-                onChange={e => this.handleInput(e)}
-              />
-            </FormControl>
-            <FormControl margin={marginSize} required fullWidth>
-              <InputLabel htmlFor={lastName}>Last Name</InputLabel>
-              <Input
-                id={lastName}
-                name={lastName}
-                onChange={e => this.handleInput(e)}
-              />
-            </FormControl>
-            <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={email}>Email Address</InputLabel>
               <Input
                 id={email}
                 name={email}
                 autoComplete={email}
+                autoFocus
                 onChange={e => this.handleInput(e)}
               />
             </FormControl>
@@ -135,6 +123,42 @@ class SignUp extends React.Component {
                 type={pwd}
                 id={pwd}
                 autoComplete="current-password"
+                onChange={e => this.handleInput(e)}
+              />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={firstName}>First Name</InputLabel>
+              <Input
+                id={firstName}
+                name={firstName}
+                autoComplete="name"
+                onChange={e => this.handleInput(e)}
+              />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={lastName}>Last Name</InputLabel>
+              <Input
+                id={lastName}
+                name={lastName}
+                autoComplete="family-name"
+                onChange={e => this.handleInput(e)}
+              />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={postCode}>Post Code</InputLabel>
+              <Input
+                id={postCode}
+                name={postCode}
+                autoComplete="postal-code"
+                onChange={e => this.handleInput(e)}
+              />
+            </FormControl>
+            <FormControl margin={marginSize} required fullWidth>
+              <InputLabel htmlFor={birthYear}>Birth Year</InputLabel>
+              <Input
+                id={birthYear}
+                name={birthYear}
+                autoComplete="bday-year"
                 onChange={e => this.handleInput(e)}
               />
             </FormControl>
