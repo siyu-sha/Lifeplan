@@ -22,8 +22,8 @@ export const CustomTheme = createMuiTheme({
   overrides: {
     MuiButton: {
       root: {
-        margin: 8,
-        borderRadius: 25,
+        // margin: 8,
+        // borderRadius: 25,
         fontWeight: 550
       }
     }

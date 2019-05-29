@@ -7,6 +7,8 @@ export default function BudgetDashBoard() {
     <Grid container justify="center">
       <Grid item xs={11} sm={10} md={9} lg={8}>
         <BudgetCategorySection sectionName="Core Supports" color="red" />
+        <BudgetCategorySection sectionName="Capital" color="red" />
+        <BudgetCategorySection sectionName="Core Supports" color="red" />
       </Grid>
     </Grid>
   );

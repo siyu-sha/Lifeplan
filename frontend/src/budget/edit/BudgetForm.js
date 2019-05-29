@@ -11,9 +11,9 @@ import Typography from "@material-ui/core/Typography/index";
 import TextField from "@material-ui/core/TextField/index";
 import withStyles from "@material-ui/core/styles/withStyles";
 import ValidatedTextField from "../../common/ValidatedTextField";
-import MomentUtils from "@date-io/moment/build/index";
-import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
-import { ChevronLeft, ChevronRight } from "@material-ui/icons/index";
+import MomentUtils from "@date-io/moment";
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
+import { ChevronLeft, ChevronRight } from "@material-ui/icons";
 
 const styles = theme => ({
   paper: {

@@ -13,6 +13,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import { makeStyles } from "@material-ui/styles";
 import { NAV_BAR_HEIGHT } from "../../common/theme";
+import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
 
 const useStyles = makeStyles(theme => ({
   secondary: {
@@ -40,72 +41,36 @@ export default function BudgetCategorySection(props) {
         </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Grid container spacing={24}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <Divider className={classes.secondary} />
           </Grid>
           <Grid item>
-            <Card style={{ width: 300 }}>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Word of the Day
-                </Typography>
-                <Typography variant="h5" component="h2">
-                  be nev lent
-                </Typography>
-                <Typography color="textSecondary">adjective</Typography>
-                <Typography variant="body2" component="p">
-                  well meaning and kindly.
-                  <br />
-                  {'"a benevolent smile"'}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small">Learn More</Button>
-              </CardActions>
-            </Card>
+            <BudgetCategoryCard
+              category={"Assistance with social and community participantion"}
+              total={1000}
+              allocated={300}
+              allocatedColor="red"
+              totalColor="blue"
+            />
           </Grid>
           <Grid item>
-            <Card style={{ width: 300 }}>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Word of the Day
-                </Typography>
-                <Typography variant="h5" component="h2">
-                  be nev lent
-                </Typography>
-                <Typography color="textSecondary">adjective</Typography>
-                <Typography variant="body2" component="p">
-                  well meaning and kindly.
-                  <br />
-                  {'"a benevolent smile"'}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small">Learn More</Button>
-              </CardActions>
-            </Card>
+            <BudgetCategoryCard
+              category={"Physical assistace"}
+              total={1000}
+              allocated={300}
+              allocatedColor="red"
+              totalColor="blue"
+            />
           </Grid>
           <Grid item>
-            <Card style={{ width: 300 }}>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Word of the Day
-                </Typography>
-                <Typography variant="h5" component="h2">
-                  be nev lent
-                </Typography>
-                <Typography color="textSecondary">adjective</Typography>
-                <Typography variant="body2" component="p">
-                  well meaning and kindly.
-                  <br />
-                  {'"a benevolent smile"'}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small">Learn More</Button>
-              </CardActions>
-            </Card>
+            <BudgetCategoryCard
+              category={"Employment"}
+              total={1000}
+              allocated={300}
+              allocatedColor="red"
+              totalColor="blue"
+            />
           </Grid>
         </Grid>
       </ExpansionPanelDetails>

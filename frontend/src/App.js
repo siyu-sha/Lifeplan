@@ -6,6 +6,7 @@ import BudgetEdit from "./budget/edit/BudgetEdit.js";
 import "./App.css";
 import NavBar from "./common/NavBar";
 import BudgetDashboard from "./budget/dashboard/BudgetDashboard";
+import DoughnutChartPage from "./DoughnutChart/Body/DoughnutChartPage";
 
 class App extends Component {
   render() {
@@ -21,6 +22,10 @@ class App extends Component {
             <Route path="/theme" component={Theme} />
             <Route path="/budget/edit" component={BudgetEdit} />
             <Route path="/budget/dashboard" component={BudgetDashboard} />
+            <Route
+              path="/DoughnutChart/Body/DoughnutChart"
+              component={DoughnutChartPage}
+            />
           </Switch>
         </main>
       </BrowserRouter>
