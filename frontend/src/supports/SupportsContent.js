@@ -206,18 +206,15 @@ export default class SupportsContent extends React.Component {
       );
     }
     return (
-      <Grid>
-        <link
-          href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet"
-        />
-        <Toolbar className={useStyles.navBar}>
-          <Typography variant="h6" color="inherit" className={useStyles.grow}>
-            {this.category}
-          </Typography>
-        </Toolbar>
-        {content}
-      </Grid>
+      <DialogContent>
+        <Grid>
+          <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+          />
+          {content}
+        </Grid>
+      </DialogContent>
     );
   }
 }

@@ -4,6 +4,11 @@ import Grid from "@material-ui/core/Grid";
 import PropTypes from "prop-types";
 import SupportsContent from "./SupportsContent";
 import withMobileDialog from "@material-ui/core/withMobileDialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+
+const stubProps = {
+  category: "Assistive Technology"
+};
 
 class SupportsPopup extends React.Component {
   state = {
@@ -15,7 +20,7 @@ class SupportsPopup extends React.Component {
 
   render() {
     const { fullScreen } = this.props;
-
+    const props = stubProps;
     return (
       <Grid>
         <Dialog
@@ -27,6 +32,7 @@ class SupportsPopup extends React.Component {
           fullWidth={true}
           maxWidth={"sm"}
         >
+          <DialogTitle>{props.category}</DialogTitle>
           <SupportsContent />
         </Dialog>
       </Grid>
