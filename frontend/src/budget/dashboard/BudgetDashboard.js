@@ -55,11 +55,7 @@ function generateData() {
   mainGroups.capital.map(value => {
     const maxAmount = 5000; //Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
     const allocatedAmount = 0; //Math.round(Math.random() * maxAmount * 100) / 100;
-    const color = [
-      Math.random() * 255,
-      Math.random() * 255,
-      Math.random() * 255
-    ];
+    const color = [0, 0, Math.floor(Math.random() * (255 - 64 - 64)) + 64];
     data.capital.push({
       category: value,
       total: maxAmount,
@@ -73,11 +69,7 @@ function generateData() {
     const maxAmount = count * 10000;
     count += 1;
     const allocatedAmount = 0; // Math.round(Math.random() * maxAmount * 100) / 100;
-    const color = [
-      Math.random() * 255,
-      Math.random() * 255,
-      Math.random() * 255
-    ];
+    const color = [0, Math.floor(Math.random() * (255 - 64 - 64)) + 64, 0];
     data.capacityBuilding.push({
       category: value,
       total: maxAmount,
