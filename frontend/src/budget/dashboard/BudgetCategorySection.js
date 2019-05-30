@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
 }));
 export default function BudgetCategorySection(props) {
   const classes = useStyles();
-  const { sectionName, categories } = props;
+  const { sectionName } = props;
   return (
     <ExpansionPanel defaultExpanded>
       <ExpansionPanelSummary
@@ -50,13 +50,7 @@ export default function BudgetCategorySection(props) {
             <Divider className={classes.secondary} />
           </Grid>
           <Grid item container spacing={2}>
-            {categories.map(value => {
-              return (
-                <Grid item xs={12} sm={6} md={4} lg={3}>
-                  <BudgetCategoryCard {...value} />
-                </Grid>
-              );
-            })}
+            {props.children}
           </Grid>
         </Grid>
       </ExpansionPanelDetails>

@@ -59,7 +59,9 @@ class BudgetCategoryCard extends Component {
         <CardActions disableSpacing className={classes.noVerticalPadding}>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button size="small">View</Button>
+              <Button onClick={this.props.openSupports} size="small">
+                View
+              </Button>
             </Grid>
           </Grid>
         </CardActions>

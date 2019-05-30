@@ -271,7 +271,7 @@ class FormPersonalDetails extends React.Component {
             <Typography variant="h6">Personal Details</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Grid container spacing={24}>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <ValidatedTextField
                   className={classes.number}
@@ -295,7 +295,6 @@ class FormPersonalDetails extends React.Component {
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <Grid item xs={12}>
                   <DatePicker
-                    margin="normal"
                     label="Plan Start Date"
                     value={this.state.startDate}
                     onChange={this.handleDateChange("startDate")}
@@ -334,7 +333,7 @@ class FormPersonalDetails extends React.Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Grid container spacing={24}>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Assistance with Daily Life
@@ -411,7 +410,7 @@ class FormPersonalDetails extends React.Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Grid container spacing={24}>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Typography variant="body1">Assistive Technology</Typography>
                 <ValidatedTextField
@@ -456,7 +455,7 @@ class FormPersonalDetails extends React.Component {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <Grid container spacing={24}>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Typography variant="body1">
                   Coordination of Supports
