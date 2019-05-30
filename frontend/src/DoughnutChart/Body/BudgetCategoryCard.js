@@ -9,11 +9,11 @@ import {
 import withStyles from "@material-ui/core/styles/withStyles";
 import CardHeader from "@material-ui/core/CardHeader";
 import { Doughnut } from "react-chartjs-2";
+import classNames from "classnames";
 
 const styles = {
-  cardContainer: { width: 300 },
-  cardHeader: { paddingBottom: 0, paddingTop: 0, height: 80 },
-  cardContent: { paddingTop: 0, height: 80 }
+  cardHeader: { height: 80 },
+  noVerticalPadding: { paddingTop: 0, paddingBottom: 0 }
 };
 
 class BudgetCategoryCard extends Component {
@@ -26,18 +26,16 @@ class BudgetCategoryCard extends Component {
       allocatedColor,
       totalColor
     } = this.props;
-    const available = total - allocated;
-    console.log(total);
-    console.log(allocated);
-    console.log(available);
+    const available = Math.round(100 * (total - allocated)) / 100;
     return (
-      <Card raised className={classes.cardContainer}>
+      <Card raised>
         <CardHeader
           title={category}
           titleTypographyProps={{ variant: "h6" }}
-          className={classes.cardHeader}
+          className={classNames(classes.cardHeader, classes.noVerticalPadding)}
+          style={{ color: totalColor }}
         />
-        <CardContent className={classes.cardContent}>
+        <CardContent className={classes.noVerticalPadding}>
           <Doughnut
             legend={{
               // display:false,
@@ -58,7 +56,7 @@ class BudgetCategoryCard extends Component {
             }}
           />
         </CardContent>
-        <CardActions disableSpacing>
+        <CardActions disableSpacing className={classes.noVerticalPadding}>
           <Grid container justify="flex-end">
             <Grid item>
               <Button size="small">View</Button>

@@ -19,14 +19,18 @@ const useStyles = makeStyles(theme => ({
   secondary: {
     backgroundColor: theme.palette.secondary.main
   },
-  categoryIcon: {}
+  categoryIcon: {},
+  expansionPanelSummary: {
+    marginBottom: 0
+  }
 }));
 export default function BudgetCategorySection(props) {
   const classes = useStyles();
-  const { sectionName } = props;
+  const { sectionName, categories } = props;
   return (
     <ExpansionPanel defaultExpanded>
       <ExpansionPanelSummary
+        classes={{ expanded: classes.expansionPanelSummary }}
         expandIcon={<ExpandMoreIcon color="secondary" />}
         aria-controls={sectionName + "content"}
         id={sectionName + "-header"}
@@ -41,36 +45,18 @@ export default function BudgetCategorySection(props) {
         </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Grid container spacing={2}>
+        <Grid container spacing={4}>
           <Grid item xs={12}>
             <Divider className={classes.secondary} />
           </Grid>
-          <Grid item>
-            <BudgetCategoryCard
-              category={"Assistance with social and community participantion"}
-              total={1000}
-              allocated={300}
-              allocatedColor="red"
-              totalColor="blue"
-            />
-          </Grid>
-          <Grid item>
-            <BudgetCategoryCard
-              category={"Physical assistace"}
-              total={1000}
-              allocated={300}
-              allocatedColor="red"
-              totalColor="blue"
-            />
-          </Grid>
-          <Grid item>
-            <BudgetCategoryCard
-              category={"Employment"}
-              total={1000}
-              allocated={300}
-              allocatedColor="red"
-              totalColor="blue"
-            />
+          <Grid item container spacing={2}>
+            {categories.map(value => {
+              return (
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <BudgetCategoryCard {...value} />
+                </Grid>
+              );
+            })}
           </Grid>
         </Grid>
       </ExpansionPanelDetails>
