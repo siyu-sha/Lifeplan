@@ -72,9 +72,7 @@ export default function Home() {
                   <Grid item>
                     <Card
                       raised
-                      onClick={() =>
-                        (window.location.href = "/budget/dashboard")
-                      }
+                      onClick={() => (window.location.href = "/budget/edit")}
                     >
                       <CardActionArea
                         className={classNames(

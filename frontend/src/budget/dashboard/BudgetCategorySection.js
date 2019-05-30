@@ -40,7 +40,7 @@ export default function BudgetCategorySection(props) {
             <MonetizationOnIcon fontSize="large" color="secondary" />
           </Grid>
           <Grid item>
-            <Typography variant="h4">{sectionName}</Typography>
+            <Typography variant="h5">{sectionName}</Typography>
           </Grid>
         </Grid>
       </ExpansionPanelSummary>

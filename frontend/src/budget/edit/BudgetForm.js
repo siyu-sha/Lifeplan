@@ -599,7 +599,8 @@ class FormPersonalDetails extends React.Component {
             className={classes.button}
             color="primary"
             variant="contained"
-            onClick={this.handleNext}
+            //onClick={this.handleNext}
+            href="/budget/dashboard"
           >
             Next
           </Button>
