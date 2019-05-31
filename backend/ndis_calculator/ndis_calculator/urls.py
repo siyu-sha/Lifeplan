@@ -25,6 +25,7 @@ api_patterns = [
     path('auth/register', views.Authentication.register, name='auth_register'),
 
     path('participant/id', views.Participant.id, name='participant_id'),
+    path('participant/<int:pk>', views.Participant.update, name='participant_update'),
 ]
 
 urlpatterns = [
