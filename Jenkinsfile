@@ -44,7 +44,7 @@ pipeline{
             steps{
                 sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
-                sh "docker-compose -f docker-compose-CI.yml up -d "
+                sh "docker-compose -f docker-compose-CI.yml up -d"
             }
         }
         stage("Run Health Check Script"){
