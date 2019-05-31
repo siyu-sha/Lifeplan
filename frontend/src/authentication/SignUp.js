@@ -54,7 +54,7 @@ class SignUp extends React.Component {
     lastName: "",
     email: "",
     password: "",
-    postCode: "",
+    postcode: "",
     birthYear: "",
     accept: false,
     submitted: false
@@ -89,7 +89,7 @@ class SignUp extends React.Component {
     const marginSize = "normal";
     const firstName = "firstName";
     const lastName = "lastName";
-    const postCode = "postCode";
+    const postCode = "postcode";
     const birthYear = "birthYear";
     const accept = "accept";
 
@@ -145,7 +145,7 @@ class SignUp extends React.Component {
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
-              <InputLabel htmlFor={postCode}>Post Code</InputLabel>
+              <InputLabel htmlFor={postCode}>Postcode</InputLabel>
               <Input
                 id={postCode}
                 name={postCode}
@@ -154,7 +154,7 @@ class SignUp extends React.Component {
               />
             </FormControl>
             <FormControl margin={marginSize} required fullWidth>
-              <InputLabel htmlFor={birthYear}>Birth Year</InputLabel>
+              <InputLabel htmlFor={birthYear}>Year of Birth</InputLabel>
               <Input
                 id={birthYear}
                 name={birthYear}
