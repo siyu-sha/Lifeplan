@@ -44,7 +44,7 @@ pipeline{
             steps{
                 sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
-                sh "docker-compose -f docker-compose-CI.yml up -d"
+                sh "docker-compose -f docker-compose-CI.yml up  "
             }
         }
         stage("Run Health Check Script"){
@@ -55,7 +55,7 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down -v"
+            sh "docker-compose -f docker-compose-CI.yml down --rmi local -v"
         }
     }
 }

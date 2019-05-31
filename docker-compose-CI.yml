@@ -35,4 +35,5 @@ services:
 
 volumes:
   db-data: {}
-  npm-cache: {}
+  npm-cache:
+    external: true
