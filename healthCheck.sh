@@ -20,7 +20,7 @@ else
 fi
 
 # Wait for react to start
-timeout -t 120 /bin/bash -c 'until echo > /dev/tcp/localhost/${DOCKER_REACT_PORT}; do sleep 2; done'
+timeout -t 120 /bin/bash -c 'until curl --output /dev/null --silent "http://localhost:${DOCKER_REACT_PORT}/"; do sleep 2; done'
 
 # ping react with HTTP GET
 status_code_2=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "http://localhost:${DOCKER_REACT_PORT}/")
