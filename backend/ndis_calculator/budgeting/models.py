@@ -6,8 +6,12 @@ from ndis_calculator import settings
 
 class CustomUser(AbstractUser):
     # add additional fields here
-    address = models.CharField(max_length=255)
-    birthday = models.DateField(null=True, blank=True)
+    postcode = models.IntegerField(null=True)
+    birth_year = models.IntegerField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('id',)
 
 
 class Category(models.Model):
