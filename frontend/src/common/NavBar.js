@@ -27,8 +27,8 @@ export default function NavBar() {
         <Button href="/theme" color="inherit">
           Theme
         </Button>
-        <Button href="/DoughnutChart/Body/DoughnutChart" color="inherit">
-          DoughnutChart
+        <Button href="/authentication/signin" color="inherit">
+          Sign In
         </Button>
       </Toolbar>
     </AppBar>
