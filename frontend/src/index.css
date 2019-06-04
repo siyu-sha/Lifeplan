@@ -1,3 +1,5 @@
+/*only put site-wide css here*/
+
 body {
   margin: 0;
   padding: 0;
@@ -11,4 +13,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+.root {
+  background: #97c7ef;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  min-height: 100vh;
 }

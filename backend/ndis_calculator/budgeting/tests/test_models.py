@@ -21,9 +21,8 @@ class CustomUserTest(TestCase):
                           last_name="Smith",
                           password="password123",
                           email="John.Smith@test.com",
-                          address="123 Fake St",
-                          # second of January, 2000
-                          birthday=dt.date(year=2000, month=1, day=2),
+                          postcode="3000",
+                          birth_year="1945",
                           ):
         if CustomUser.objects.filter(username="test").first():
             return CustomUser.objects.first()
@@ -33,8 +32,8 @@ class CustomUserTest(TestCase):
                                              last_name=last_name,
                                              password=password,
                                              email=email,
-                                             address=address,
-                                             birthday=birthday,
+                                             postcode=postcode,
+                                             birth_year=birth_year,
                                              )
 
     def test_CustomUser(self):
@@ -44,6 +43,16 @@ class CustomUserTest(TestCase):
 
 
 class GoalTest(TestCase):
+    @staticmethod
+    def create_Goal(description="A Set of description Text"):
+        return Goal.objects.create(description=description)
+
+    def test_Goal(self):
+        g = self.create_Goal()
+        self.assertTrue(isinstance(g, Goal))
+
+
+class CategoryTest(TestCase):
     @staticmethod
     def create_Goal(description="to be a web developer"):
         return Goal.objects.create(description=description)
