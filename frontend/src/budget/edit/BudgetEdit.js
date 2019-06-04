@@ -1,7 +1,7 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
-import { NAV_BAR_HEIGHT } from "../common/theme";
-import { makeStyles } from "@material-ui/styles";
+import Grid from "@material-ui/core/Grid/index";
+import { NAV_BAR_HEIGHT } from "../../common/theme";
+import { makeStyles } from "@material-ui/styles/index";
 import FormPersonalDetails from "./BudgetForm";
 
 const useStyles = makeStyles({
@@ -14,7 +14,7 @@ export default function BudgetForm() {
   const classes = useStyles();
   return (
     <Grid container className={classes.home} justify="center">
-      <Grid item xs={11} sm={5} lg={5}>
+      <Grid item xs={11} sm={8} md={6} lg={5}>
         <FormPersonalDetails />
       </Grid>
     </Grid>

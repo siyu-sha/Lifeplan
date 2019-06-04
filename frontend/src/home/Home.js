@@ -8,18 +8,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import { DARK_BLUE, LIGHT_BLUE, NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
 import classNames from "classnames";
+import { palette } from "@material-ui/system";
 
 const useStyles = makeStyles(theme => ({
   home: {
     height: `calc(100vh - ${NAV_BAR_HEIGHT}px)`
   },
   planPageSelector: {
-    backgroundColor: DARK_BLUE,
+    backgroundColor: theme.palette.primary.main,
     color: "white"
   },
   budgetPageSelector: {
-    background: LIGHT_BLUE,
-    color: DARK_BLUE
+    background: theme.palette.secondary.main,
+    color: theme.palette.primary.main
   },
   pageSelector: {
     width: theme.spacing(16),
@@ -71,7 +72,7 @@ export default function Home() {
                   <Grid item>
                     <Card
                       raised
-                      onClick={() => (window.location.href = "/budget")}
+                      onClick={() => (window.location.href = "/budget/edit")}
                     >
                       <CardActionArea
                         className={classNames(
