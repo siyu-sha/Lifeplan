@@ -2,12 +2,16 @@ from django.test import TestCase
 
 import datetime as dt
 
-from budgeting.models import CustomUser
-from budgeting.models import Category
-from budgeting.models import SupportItem
-from budgeting.models import Plan
-from budgeting.models import Budgeting
-from budgeting.models import Goal
+# from budgeting.models import CustomUser
+# from budgeting.models import CategoryList
+# from budgeting.models import SupportItem
+# from budgeting.models import Plan
+# from budgeting.models import Budgeting
+# from budgeting.models import Goal
+from backend.ndis_calculator.budgeting.models import *
+
+
+# from backend.ndis_calculator.budgeting.models import Goal
 
 
 class CustomUserTest(TestCase):
@@ -39,53 +43,89 @@ class CustomUserTest(TestCase):
         # self.assertEqual() - assert any custom methods we create work
 
 
-class CategoryTest(TestCase):
+class GoalTest(TestCase):
     @staticmethod
-    def create_Category(name="testCat"):
-        return Category.objects.create(name=name)
+    def create_Goal(description="to be a web developer"):
+        return Goal.objects.create(description=description)
+
+    def test_Goal(self):
+        goal = self.create_Goal()
+        self.assertTrue(isinstance(goal, Goal))
+
+
+class CategoryListTest(TestCase):
+    @staticmethod
+    def create_Category(name="testCat", purpose="core"):
+        return CategoryList.objects.create(name=name, purpose=purpose)
 
     def test_Category(self):
         cat = self.create_Category()
-        self.assertTrue(isinstance(cat, Category))
+        self.assertTrue(isinstance(cat, CategoryList))
 
 
-class SupportItemTest(TestCase):
+class RegistrationGroupTest(TestCase):
     @staticmethod
-    def create_SupportItem(name="item1",
-                           description="description goes here",
-                           cost=2.20,
-                           category=CategoryTest.create_Category()):
-        return SupportItem.objects.create(name=name,
-                                          description=description,
-                                          cost=cost,
-                                          category=category,
-                                          )
+    def create_RegistrationGroup(code="123",
+                                 name="testGroup",
+                                 description="Rental of adapted vehicle",
+                                 product_count=10,
+                                 experience="working with people",
+                                 professions="Social Worker; Welfare Worker"
+                                 ):
+        return RegistrationGroup.objects.create(code=code,
+                                                name=name,
+                                                description=description,
+                                                product_count=product_count,
+                                                experience=experience,
+                                                professions=professions)
+
+    def test_Category(self):
+        rg = self.create_RegistrationGroup()
+        self.assertTrue(isinstance(rg, RegistrationGroup))
+
+
+class SupportItemListTest(TestCase):
+    @staticmethod
+    def create_SupportItem(ref_no=123,
+                           name="item1",
+                           is_labour=True,
+                           unit_of_measurement="Hour",
+                           price_limit=850.25,
+                           outcome="home",
+                           category=CategoryListTest.create_Category(),
+                           registration_group=RegistrationGroupTest.create_RegistrationGroup()
+                           ):
+        return SupportItemList.objects.create(ref_no=ref_no,
+                                              name=name,
+                                              is_labour=is_labour,
+                                              unit_of_measurement=unit_of_measurement,
+                                              price_limit=price_limit,
+                                              outcome=outcome,
+                                              category=category,
+                                              registration_group=registration_group
+                                              )
 
     def test_SupportItem(self):
         si = self.create_SupportItem()
-        self.assertTrue(isinstance(si, SupportItem))
+        self.assertTrue(isinstance(si, SupportItemList))
 
 
 class PlanTest(TestCase):
     @staticmethod
     def create_Plan(start_time=dt.date(year=2018, month=6, day=1),
                     end_time=dt.date(year=2019, month=6, day=1),
-                    total_funds=100,
-                    customer=CustomUserTest.create_CustomUser(),
+                    participant=CustomUserTest.create_CustomUser(),
+                    goals=GoalTest.create_Goal(),
+                    categories=CategoryListTest.create_Category(),
+                    support_items=SupportItemListTest.create_SupportItem()
                     ):
         obj = Plan.objects.create(start_time=start_time,
                                   end_time=end_time,
-                                  total_funds=total_funds,
-                                  customer=customer,
+                                  participant=participant,
+                                  goals=goals,
+                                  categories=categories,
+                                  support_items=support_items
                                   )
-        Budgeting.objects.create(plan=obj,
-                                 item=SupportItemTest.create_SupportItem(),
-                                 num_item=1,
-                                 cost_per_unit=1,
-                                 weekday_7_7=1.0,
-                                 after_hour_weekend=1.0,
-                                 holiday_7_7=1.0,
-                                 holiday_after_hour=1.0, )
         return obj
 
     def test_Plan(self):
@@ -93,47 +133,44 @@ class PlanTest(TestCase):
         self.assertTrue(isinstance(p, Plan))
 
 
-class BudgetingTest(TestCase):
+class PlanContainsCategoriesTest(TestCase):
     @staticmethod
-    def create_Budgeting(plan=PlanTest.create_Plan(),
-                         item=SupportItemTest.create_SupportItem(),
-                         num_item=1,
-                         cost_per_unit=1,
-                         weekday_7_7=1.0,
-                         after_hour_weekend=1.0,
-                         holiday_7_7=1.0,
-                         holiday_after_hour=1.0,
-                         ):
-        return Budgeting.objects.create(plan=plan,
-                                        item=item,
-                                        num_item=num_item,
-                                        cost_per_unit=cost_per_unit,
-                                        weekday_7_7=weekday_7_7,
-                                        after_hour_weekend=after_hour_weekend,
-                                        holiday_7_7=holiday_7_7,
-                                        holiday_after_hour=holiday_after_hour,
-                                        )
+    def create_PlanContainsCategories(plan=PlanTest.create_Plan(),
+                                      category=CategoryListTest.create_Category(),
+                                      amount=10000.50):
+        return PlanContainsCategories.objects.create(plan=plan,
+                                                     category=category,
+                                                     amount=amount
+                                                     )
 
-    def test_Budgeting(self):
-        b = self.create_Budgeting()
-        self.assertTrue(isinstance(b, Budgeting))
+    def test_PlanContainsCategories(self):
+        pContainsCat = self.create_PlanContainsCategories()
+        self.assertTrue(isinstance(pContainsCat, PlanContainsCategories))
 
 
-class GoalTest(TestCase):
+class PlanContainsItemsTest(TestCase):
     @staticmethod
-    def create_Goal(type="ABC",
-                    description="A Set of description Text",
-                    how_to_achieve="Somehow",
-                    how_to_support="Somehow Support",
-                    customer=CustomUserTest.create_CustomUser(),
-                    ):
-        return Goal.objects.create(type=type,
-                                   description=description,
-                                   how_to_achieve=how_to_achieve,
-                                   how_to_support=how_to_support,
-                                   customer=customer,
-                                   )
+    def create_PlanContainsItems(plan=PlanTest.create_Plan(),
+                                 support_item=SupportItemListTest.create_SupportItem(),
+                                 cost_per_unit=200.50,
+                                 quantity=2,
+                                 hours_weekday=10.50,
+                                 hours_weekend=10.50,
+                                 hours_holiday=0.00,
+                                 hours_holiday_after_hours=2.50,
+                                 goal=GoalTest.create_Goal()
+                                 ):
+        return PlanContainsItems.objects.create(plan=plan,
+                                                support_item=support_item,
+                                                cost_per_unit=cost_per_unit,
+                                                quantity=quantity,
+                                                hours_weekday=hours_weekday,
+                                                hours_weekend=hours_weekend,
+                                                hours_holiday=hours_holiday,
+                                                hours_holiday_after_hours=hours_holiday_after_hours,
+                                                goal=goal
+                                                )
 
-    def test_Goal(self):
-        g = self.create_Goal()
-        self.assertTrue(isinstance(g, Goal))
+    def test_PlanContainsItems(self):
+        pContainsItems = self.create_PlanContainsItems()
+        self.assertTrue(isinstance(pContainsItems, PlanContainsItems))

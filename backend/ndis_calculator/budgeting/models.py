@@ -18,6 +18,8 @@ class Goal(models.Model):
     description = models.TextField()
 
 
+# a static table stores all categories.
+# Participants cannot manipulate data in this table, but they can retrieve data
 class CategoryList(models.Model):
     name = models.CharField(max_length=255)
     purpose = models.CharField(max_length=255)  # 3 purpose (core, capital, capacity)
@@ -32,6 +34,8 @@ class RegistrationGroup(models.Model):
     professions = models.CharField(max_length=255)
 
 
+# a static table stores all support itmes.
+# Participants cannot manipulate data in this table, but they can retrieve data
 class SupportItemList(models.Model):
     UNIT_CHOICES = (
         ('Each', 'Each'),
@@ -64,7 +68,7 @@ class Plan(models.Model):
 class PlanContainsCategories(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     category = models.ForeignKey(CategoryList, on_delete=models.CASCADE)
-    amount = models.IntegerField()
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
 
 
 class PlanContainsItems(models.Model):
