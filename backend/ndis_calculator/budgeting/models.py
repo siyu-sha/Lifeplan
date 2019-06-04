@@ -19,8 +19,14 @@ class Goal(models.Model):
 
 
 class CategoryList(models.Model):
+    PURPOSE_CHOICES = (
+        ('core', 'Core')
+        ('capital', 'Capital')
+        ('capacity', 'Capacity')
+    )
+
     name = models.CharField(max_length=255)
-    purpose = models.CharField(max_length=255)  # 3 purpose (core, capital, capacity)
+    purpose = models.CharField(max_length=255, choices=PURPOSE_CHOICES)
 
 
 class RegistrationGroup(models.Model):
@@ -29,7 +35,7 @@ class RegistrationGroup(models.Model):
     description = models.TextField()
     product_count = models.IntegerField()
     experience = models.TextField()
-    professions = models.CharField(max_length=255)
+    profession = models.CharField(max_length=255)
 
 
 class SupportItemList(models.Model):
@@ -47,7 +53,7 @@ class SupportItemList(models.Model):
     is_labour = models.BooleanField()
     unit_of_measurement = models.CharField(max_length=20, choices=UNIT_CHOICES)
     price_limit = models.DecimalField(max_digits=15, decimal_places=2)
-    outcome = models.CharField(max_length=255)  # 8 outcomes(Daily living; home; health...)
+    outcome = models.CharField(max_length=255)  # 8 outcomes (Daily living; home; health...)
     category = models.ForeignKey(CategoryList, on_delete=models.CASCADE)
     registration_group = models.ForeignKey(RegistrationGroup, on_delete=models.CASCADE)
 
@@ -71,10 +77,9 @@ class PlanContainsItems(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     support_item = models.ForeignKey(SupportItemList, on_delete=models.CASCADE)
     cost_per_unit = models.DecimalField(max_digits=15, decimal_places=2)
-    quantity = models.IntegerField(blank=True, null=True)
+    quantity = models.IntegerField(null=True, blank=True)
     hours_weekday = models.DecimalField(max_digits=4, decimal_places=2)
     hours_weekend = models.DecimalField(max_digits=4, decimal_places=2)
     hours_holiday = models.DecimalField(max_digits=4, decimal_places=2)
     hours_holiday_after_hours = models.DecimalField(max_digits=4, decimal_places=2)
-    goal = models.OneToOneField(Goal, on_delete=models.SET_NULL, blank=True, null=True)
-
+    goal = models.OneToOneField(Goal, on_delete=models.SET_NULL, null=True, blank=True)

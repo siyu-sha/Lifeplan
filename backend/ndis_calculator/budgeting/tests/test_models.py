@@ -17,9 +17,8 @@ class CustomUserTest(TestCase):
                           last_name="Smith",
                           password="password123",
                           email="John.Smith@test.com",
-                          address="123 Fake St",
-                          # second of January, 2000
-                          birthday=dt.date(year=2000, month=1, day=2),
+                          postcode="3000",
+                          birth_year="1945",
                           ):
         if CustomUser.objects.filter(username="test").first():
             return CustomUser.objects.first()
@@ -29,14 +28,24 @@ class CustomUserTest(TestCase):
                                              last_name=last_name,
                                              password=password,
                                              email=email,
-                                             address=address,
-                                             birthday=birthday,
+                                             postcode=postcode,
+                                             birth_year=birth_year,
                                              )
 
     def test_CustomUser(self):
         cu = self.create_CustomUser()
         self.assertTrue(isinstance(cu, CustomUser))
         # self.assertEqual() - assert any custom methods we create work
+
+
+class GoalTest(TestCase):
+    @staticmethod
+    def create_Goal(description="A Set of description Text"):
+        return Goal.objects.create(description=description)
+
+    def test_Goal(self):
+        g = self.create_Goal()
+        self.assertTrue(isinstance(g, Goal))
 
 
 class CategoryTest(TestCase):
@@ -117,23 +126,3 @@ class BudgetingTest(TestCase):
     def test_Budgeting(self):
         b = self.create_Budgeting()
         self.assertTrue(isinstance(b, Budgeting))
-
-
-class GoalTest(TestCase):
-    @staticmethod
-    def create_Goal(type="ABC",
-                    description="A Set of description Text",
-                    how_to_achieve="Somehow",
-                    how_to_support="Somehow Support",
-                    customer=CustomUserTest.create_CustomUser(),
-                    ):
-        return Goal.objects.create(type=type,
-                                   description=description,
-                                   how_to_achieve=how_to_achieve,
-                                   how_to_support=how_to_support,
-                                   customer=customer,
-                                   )
-
-    def test_Goal(self):
-        g = self.create_Goal()
-        self.assertTrue(isinstance(g, Goal))
