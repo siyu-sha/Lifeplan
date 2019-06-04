@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 export default function Theme() {
   return (
     <div className="App" style={{ background: "#97c7ef" }}>
-      <Grid container spacing={24} justify="center" alignItems="center">
+      <Grid container spacing={3} justify="center" alignItems="center">
         <Grid item xs={11}>
           <Card>
             <CardContent>

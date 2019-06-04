@@ -13,11 +13,11 @@ pipeline{
                     agent{
                         docker{
                             image 'node'
-                            args '-e CI=true'
+                            args '-v npm-cache:/root/.npm -e CI=true'
                         }
                     }
                     steps {
-                        sh "npm --prefix frontend/ install"
+                        sh "npm --prefix frontend/ --verbose install"
                         sh "npm --prefix frontend/ test --exit"
                     }
                 }
@@ -34,7 +34,7 @@ pipeline{
                     }
                     post{
                         always{
-                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
+                            sh "docker-compose -f docker-compose-CI.test.yml down --rmi local -v"
                         }
                     }
                 }
@@ -55,7 +55,7 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down -v"
+            sh "docker-compose -f docker-compose-CI.yml down --rmi local -v"
         }
     }
 }
