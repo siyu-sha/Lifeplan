@@ -10,8 +10,8 @@ from ndis_calculator import settings
 
 class CustomUser(AbstractUser):
     # add additional fields here
-    postcode = models.IntegerField(default=3000)
-    birth_year = models.IntegerField(default=2019)
+    postcode = models.IntegerField()
+    birth_year = models.IntegerField()
 
 
 class Goal(models.Model):
@@ -24,12 +24,12 @@ class CategoryList(models.Model):
 
 
 class RegistrationGroup(models.Model):
-    rg_code = models.CharField(max_length=30)
-    rg_name = models.CharField(max_length=255)
-    rg_description = models.TextField()
+    code = models.CharField(max_length=30)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
     product_count = models.IntegerField()
-    registration_experience = models.TextField()
-    registration_professions = models.CharField(max_length=255)
+    experience = models.TextField()
+    professions = models.CharField(max_length=255)
 
 
 class SupportItemList(models.Model):
@@ -44,9 +44,9 @@ class SupportItemList(models.Model):
 
     ref_no = models.IntegerField()
     name = models.CharField(max_length=300)
-    isLabour = models.BooleanField()
+    is_labour = models.BooleanField()
     unit_of_measurement = models.CharField(max_length=20, choices=UNIT_CHOICES)
-    price_limit = models.IntegerField()
+    price_limit = models.DecimalField(max_digits=15, decimal_places=2)
     outcome = models.CharField(max_length=255)  # 8 outcomes(Daily living; home; health...)
     category = models.ForeignKey(CategoryList, on_delete=models.CASCADE)
     registration_group = models.ForeignKey(RegistrationGroup, on_delete=models.CASCADE)
@@ -70,11 +70,11 @@ class PlanContainsCategories(models.Model):
 class PlanContainsItems(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     support_item = models.ForeignKey(SupportItemList, on_delete=models.CASCADE)
-    cost_per_unit = models.IntegerField()
+    cost_per_unit = models.DecimalField(max_digits=15, decimal_places=2)
     quantity = models.IntegerField(blank=True, null=True)
-    hours_weekday = models.IntegerField(blank=True, null=True)
-    hours_weekend = models.IntegerField(blank=True, null=True)
-    hours_holiday = models.IntegerField(blank=True, null=True)
-    hours_holiday_after_hours = models.IntegerField(blank=True, null=True)
+    hours_weekday = models.DecimalField(max_digits=4, decimal_places=2)
+    hours_weekend = models.DecimalField(max_digits=4, decimal_places=2)
+    hours_holiday = models.DecimalField(max_digits=4, decimal_places=2)
+    hours_holiday_after_hours = models.DecimalField(max_digits=4, decimal_places=2)
     goal = models.OneToOneField(Goal, on_delete=models.SET_NULL, blank=True, null=True)
 
