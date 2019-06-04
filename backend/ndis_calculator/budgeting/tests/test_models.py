@@ -8,10 +8,7 @@ import datetime as dt
 # from budgeting.models import Plan
 # from budgeting.models import Budgeting
 # from budgeting.models import Goal
-from backend.ndis_calculator.budgeting.models import *
-
-
-# from backend.ndis_calculator.budgeting.models import Goal
+from budgeting.models import *
 
 
 class CustomUserTest(TestCase):
@@ -44,22 +41,12 @@ class CustomUserTest(TestCase):
 
 class GoalTest(TestCase):
     @staticmethod
-    def create_Goal(description="A Set of description Text"):
+    def create_Goal(description="To be a web developer"):
         return Goal.objects.create(description=description)
 
     def test_Goal(self):
         g = self.create_Goal()
         self.assertTrue(isinstance(g, Goal))
-
-
-class CategoryTest(TestCase):
-    @staticmethod
-    def create_Goal(description="to be a web developer"):
-        return Goal.objects.create(description=description)
-
-    def test_Goal(self):
-        goal = self.create_Goal()
-        self.assertTrue(isinstance(goal, Goal))
 
 
 class CategoryListTest(TestCase):

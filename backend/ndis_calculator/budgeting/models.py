@@ -26,9 +26,9 @@ class Goal(models.Model):
 # Participants cannot manipulate data in this table, but they can retrieve data
 class CategoryList(models.Model):
     PURPOSE_CHOICES = (
-        ('core', 'Core')
-        ('capital', 'Capital')
-        ('capacity', 'Capacity')
+        ('core', 'Core'),
+        ('capital', 'Capital'),
+        ('capacity', 'Capacity'),
     )
 
     name = models.CharField(max_length=255)
@@ -41,7 +41,7 @@ class RegistrationGroup(models.Model):
     description = models.TextField()
     product_count = models.IntegerField()
     experience = models.TextField()
-    profession = models.CharField(max_length=255)
+    professions = models.CharField(max_length=255)
 
 
 # a static table stores all support itmes.
