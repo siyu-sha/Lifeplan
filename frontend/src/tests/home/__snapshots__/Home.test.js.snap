@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test home rendering 1`] = `
+<div
+  className="MuiGrid-root makeStyles-home-1 MuiGrid-container MuiGrid-align-items-xs-center"
+>
+  <div
+    className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+  >
+    <div
+      className="MuiGrid-root MuiGrid-container MuiGrid-justify-xs-center"
+    >
+      <div
+        className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-11"
+      >
+        <div
+          className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-4"
+        >
+          <div
+            className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <h5
+              className="MuiTypography-root MuiTypography-h5 MuiTypography-alignCenter"
+            >
+              Welcome.
+              <br />
+              Please select the tool you wish to use:
+            </h5>
+          </div>
+          <div
+            className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <div
+              className="MuiGrid-root MuiGrid-container MuiGrid-justify-xs-space-evenly"
+            >
+              <div
+                className="MuiGrid-root MuiGrid-item"
+              >
+                <div
+                  className="MuiPaper-root MuiPaper-elevation8 MuiPaper-rounded MuiCard-root"
+                >
+                  <button
+                    className="MuiButtonBase-root MuiCardActionArea-root makeStyles-planPageSelector-2 makeStyles-pageSelector-4"
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    tabIndex={0}
+                    type="button"
+                  >
+                    <div
+                      className="MuiCardContent-root"
+                    >
+                      <h6
+                        className="MuiTypography-root MuiTypography-h6 MuiTypography-colorInherit MuiTypography-alignCenter"
+                      >
+                        Plan Creator
+                      </h6>
+                    </div>
+                    <span
+                      className="MuiCardActionArea-focusHighlight"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                className="MuiGrid-root MuiGrid-item"
+              >
+                <div
+                  className="MuiPaper-root MuiPaper-elevation8 MuiPaper-rounded MuiCard-root"
+                  onClick={[Function]}
+                >
+                  <button
+                    className="MuiButtonBase-root MuiCardActionArea-root makeStyles-budgetPageSelector-3 makeStyles-pageSelector-4"
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    tabIndex={0}
+                    type="button"
+                  >
+                    <div
+                      className="MuiCardContent-root"
+                    >
+                      <h6
+                        className="MuiTypography-root MuiTypography-h6 MuiTypography-colorInherit MuiTypography-alignCenter"
+                      >
+                        Plan Budget Calculator
+                      </h6>
+                    </div>
+                    <span
+                      className="MuiCardActionArea-focusHighlight"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

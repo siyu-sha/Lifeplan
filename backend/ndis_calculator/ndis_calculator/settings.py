@@ -31,14 +31,20 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
-    'rest_framework',
+    # Django Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-Party
+    'corsheaders',
+    'rest_framework',
+
+    # Local
+    'budgeting',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +78,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ndis_calculator.wsgi.application'
 
+AUTH_USER_MODEL = 'budgeting.CustomUser'
+
+APPEND_SLASH = False
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -79,11 +88,14 @@ WSGI_APPLICATION = 'ndis_calculator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mysql',
+        'NAME': 'ndis',
         'USER': 'root',
         'PASSWORD': 'ndisFP2019',
         'HOST': 'db',
         'PORT': '3306',
+        'OPTIONS': {
+                   "init_command": "SET foreign_key_checks = 0;",
+                   },
     }
 }
 
@@ -125,4 +137,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# REST Framework
+
 CORS_ORIGIN_ALLOW_ALL = True
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': [
+        'djangorestframework_camel_case.parser.CamelCaseFormParser',
+        'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+    ],
+}
