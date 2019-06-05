@@ -90,5 +90,6 @@ class PlanContainsItems(models.Model):
     hours_weekday = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
     hours_weekend = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
     hours_holiday = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
-    hours_holiday_after_hours = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    hours_holiday_after_hours = models.DecimalField(max_digits=4, decimal_places=2, blank=True,
+                                                    null=True)
     goal = models.OneToOneField(Goal, on_delete=models.SET_NULL, null=True, blank=True)

@@ -11,6 +11,7 @@ from budgeting.models import PlanContainsCategories
 from budgeting.models import PlanContainsItems
 from budgeting.models import Goal
 
+
 class CustomUserTest(TestCase):
     @staticmethod
     def create_CustomUser(username="test",
@@ -105,6 +106,7 @@ class SupportItemListTest(TestCase):
         si = self.create_SupportItem()
         self.assertTrue(isinstance(si, SupportItemList))
 
+
 class PlanContainsCategoriesTest(TestCase):
     @staticmethod
     def create_PlanContainsCategories(plan,
@@ -139,10 +141,13 @@ class PlanContainsItemsTest():
                                                 goal=goal
                                                 )
 
+
 class PlanTest(TestCase):
     p = None
+
     def setUp(self) -> None:
         self.p = None
+
     def create_Plan(self,
                     start_date=dt.date(year=2018, month=6, day=1),
                     end_date=dt.date(year=2019, month=6, day=1),
