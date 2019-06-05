@@ -2,13 +2,13 @@ from django.test import TestCase
 
 import datetime as dt
 
-# from budgeting.models import CustomUser
-# from budgeting.models import CategoryList
-# from budgeting.models import SupportItem
-# from budgeting.models import Plan
-# from budgeting.models import Budgeting
-# from budgeting.models import Goal
-from budgeting.models import *
+from backend.ndis_calculator.budgeting.models import CustomUser
+from backend.ndis_calculator.budgeting.models import CategoryList
+from backend.ndis_calculator.budgeting.models import RegistrationGroup
+from backend.ndis_calculator.budgeting.models import SupportItemList
+from backend.ndis_calculator.budgeting.models import Plan
+from backend.ndis_calculator.budgeting.models import PlanContainsCategories
+from backend.ndis_calculator.budgeting.models import PlanContainsItems
 
 
 class CustomUserTest(TestCase):
@@ -108,20 +108,20 @@ class SupportItemListTest(TestCase):
 
 class PlanTest(TestCase):
     @staticmethod
-    def create_Plan(start_time=dt.date(year=2018, month=6, day=1),
-                    end_time=dt.date(year=2019, month=6, day=1),
+    def create_Plan(start_date=dt.date(year=2018, month=6, day=1),
+                    end_date=dt.date(year=2019, month=6, day=1),
                     participant=CustomUserTest.create_CustomUser(),
                     goals=GoalTest.create_Goal(),
                     categories=CategoryListTest.create_Category(),
                     support_items=SupportItemListTest.create_SupportItem()
                     ):
-        obj = Plan.objects.create(start_time=start_time,
-                                  end_time=end_time,
+        obj = Plan.objects.create(start_date=start_date,
+                                  end_date=end_date,
                                   participant=participant,
                                   goals=goals,
-                                  categories=categories,
-                                  support_items=support_items
                                   )
+        obj.categories.set(categories)
+        obj.support_items.set(support_items)
         return obj
 
     def test_Plan(self):

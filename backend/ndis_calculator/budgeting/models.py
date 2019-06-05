@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+# from django.utils import timezone
 
 
 from ndis_calculator import settings
@@ -86,8 +87,8 @@ class PlanContainsItems(models.Model):
     support_item = models.ForeignKey(SupportItemList, on_delete=models.CASCADE)
     cost_per_unit = models.DecimalField(max_digits=15, decimal_places=2)
     quantity = models.IntegerField(null=True, blank=True)
-    hours_weekday = models.DecimalField(max_digits=4, decimal_places=2)
-    hours_weekend = models.DecimalField(max_digits=4, decimal_places=2)
-    hours_holiday = models.DecimalField(max_digits=4, decimal_places=2)
-    hours_holiday_after_hours = models.DecimalField(max_digits=4, decimal_places=2)
+    hours_weekday = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    hours_weekend = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    hours_holiday = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    hours_holiday_after_hours = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
     goal = models.OneToOneField(Goal, on_delete=models.SET_NULL, null=True, blank=True)
