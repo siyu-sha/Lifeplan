@@ -68,8 +68,8 @@ class SupportItemList(models.Model):
 
 
 class Plan(models.Model):
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
+    start_date = models.DateField(auto_now_add=True, null=True, blank=True)
+    end_date = models.DateField(auto_now_add=True, null=True, blank=True)
     participant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     goals = models.ForeignKey(Goal, on_delete=models.SET_NULL, blank=True, null=True)
     categories = models.ManyToManyField(CategoryList, through='PlanContainsCategories')

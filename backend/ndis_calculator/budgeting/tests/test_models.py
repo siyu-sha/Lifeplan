@@ -2,14 +2,14 @@ from django.test import TestCase
 
 import datetime as dt
 
-from backend.ndis_calculator.budgeting.models import CustomUser
-from backend.ndis_calculator.budgeting.models import CategoryList
-from backend.ndis_calculator.budgeting.models import RegistrationGroup
-from backend.ndis_calculator.budgeting.models import SupportItemList
-from backend.ndis_calculator.budgeting.models import Plan
-from backend.ndis_calculator.budgeting.models import PlanContainsCategories
-from backend.ndis_calculator.budgeting.models import PlanContainsItems
-
+from budgeting.models import CustomUser
+from budgeting.models import CategoryList
+from budgeting.models import RegistrationGroup
+from budgeting.models import SupportItemList
+from budgeting.models import Plan
+from budgeting.models import PlanContainsCategories
+from budgeting.models import PlanContainsItems
+from budgeting.models import Goal
 
 class CustomUserTest(TestCase):
     @staticmethod
@@ -105,33 +105,9 @@ class SupportItemListTest(TestCase):
         si = self.create_SupportItem()
         self.assertTrue(isinstance(si, SupportItemList))
 
-
-class PlanTest(TestCase):
-    @staticmethod
-    def create_Plan(start_date=dt.date(year=2018, month=6, day=1),
-                    end_date=dt.date(year=2019, month=6, day=1),
-                    participant=CustomUserTest.create_CustomUser(),
-                    goals=GoalTest.create_Goal(),
-                    categories=CategoryListTest.create_Category(),
-                    support_items=SupportItemListTest.create_SupportItem()
-                    ):
-        obj = Plan.objects.create(start_date=start_date,
-                                  end_date=end_date,
-                                  participant=participant,
-                                  goals=goals,
-                                  )
-        obj.categories.set(categories)
-        obj.support_items.set(support_items)
-        return obj
-
-    def test_Plan(self):
-        p = self.create_Plan()
-        self.assertTrue(isinstance(p, Plan))
-
-
 class PlanContainsCategoriesTest(TestCase):
     @staticmethod
-    def create_PlanContainsCategories(plan=PlanTest.create_Plan(),
+    def create_PlanContainsCategories(plan,
                                       category=CategoryListTest.create_Category(),
                                       amount=10000.50):
         return PlanContainsCategories.objects.create(plan=plan,
@@ -139,14 +115,10 @@ class PlanContainsCategoriesTest(TestCase):
                                                      amount=amount
                                                      )
 
-    def test_PlanContainsCategories(self):
-        pContainsCat = self.create_PlanContainsCategories()
-        self.assertTrue(isinstance(pContainsCat, PlanContainsCategories))
 
-
-class PlanContainsItemsTest(TestCase):
+class PlanContainsItemsTest():
     @staticmethod
-    def create_PlanContainsItems(plan=PlanTest.create_Plan(),
+    def create_PlanContainsItems(plan,
                                  support_item=SupportItemListTest.create_SupportItem(),
                                  cost_per_unit=200.50,
                                  quantity=2,
@@ -167,6 +139,36 @@ class PlanContainsItemsTest(TestCase):
                                                 goal=goal
                                                 )
 
+class PlanTest(TestCase):
+    p = None
+    def setUp(self) -> None:
+        self.p = None
+    def create_Plan(self,
+                    start_date=dt.date(year=2018, month=6, day=1),
+                    end_date=dt.date(year=2019, month=6, day=1),
+                    participant=CustomUserTest.create_CustomUser(),
+                    goals=GoalTest.create_Goal(),
+                    ):
+        obj = Plan.objects.create(start_date=start_date,
+                                  end_date=end_date,
+                                  participant=participant,
+                                  goals=goals,
+                                  )
+        self.categories = PlanContainsCategoriesTest.create_PlanContainsCategories(plan=obj)
+        self.items = PlanContainsItemsTest.create_PlanContainsItems(plan=obj)
+        return obj
+
+    def test_Plan(self):
+        if self.p is None:
+            self.p = self.create_Plan(self)
+        self.assertTrue(isinstance(self.p, Plan))
+
     def test_PlanContainsItems(self):
-        pContainsItems = self.create_PlanContainsItems()
-        self.assertTrue(isinstance(pContainsItems, PlanContainsItems))
+        if self.p is None:
+            self.p = self.create_Plan(self)
+        self.assertTrue(isinstance(self.items, PlanContainsItems))
+
+    def test_PlanContainsCategories(self):
+        if self.p is None:
+            self.p = self.create_Plan(self)
+        self.assertTrue(isinstance(self.categories, PlanContainsCategories))
