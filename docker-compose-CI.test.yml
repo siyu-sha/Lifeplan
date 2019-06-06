@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   db:
-    image: mysql:8.0.16
+    image: mysql-server:8.0.16
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
