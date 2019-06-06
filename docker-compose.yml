@@ -30,7 +30,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app/frontend
-      - ./frontend/node-modules:/app/frontend/node_modules:ro
+      - /app/frontend/node_modules
     working_dir: /app/frontend/
 
 volumes:
