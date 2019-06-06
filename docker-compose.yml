@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   db:
-    image: mysql:8.0.16
+    image: mysql/mysql-server:8.0.16
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes:
@@ -30,7 +30,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app/frontend
-      - /app/frontend/node_modules
+      - ./frontend/node-modules:/app/frontend/node_modules:ro
     working_dir: /app/frontend/
 
 volumes:
