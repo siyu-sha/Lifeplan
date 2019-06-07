@@ -34,7 +34,7 @@ pipeline{
                     }
                     post{
                         always{
-                            sh "docker-compose -f docker-compose-CI.test.yml down --rmi local -v"
+                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
                         }
                     }
                 }
@@ -55,7 +55,7 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down --rmi local -v"
+            sh "docker-compose -f docker-compose-CI.yml down -v"
         }
     }
 }
