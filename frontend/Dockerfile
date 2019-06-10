@@ -1,10 +1,9 @@
-FROM node
+FROM node:alpine
 
-WORKDIR /app/frontend
 COPY ./package.json /app/frontend/package.json
 COPY ./package-lock.json /app/frontend/package-lock.json
-
-RUN npm install
+RUN cd /app/frontend; npm install
+WORKDIR /app/frontend
 
 EXPOSE 3000
 ENTRYPOINT npm start
