@@ -8,8 +8,9 @@ RUN apt-get update \
         mysql-client \
     && rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt /app/ndis_calculator/requirements.txt
 WORKDIR /app/ndis_calculator
-COPY . /app/ndis_calculator/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
+COPY . /app/ndis_calculator
 
 EXPOSE 8000
