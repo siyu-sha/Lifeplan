@@ -35,6 +35,6 @@ services:
       - npm-cache:/root/.npm
 
 volumes:
-  db-data: {}
+  db-data:
   npm-cache:
     external: true
