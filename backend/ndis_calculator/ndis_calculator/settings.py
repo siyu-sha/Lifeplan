@@ -82,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ndis_calculator.wsgi.application'
 
-AUTH_USER_MODEL = 'budgeting.CustomUser'
+AUTH_USER_MODEL = 'budgeting.Participant'
 
 APPEND_SLASH = False
 

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from budgeting.models import CustomUser
+from budgeting.models import Participant
 
 
 class AuthenticationApiTests(APITestCase):
@@ -35,8 +35,8 @@ class AuthenticationApiTests(APITestCase):
             }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(CustomUser.objects.count(), 1)
-        self.assertEqual(CustomUser.objects.get().email, 'ayaya@azurlane.com')
+        self.assertEqual(Participant.objects.count(), 1)
+        self.assertEqual(Participant.objects.get().email, 'ayaya@azurlane.com')
 
     def test_login(self):
         """

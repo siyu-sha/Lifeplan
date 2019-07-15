@@ -2,7 +2,7 @@ from django.test import TestCase
 
 import datetime as dt
 
-from budgeting.models import CustomUser
+from budgeting.models import Participant
 from budgeting.models import CategoryList
 from budgeting.models import RegistrationGroup
 from budgeting.models import SupportItemList
@@ -12,9 +12,9 @@ from budgeting.models import PlanContainsItems
 from budgeting.models import Goal
 
 
-class CustomUserTest(TestCase):
+class ParticipantTest(TestCase):
     @staticmethod
-    def create_CustomUser(username="test",
+    def create_Participant(username="test",
                           first_name="John",
                           last_name="Smith",
                           password="password123",
@@ -22,10 +22,10 @@ class CustomUserTest(TestCase):
                           postcode="3000",
                           birth_year="1945",
                           ):
-        if CustomUser.objects.filter(username="test").first():
-            return CustomUser.objects.first()
+        if Participant.objects.filter(username="test").first():
+            return Participant.objects.first()
         else:
-            return CustomUser.objects.create(username=username,
+            return Participant.objects.create(username=username,
                                              first_name=first_name,
                                              last_name=last_name,
                                              password=password,
@@ -34,9 +34,9 @@ class CustomUserTest(TestCase):
                                              birth_year=birth_year,
                                              )
 
-    def test_CustomUser(self):
-        cu = self.create_CustomUser()
-        self.assertTrue(isinstance(cu, CustomUser))
+    def test_Participant(self):
+        cu = self.create_Participant()
+        self.assertTrue(isinstance(cu, Participant))
         # self.assertEqual() - assert any custom methods we create work
 
 
@@ -151,7 +151,7 @@ class PlanTest(TestCase):
     def create_Plan(self,
                     start_date=dt.date(year=2018, month=6, day=1),
                     end_date=dt.date(year=2019, month=6, day=1),
-                    participant=CustomUserTest.create_CustomUser(),
+                    participant=ParticipantTest.create_Participant(),
                     goals=GoalTest.create_Goal(),
                     ):
         obj = Plan.objects.create(start_date=start_date,

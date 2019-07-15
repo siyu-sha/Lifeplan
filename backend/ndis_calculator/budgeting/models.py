@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from .validators import *
 # from django.utils import timezone
 
 
@@ -9,11 +10,15 @@ from ndis_calculator import settings
 # Create your models here.
 
 
-class CustomUser(AbstractUser):
+class Participant(AbstractUser):
     # add additional fields here
-    postcode = models.IntegerField()
-    birth_year = models.IntegerField()
+    email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    postcode = models.IntegerField(validators=[validate_postcode])
+    birth_year = models.IntegerField(validators=[validate_birth_year])
     created = models.DateTimeField(auto_now_add=True)
+
 
     class Meta:
         ordering = ('id',)

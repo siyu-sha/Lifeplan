@@ -1,12 +1,12 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from budgeting.models import CustomUser
+from budgeting.models import Participant
 
 
-class CustomUserSerializer(serializers.Serializer):
+class ParticipantSerializer(serializers.Serializer):
     username = serializers.CharField(write_only=True)
-    email = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
+    email = serializers.CharField(validators=[UniqueValidator(queryset=Participant.objects.all())])
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -15,9 +15,9 @@ class CustomUserSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """
-        Create and return a new `CustomUser` instance, given the validated data.
+        Create and return a new `Participant` instance, given the validated data.
         """
-        user = CustomUser.objects.create(
+        user = Participant.objects.create(
                 username=validated_data['username'],
                 email=validated_data['email'],
                 first_name=validated_data['first_name'],
@@ -30,7 +30,7 @@ class CustomUserSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `CustomUser` instance, given the validated data.
+        Update and return an existing `Participant` instance, given the validated data.
         """
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)

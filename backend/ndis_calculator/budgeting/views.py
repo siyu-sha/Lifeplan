@@ -8,8 +8,8 @@ from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import Participant
+from .serializers import ParticipantSerializer
 
 # Create your views here.
 
@@ -37,18 +37,16 @@ class Authentication(APIView):
     def register(request):
         if request.method == 'POST':
             request.data['username'] = request.data.get('email')
-            serializer = CustomUserSerializer(data=request.data)
+            serializer = ParticipantSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
-
-                user = CustomUser.objects.filter(email=request.data.get('email')).first()
+                user = serializer.save()
                 refresh = RefreshToken.for_user(user)
                 tokens = {
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                 }
 
-                return Response(tokens)
+                return Response({'id':user.id, 'tokens':tokens})
             return Response(serializer.errors)
 
 
@@ -61,7 +59,7 @@ class Participant(APIView):
     @csrf_exempt
     def id(request):
         if request.method == 'GET':
-            serializer = CustomUserSerializer(request.user)
+            serializer = ParticipantSerializer(request.user)
             data = serializer.data
             data['id'] = request.user.id
             return Response(data)
@@ -70,13 +68,13 @@ class Participant(APIView):
     @csrf_exempt
     def update(request, pk):
         try:
-            user = CustomUser.objects.get(pk=pk)
-        except CustomUser.DoesNotExist:
+            user = Participant.objects.get(pk=pk)
+        except Participant.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'PUT':
             request.data['username'] = request.data.get('email')
-            serializer = CustomUserSerializer(user, data=request.data, partial=True)
+            serializer = ParticipantSerializer(user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
