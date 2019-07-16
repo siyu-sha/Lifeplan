@@ -47,7 +47,7 @@ class Authentication(APIView):
                     'access': str(refresh.access_token),
                 }
                 return Response({'id':user.id, 'tokens':tokens}, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Participant(APIView):
