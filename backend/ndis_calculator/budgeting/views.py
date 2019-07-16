@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Participant
 from .serializers import ParticipantSerializer
+from rest_framework import status
 
 # Create your views here.
 
@@ -45,8 +46,7 @@ class Authentication(APIView):
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                 }
-
-                return Response({'id':user.id, 'tokens':tokens})
+                return Response({'id':user.id, 'tokens':tokens}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors)
 
 

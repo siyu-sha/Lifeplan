@@ -2,64 +2,133 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from budgeting.models import Participant
+from django.contrib.auth.hashers import check_password
+import datetime
+
+
 
 
 class AuthenticationApiTests(APITestCase):
-    refresh = ''
+    # refresh = ''
 
     def setUp(self):
+        # What does the below do?
         super(AuthenticationApiTests, self).setUp()
-        url = reverse('auth_register')
-        data = {
-                "email": "ayaya@azurlane.com",
-                "firstName": "IJN",
-                "lastName": "Ayanami",
-                "password": "DD45",
-                "postcode": 3000,
-                "birthYear": 1945
-            }
-        response = self.client.post(url, data, format='json')
+        self.stub_participant_data = {
+            "email": "example@example.com",
+            "password": "password123",
+            "firstName": "John",
+            "lastName": "Smith",
+            "postcode": 3000,
+            "birthYear": 2019
+        }
+
+        self.url_auth_register = reverse('auth_register')
+        self.url_auth_login = reverse('auth_login')
+        self.url_auth_refresh = reverse('auth_refresh')
+
+    # def setUp(self):
+    #     return
+        # super(AuthenticationApiTests, self).setUp()
+        # url = reverse('auth_register')
+        # data = {
+        #         "email": "ayaya@azurlane.com",
+        #         "firstName": "IJN",
+        #         "lastName": "Ayanami",
+        #         "password": "DD45",
+        #         "postcode": 3000,
+        #         "birthYear": 1945
+        #     }
+        # response = self.client.post(url, data, format='json')
+
+    def create_stub_participant(self):
+        return self.client.post(self.url_auth_register, self.stub_participant_data, format='json')
+
+    def assert_equal_participant(self, participant_data, participant):
+        participant = participant.__dict__
+        for key in participant_data:
+            if key == 'password':
+                self.assertTrue(check_password(participant_data[key], participant[key]))
+            elif key == 'firstName':
+                self.assertEqual(participant_data[key], participant["first_name"])
+            elif key == 'lastName':
+                self.assertEqual(participant_data[key], participant["last_name"])
+            elif key == 'birthYear':
+                self.assertEqual(participant_data[key], participant["birth_year"])
+            else:
+                self.assertEqual(participant_data[key], participant[key])
 
     def test_register(self):
         """
         Ensure we can register a new user.
         """
-        url = reverse('auth_register')
-        data = {
-                "email": "ayaya@azurlane.com",
-                "firstName": "IJN",
-                "lastName": "Ayanami",
-                "password": "DD45",
-                "postcode": 3000,
-                "birthYear": 1945
-            }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Participant.objects.count(), 1)
-        self.assertEqual(Participant.objects.get().email, 'ayaya@azurlane.com')
+        # url = reverse('auth_register')
+        # data = {
+        #         "email": "ayaya@azurlane.com",
+        #         "firstName": "IJN",
+        #         "lastName": "Ayanami",
+        #         "password": "DD45",
+        #         "postcode": 3000,
+        #         "birthYear": 1945
+        #     }
+        # response = self.client.post(url, data, format='json')
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertEqual(Participant.objects.count(), 1)
+        # self.assertEqual(Participant.objects.get().email, 'ayaya@azurlane.com')
+
+        response = self.create_stub_participant()
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('tokens', response.data)
+        participant = Participant.objects.get(id=response.data['id'])
+
+        self.assert_equal_participant(self.stub_participant_data, participant)
+
 
     def test_login(self):
         """
         Ensure we can login.
         """
-        url = reverse('auth_login')
+        # url = reverse('auth_login')
+        # data = {
+        #         "username": "ayaya@azurlane.com",
+        #         "password": "DD45",
+        #     }
+        # response = self.client.post(url, data, format='json')
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.__class__.refresh = response.json()['refresh']
+
+        self.create_stub_participant()
+
         data = {
-                "username": "ayaya@azurlane.com",
-                "password": "DD45",
-            }
-        response = self.client.post(url, data, format='json')
+            "username": self.stub_participant_data['email'],
+            "password": self.stub_participant_data['password'],
+        }
+        response = self.client.post(self.url_auth_login, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.__class__.refresh = response.json()['refresh']
+        self.assertIn('refresh', response.data)
+        self.assertIn('access', response.data)
+
+        # self.__class__.refresh = response.json()['refresh']
 
     def test_refresh(self):
         """
         Ensure we can refresh expired access tokens.
         """
-        url = reverse('auth_refresh')
+        # url = reverse('auth_refresh')
+        # data = {
+        #         "refresh": self.__class__.refresh
+        #     }
+        # response = self.client.post(url, data, format='json')
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.create_stub_participant()
+
         data = {
-                "refresh": self.__class__.refresh
-            }
-        response = self.client.post(url, data, format='json')
+            "refresh": response.data['tokens']['refresh']
+        }
+
+        response = self.client.post(self.url_auth_refresh, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 

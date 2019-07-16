@@ -28,7 +28,7 @@ class Goal(models.Model):
     description = models.TextField()
 
 
-# a static table stores all categories.
+# a static table stores all groups, e.g. Core.
 # Participants cannot manipulate data in this table, but they can retrieve data
 class CategoryList(models.Model):
     PURPOSE_CHOICES = (
