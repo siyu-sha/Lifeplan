@@ -30,8 +30,6 @@ class HelloView(APIView):
 
 class Authentication(APIView):
     permission_classes = (AllowAny,)
-    parser_classes = (CamelCaseJSONParser,)
-    renderer_classes = (CamelCaseJSONRenderer,)
 
     @api_view(['POST', ])
     @csrf_exempt
@@ -52,8 +50,6 @@ class Authentication(APIView):
 
 class Participant(APIView):
     permission_classes = (IsAuthenticated,)
-    parser_classes = (CamelCaseJSONParser,)
-    renderer_classes = (CamelCaseJSONRenderer,)
 
     @api_view(['GET', ])
     @csrf_exempt

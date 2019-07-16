@@ -4,6 +4,22 @@ from rest_framework.test import APITestCase
 from budgeting.models import Participant
 from django.contrib.auth.hashers import check_password
 import datetime
+import json
+
+
+URL_AUTH_REGISTER = reverse('auth_register')
+URL_AUTH_LOGIN = reverse('auth_login')
+URL_AUTH_REFRESH = reverse('auth_refresh')
+URL_PARTICIPANT_ID = reverse('participant_id')
+
+STUB_PARTICIPANT_DATA = {
+    "email": "example@example.com",
+    "password": "password123",
+    "firstName": "John",
+    "lastName": "Smith",
+    "postcode": 3000,
+    "birthYear": 2019
+}
 
 
 
@@ -14,18 +30,7 @@ class AuthenticationApiTests(APITestCase):
     def setUp(self):
         # What does the below do?
         super(AuthenticationApiTests, self).setUp()
-        self.stub_participant_data = {
-            "email": "example@example.com",
-            "password": "password123",
-            "firstName": "John",
-            "lastName": "Smith",
-            "postcode": 3000,
-            "birthYear": 2019
-        }
 
-        self.url_auth_register = reverse('auth_register')
-        self.url_auth_login = reverse('auth_login')
-        self.url_auth_refresh = reverse('auth_refresh')
 
     # def setUp(self):
     #     return
@@ -42,15 +47,16 @@ class AuthenticationApiTests(APITestCase):
         # response = self.client.post(url, data, format='json')
 
     def create_stub_participant(self):
-        return self.client.post(self.url_auth_register, self.stub_participant_data, format='json')
+        return self.client.post(URL_AUTH_REGISTER, STUB_PARTICIPANT_DATA, format='json')
 
     def create_participant(self, participant_data):
-        return self.client.post(self.url_auth_register, participant_data, format='json')
+        return self.client.post(URL_AUTH_REGISTER, participant_data, format='json')
 
     def assert_equal_participant(self, participant_data, participant):
         participant = participant.__dict__
         for key in participant_data:
             if key == 'password':
+                ## doesn't get checked due to serializer
                 self.assertTrue(check_password(participant_data[key], participant[key]))
             elif key == 'firstName':
                 self.assertEqual(participant_data[key], participant["first_name"])
@@ -94,7 +100,9 @@ class AuthenticationApiTests(APITestCase):
         self.assertIn('tokens', response.data)
         participant = Participant.objects.get(id=response.data['id'])
 
-        self.assert_equal_participant(self.stub_participant_data, participant)
+
+
+        self.assert_equal_participant(STUB_PARTICIPANT_DATA, participant)
 
 
     def test_login(self):
@@ -113,10 +121,10 @@ class AuthenticationApiTests(APITestCase):
         self.create_stub_participant()
 
         data = {
-            "username": self.stub_participant_data['email'],
-            "password": self.stub_participant_data['password'],
+            "username": STUB_PARTICIPANT_DATA['email'],
+            "password": STUB_PARTICIPANT_DATA['password'],
         }
-        response = self.client.post(self.url_auth_login, data, format='json')
+        response = self.client.post(URL_AUTH_LOGIN, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('refresh', response.data)
         self.assertIn('access', response.data)
@@ -140,7 +148,7 @@ class AuthenticationApiTests(APITestCase):
             "refresh": response.data['tokens']['refresh']
         }
 
-        response = self.client.post(self.url_auth_refresh, data, format='json')
+        response = self.client.post(URL_AUTH_REFRESH, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_register_existing_email(self):
@@ -156,7 +164,7 @@ class AuthenticationApiTests(APITestCase):
     def test_register_invalid_email(self):
         def code():
             user_data = {
-                **self.stub_participant_data,
+                **STUB_PARTICIPANT_DATA,
                 'email': 'invalid@a'
             }
 
@@ -167,9 +175,9 @@ class AuthenticationApiTests(APITestCase):
 
     def test_register_missing_fields(self):
         def code():
-            for key in self.stub_participant_data:
+            for key in STUB_PARTICIPANT_DATA:
                 participant_data = {
-                    **self.stub_participant_data,
+                    **STUB_PARTICIPANT_DATA,
                     key: ""
                 }
 
@@ -181,7 +189,7 @@ class AuthenticationApiTests(APITestCase):
     def test_register_invalid_birth_year(self):
         def too_low():
             participant_data = {
-                **self.stub_participant_data,
+                **STUB_PARTICIPANT_DATA,
                 'birth_year': 1799
             }
 
@@ -192,7 +200,7 @@ class AuthenticationApiTests(APITestCase):
 
         def too_high():
             participant_data = {
-                **self.stub_participant_data,
+                **STUB_PARTICIPANT_DATA,
                 'birth_year': datetime.datetime.now().year + 1
             }
 
@@ -202,43 +210,47 @@ class AuthenticationApiTests(APITestCase):
         self.assert_participant_not_created(too_high)
 
 
-# class ParticipantApiTests(APITestCase):
-#     access = ''
-#
-#     def setUp(self):
-#         super(ParticipantApiTests, self).setUp()
-#         url = reverse('auth_register')
-#         data = {
-#                 "email": "ayaya@azurlane.com",
-#                 "firstName": "IJN",
-#                 "lastName": "Ayanami",
-#                 "password": "DD45",
-#                 "postcode": 3000,
-#                 "birthYear": 1945
-#             }
-#         response = self.client.post(url, data, format='json')
-#
-#         url = reverse('auth_login')
-#         data = {
-#                 "username": "ayaya@azurlane.com",
-#                 "password": "DD45",
-#             }
-#         response = self.client.post(url, data, format='json')
-#         self.__class__.access = response.json()['access']
-#
-#     def test_participant_id(self):
-#         """
-#         Ensure we can get current participant's details.
-#         """
-#         url = reverse('participant_id')
-#         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.__class__.access)
-#         response = self.client.get(url, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertEqual(response.data, {
-#                 'email': 'ayaya@azurlane.com',
-#                 'first_name': 'IJN',
-#                 'last_name': 'Ayanami',
-#                 'postcode': 3000,
-#                 'birth_year': 1945,
-#                 'id': 4
-#             })
+class ParticipantApiTests(APITestCase):
+    access = ''
+
+    def setUp(self):
+        super(ParticipantApiTests, self).setUp()
+        # url = reverse('auth_register')
+        # STUB_PARTICIPANT_DATA = {
+        #         "email": "ayaya@azurlane.com",
+        #         "firstName": "IJN",
+        #         "lastName": "Ayanami",
+        #         "password": "DD45",
+        #         "postcode": 3000,
+        #         "birthYear": 1945
+        #     }
+        # response = self.client.post(url, data, format='json')
+        #
+        # url = reverse('auth_login')
+        # data = {
+        #         "username": "ayaya@azurlane.com",
+        #         "password": "DD45",
+        #     }
+        # response = self.client.post(url, data, format='json')
+        # self.__class__.access = response.json()['access']
+
+    def test_participant_id(self):
+        """
+        Ensure we can get current participant's details.
+        """
+        response = self.client.post(URL_AUTH_REGISTER, STUB_PARTICIPANT_DATA, format='json')
+
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['tokens']['access'])
+        participant_data = {
+            'id': response.data['id'],
+            **STUB_PARTICIPANT_DATA
+
+        }
+        participant_data.pop('password')
+        response = self.client.get(URL_PARTICIPANT_ID, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # render to camelCase JSON for easier comparison
+        response.render()
+
+        self.assertEqual(participant_data, json.loads(response.content))

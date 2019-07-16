@@ -7,14 +7,19 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Participant
-        fields = '__all__'
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode', )
+        read_only_fields = ('id',)
+        extra_kwargs = {
+            'username': {'write_only':True},
+            'password': {'write_only':True}
+        }
 
     def create(self, validated_data):
         """
         Create and return a new `User` instance, given the validated data.
         """
         user = Participant.objects.create(
-            username=validated_data['username'],
+            username=validated_data['email'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
