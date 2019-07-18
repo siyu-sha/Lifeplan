@@ -17,7 +17,7 @@ STUB_PARTICIPANT_DATA = {
     "password": "password123",
     "firstName": "John",
     "lastName": "Smith",
-    "postcode": 3000,
+    "postcode": '3000',
     "birthYear": 2019
 }
 

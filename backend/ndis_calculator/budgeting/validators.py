@@ -8,5 +8,5 @@ def validate_birth_year(birth_year):
         raise ValidationError('Invalid birth year')
 
 def validate_postcode(postcode):
-    if postcode < 100:
+    if int(postcode) < 200:
         raise ValidationError('Invalid postcode')
