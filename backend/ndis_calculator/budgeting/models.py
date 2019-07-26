@@ -66,7 +66,7 @@ class RegistrationGroup(models.Model):
 
 
 class Plan(models.Model):
-    participant = models.ForeignKey(settings.AUTH_USER_MODEL, null=true, on_delete=models.SET_NULL)
+    participant = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
 
     start_date = models.DateField()
     end_date = models.DateField()
@@ -85,8 +85,8 @@ class PlanGoal(models.Model):
     priority = models.IntegerField(default=0)
 
 class PlanCategory(models.Model):
-    models.ForeignKey(Plan, on_delete=models.CASCADE)
-    models.ForeignKey(SupportCategory, on_delete=models.PROTECT)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    support_category = models.ForeignKey(SupportCategory, on_delete=models.PROTECT)
 
     budget = models.DecimalField(max_digits=10, decimal_places=2)
 

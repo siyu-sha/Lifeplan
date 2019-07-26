@@ -11,7 +11,7 @@ class ParticipantCreationForm(UserCreationForm):
 
 
 class ParticipantChangeForm(UserChangeForm):
-st
+
     class Meta:
         model = Participant
         fields = ('email', 'password', 'first_name', 'last_name', 'postcode', 'birth_year')
