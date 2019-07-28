@@ -1,0 +1,40 @@
+openapi: 3.0.2
+
+info:
+  title: ndis_calculator
+  version: 1.0.0
+
+paths:
+  /support-groups:
+    get:
+      tags:
+        - support group
+        - support category
+      summary: Retrieves list of support groups and their support categories
+      description: Retrieves list of support groups and their support categories in database order
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportGroup"
+components:
+  schemas:
+    SupportGroup:
+      type: object
+      properties:
+        name:
+          type: string
+        supportCategories:
+          type: array
+          items:
+            type: string
+      example:
+        name: Capital
+        supportCategories:
+          items:
+            - Improved life choices
+            - Improved daily living skills
