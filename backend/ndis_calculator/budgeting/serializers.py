@@ -1,7 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from budgeting.models import Participant
+from budgeting.models import *
 
 class ParticipantSerializer(serializers.ModelSerializer):
 
@@ -67,3 +67,18 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #
 #         instance.save()
 #         return instance
+
+class SupportGroupSerializer(serializers.ModelSerializer):
+    support_categories = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = SupportGroup
+        fields = ['name', 'support_categories']
+
+# class SupportCategorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SupportCategory
+#         fields = ['name']
+#
+#     def __str__(self):
+#         return self.name

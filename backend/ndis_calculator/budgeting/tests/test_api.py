@@ -254,3 +254,12 @@ class ParticipantApiTests(APITestCase):
         response.render()
 
         self.assertEqual(participant_data, json.loads(response.content))
+
+class SupportGroupTests(APITestCase):
+
+    def setUp(self):
+        self.URL_SUPPORT_GROUP_LIST = reverse('support-group-list')
+
+    def test_support_group_list(self):
+        response = self.client.get(self.URL_SUPPORT_GROUP_LIST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

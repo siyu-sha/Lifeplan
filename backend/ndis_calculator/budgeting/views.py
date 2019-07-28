@@ -8,9 +8,10 @@ from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Participant
-from .serializers import ParticipantSerializer
-from rest_framework import status
+from .models import *
+from .serializers import *
+from rest_framework import status, viewsets
+
 
 # Create your views here.
 
@@ -75,3 +76,11 @@ class Participant(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors)
+
+class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all support groups and their support categories
+    """
+
+    queryset = SupportGroup.objects.all()
+    serializer_class = SupportGroupSerializer
