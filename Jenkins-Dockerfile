@@ -1,7 +1,7 @@
 FROM jenkins/jenkins:lts
 USER root
-RUN apt-get update
-RUN apt-get install \
+RUN apt-get -y update
+RUN apt-get -y install \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -12,4 +12,4 @@ RUN add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
-RUN apt-get install docker docker-compose 
+RUN apt-get -y install docker docker-compose 

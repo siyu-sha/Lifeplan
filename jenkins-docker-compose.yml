@@ -1,8 +1,10 @@
-version: "3.7"
+version: "3"
 
 services:
   jenkins5:
-    build: build Jenkins-Dockerfile
+    build:
+      context: ./
+      dockerfile: Jenkins-Dockerfile
     restart: always
     privileged: true
     volumes:
