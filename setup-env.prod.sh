@@ -1,7 +1,6 @@
 # Generate random ports for Django and React
-export DJANGO_PORT=$((($RANDOM % 999) + 8000))
-echo "django-port: $DJANGO_PORT"
-export REACT_PORT=$((($RANDOM % 999) + 3000))
+#Django ports are gone. Further refactoring will see docker-compose split into a base file and override set
+export REACT_PORT=80
 echo "react-port: $REACT_PORT"
 
 # Put the port settings in an .env file for Docker
