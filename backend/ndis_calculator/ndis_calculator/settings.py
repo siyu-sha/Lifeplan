@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Local
-    'budgeting.apps.BudgetingConfig',
+    'budgeting',
 ]
 
 MIDDLEWARE = [
