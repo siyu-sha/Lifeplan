@@ -24,11 +24,13 @@ class Participant(AbstractUser):
 class SupportGroup(models.Model):
     name = models.CharField(max_length=255)
 
+
 class SupportCategory(models.Model):
     support_group = models.ForeignKey(SupportGroup, on_delete=models.PROTECT)
 
     number = models.IntegerField(unique=True)
-    name= models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+
 
 class SupportItem(models.Model):
     EACH = 'EA'
@@ -60,6 +62,7 @@ class SupportItem(models.Model):
     price_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_very_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
+
 class RegistrationGroup(models.Model):
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
@@ -75,14 +78,17 @@ class Plan(models.Model):
     goals = models.ManyToManyField('Goal', through='PlanGoal')
     support_categories = models.ManyToManyField(SupportCategory, through='PlanCategory')
 
+
 class Goal(models.Model):
     description = models.TextField()
+
 
 class PlanGoal(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
 
     priority = models.IntegerField(default=0)
+
 
 class PlanCategory(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
