@@ -68,17 +68,16 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #         instance.save()
 #         return instance
 
+class SupportCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SupportCategory
+        fields = ['id', 'name']
+
 class SupportGroupSerializer(serializers.ModelSerializer):
-    support_categories = serializers.StringRelatedField(many=True)
+    support_categories = SupportCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = SupportGroup
         fields = ['name', 'support_categories']
 
-# class SupportCategorySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = SupportCategory
-#         fields = ['name']
-#
-#     def __str__(self):
-#         return self.name
+
