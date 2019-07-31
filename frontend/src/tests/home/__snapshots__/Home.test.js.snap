@@ -37,11 +37,12 @@ exports[`Test home rendering 1`] = `
                 className="MuiGrid-root MuiGrid-item"
               >
                 <div
-                  className="MuiPaper-root MuiPaper-elevation8 MuiPaper-rounded MuiCard-root"
+                  className="MuiPaper-root MuiPaper-elevation8 MuiCard-root MuiPaper-rounded"
                 >
                   <button
                     className="MuiButtonBase-root MuiCardActionArea-root makeStyles-planPageSelector-2 makeStyles-pageSelector-4"
                     onBlur={[Function]}
+                    onDragLeave={[Function]}
                     onFocus={[Function]}
                     onKeyDown={[Function]}
                     onKeyUp={[Function]}
@@ -73,12 +74,13 @@ exports[`Test home rendering 1`] = `
                 className="MuiGrid-root MuiGrid-item"
               >
                 <div
-                  className="MuiPaper-root MuiPaper-elevation8 MuiPaper-rounded MuiCard-root"
+                  className="MuiPaper-root MuiPaper-elevation8 MuiCard-root MuiPaper-rounded"
                   onClick={[Function]}
                 >
                   <button
                     className="MuiButtonBase-root MuiCardActionArea-root makeStyles-budgetPageSelector-3 makeStyles-pageSelector-4"
                     onBlur={[Function]}
+                    onDragLeave={[Function]}
                     onFocus={[Function]}
                     onKeyDown={[Function]}
                     onKeyUp={[Function]}

@@ -263,3 +263,8 @@ class SupportGroupTests(APITestCase):
     def test_support_group_list(self):
         response = self.client.get(self.URL_SUPPORT_GROUP_LIST)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for support_group in response.data:
+            #print(support_group)
+            for support_category in support_group['support_categories']:
+                self.assertIn('id', support_category)
+                self.assertIn('name', support_category)
