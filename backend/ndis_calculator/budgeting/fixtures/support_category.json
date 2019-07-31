@@ -1,0 +1,121 @@
+[
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 3,
+    "fields": {
+      "support_group": 1,
+      "number": 1,
+      "name": "Assistance with daily life (includes Supported Independent Living)"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 4,
+    "fields": { "support_group": 1, "number": 2, "name": "Transport" }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 5,
+    "fields": { "support_group": 1, "number": 3, "name": "Consumables" }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 6,
+    "fields": {
+      "support_group": 1,
+      "number": 4,
+      "name": "Assistance with social and community participation"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 7,
+    "fields": {
+      "support_group": 2,
+      "number": 5,
+      "name": "Assistive technology"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 8,
+    "fields": { "support_group": 2, "number": 6, "name": "Home modifications" }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 9,
+    "fields": {
+      "support_group": 2,
+      "number": 7,
+      "name": "Support Coordination"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 10,
+    "fields": {
+      "support_group": 2,
+      "number": 8,
+      "name": "Improved living arrangements"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 11,
+    "fields": {
+      "support_group": 2,
+      "number": 9,
+      "name": "Increased social and community participation"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 12,
+    "fields": {
+      "support_group": 2,
+      "number": 10,
+      "name": "Finding and keeping a job"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 13,
+    "fields": {
+      "support_group": 2,
+      "number": 11,
+      "name": "Improved relationships"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 14,
+    "fields": {
+      "support_group": 2,
+      "number": 12,
+      "name": "Improved health and wellbeing"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 15,
+    "fields": { "support_group": 2, "number": 13, "name": "Improved learning" }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 16,
+    "fields": {
+      "support_group": 3,
+      "number": 14,
+      "name": "Improved life choices "
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 17,
+    "fields": {
+      "support_group": 3,
+      "number": 15,
+      "name": "Improved daily living skills"
+    }
+  }
+]
