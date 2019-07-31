@@ -26,11 +26,14 @@ class SupportGroup(models.Model):
 
 
 class SupportCategory(models.Model):
-    support_group = models.ForeignKey(SupportGroup, on_delete=models.PROTECT)
+    support_group = models.ForeignKey(SupportGroup, related_name='support_categories', on_delete=models.PROTECT)
 
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
 
+
+    def __str__(self):
+        return self.name
 
 class SupportItem(models.Model):
     EACH = 'EA'
