@@ -72,9 +72,9 @@ pipeline{
     post{
         always{
             script{
-                if(${GIT_LOCAL_BRANCH} == 'develop'){
+                if(${env.BRANCH_NAME} == 'feature/xx/xx-CI-Improvements')
                     docker-compose -f docker-compose-CI.yml down -v
-                }
+                
             }
         }
     }
