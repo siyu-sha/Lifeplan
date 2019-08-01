@@ -72,8 +72,9 @@ pipeline{
     post{
         always{
             script{
-                if(${env.BRANCH_NAME} != 'feature/xx/xx-CI-Improvements')
+                if (${env.BRANCH_NAME} != 'feature/xx/xx-CI-Improvements') {
                     sh "docker-compose -f docker-compose-CI.yml down -v"
+                }
                 
             }
         }
