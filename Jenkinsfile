@@ -57,8 +57,8 @@ pipeline{
                 branch 'feature/xx/xx-CI-Improvements'
             }
             steps{
-                sh "docker-compose -f docker-compose-prod.yml down"
                 sh "./setup-env.dev.sh"
+                sh "docker-compose -f docker-compose-prod.yml down"
                 sh "docker-compose -f docker-compose-prod.yml build"
                 sh "docker-compose -f docker-compose-prod.yml up -d"
             }
