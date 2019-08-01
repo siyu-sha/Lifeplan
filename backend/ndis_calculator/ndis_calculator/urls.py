@@ -18,11 +18,17 @@ from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
 from budgeting import views
 
+support_group_list = views.SupportGroupViewSet.as_view({
+    'get': 'list'
+})
+
 api_patterns = [
     # JWT
     path('auth/login', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
     path('auth/refresh', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
     path('auth/register', views.Authentication.register, name='auth_register'),
+
+    path('support-groups', support_group_list, name='support-group-list'),
 
     path('participant/id', views.Participant.id, name='participant_id'),
     path('participant/<int:pk>', views.Participant.update, name='participant_update'),

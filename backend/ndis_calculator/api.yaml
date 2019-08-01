@@ -1,0 +1,206 @@
+openapi: 3.0.2
+
+info:
+  title: ndis_calculator
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server (local)
+
+paths:
+  /participants/{participantID}/plans:
+    get:
+      tags:
+        - plan
+      summary: Retrieve list of all plans of a specific participant
+      description: Retrieve list of all plans of a specific participant, both generated and non-generated
+      parameters:
+        - $ref: "#/components/parameters/ParticipantID"
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Plan"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+
+    post:
+      tags:
+        - plan
+      summary: Create a plan based on an existing plan
+      description: Create a plan based on an existing plan of a specific participant, labeled non-generated in the backend
+      parameters:
+        - $ref: "#/components/parameters/ParticipantID"
+      responses:
+        "201":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: plan id
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+
+  /registration-groups:
+    get:
+      tags:
+        - registration group
+      summary: Retrieves list of registration groups
+      description: Retrieves all registration groups
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegistrationGroup"
+  /support-groups:
+    get:
+      tags:
+        - support group
+        - support category
+      summary: Retrieves list of support groups and their support categories
+      description: Retrieves list of support groups and their support categories in database order
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportGroup"
+  /support-items:
+    get:
+      tags:
+        - support item
+      summary: Retrieves list of support items
+      description: Retrieves list of support items based on filter. The backend will retrieve the appropriate price based on the postcode.
+      parameters:
+        - name: birth-year
+          in: query
+          schema:
+            type: integer
+          required: true
+        - name: postcode
+          in: query
+          schema:
+            type: integer
+          required: true
+        - name: registration-group-id
+          in: query
+          schema:
+            type: integer
+        - name: support-category-id
+          in: query
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportItem"
+
+components:
+  schemas:
+    SupportGroup:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Capital"
+        supportCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupportCategory"
+
+    SupportCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 16
+        name:
+          type: string
+          example: Improved life choices
+
+    SupportItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 717
+        number:
+          type: string
+          example: "15_001_0118_1_3"
+        name:
+          type: string
+          example: Capacity Building Supports For Early Childhood Interventions - Psychology
+        description:
+          type: string
+          example: Capacity building supports, including key worker, to assist a child with developmental delay and/or disability and their family/carers in home, community and early childhood education settings, to work towards increased functional independence and social participation. To be delivered by a Psychologist.
+        unit:
+          type: string
+          example: H
+        price:
+          type: number
+          example: 243.83
+
+    RegistrationGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 41
+        name:
+          type: string
+          example: "Early Intervention Supports For Early Childhood"
+
+    Plan:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        startDate:
+          type: string
+          example: 01/01/2019
+        endDate:
+          type: string
+          example: 02/01/2019
+        generated:
+          type: boolean
+          example: false
+
+  responses:
+    Unauthenticated:
+      description: Unauthenticated
+    Unauthorised:
+      description: Unauthorised to access this resource
+
+  parameters:
+    ParticipantID:
+      name: participantID
+      in: path
+      description: participant ID
+      required: true
+      schema:
+        type: integer
