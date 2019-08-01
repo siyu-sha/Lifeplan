@@ -41,10 +41,26 @@ pipeline{
             }
         }
         stage("Setup Env Vars, Build and Run New Images"){
+            when {
+                not {
+                    branch 'feature/xx/xx-CI-Improvements'
+                }
+            }
             steps{
                 sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
+            }
+        }
+        stage("deploy to dev"){
+            when{
+                branch 'feature/xx/xx-CI-Improvements'
+            }
+            steps{
+                sh "docker-compose -f docker-compose-prod.yml down"
+                sh "./setup-env.dev.sh"
+                sh "docker-compose -f docker-compose-prod.yml build"
+                sh "docker-compose -f docker-compose-prod.yml up -d"
             }
         }
         stage("Run Health Check Script"){
@@ -55,7 +71,11 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down -v"
+            script{
+                if(${GIT_LOCAL_BRANCH} == 'develop'){
+                    docker-compose -f docker-compose-CI.yml down -v
+                }
+            }
         }
     }
 }
