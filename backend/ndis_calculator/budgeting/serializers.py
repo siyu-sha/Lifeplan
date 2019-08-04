@@ -81,3 +81,37 @@ class SupportGroupSerializer(serializers.ModelSerializer):
         fields = ['name', 'support_categories']
 
 
+class RegistrationGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegistrationGroup
+        fields = ('id','number', 'name')
+
+        def create(self, validated_data):
+            group = RegistrationGroup.objects.create(
+                number=validated_data['number'],
+                name=validated_data['name']
+            )
+            return group
+
+class SupportItemSerializer(serializers.ModelSerializer):
+    support_category = SupportCategorySerializer(many=False, read_only=True)
+    registration_group =RegistrationGroupSerializer(many=False, read_only=True)
+    class Meta:
+        model = SupportItem
+        fields = ('id','support_category','registration_group','name', 'number', 'description','unit','price_NA_SA_TAS_WA','price_ACT_NSW_QLD_VIC','price_national','price_remote','price_very_remote')
+
+    def create(self, validated_data):
+        item = SupportItem.objects.create(
+            support_category=validated_data['support_category'],
+            registration_group = validated_data['registration_group'],
+            name = validated_data['name'],
+            number = validated_data['number'],
+            description = validated_data['description'],
+            unit = validated_data['unit'],
+            price_NA_SA_TAS_WA = validated_data['price_NA_SA_TAS_WA'],
+            price_ACT_NSW_QLD_VIC = validated_data['price_ACT_NSW_QLD_VIC'],
+            price_national = validated_data['price_national'],
+            price_remote = validated_data['price_remote'],
+            price_very_remote = validated_data['price_very_remote']
+        )
+        return item

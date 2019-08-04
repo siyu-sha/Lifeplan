@@ -84,3 +84,37 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SupportGroup.objects.all()
     serializer_class = SupportGroupSerializer
+
+class SupportItem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @api_view(['GET', ])
+    @csrf_exempt
+    def getList(request):
+        if request.method == 'GET':
+            birth_year=request.GET.get('birth-year')
+            postcode=request.GET.get('postcode')
+            registration_group_id = request.GET.get('registration-grou-id',default='-1')
+            support_category_id = request.GET.get('support-category-id')
+            items=SupportItem.objects.all()
+            results=[]
+            if registration_group_id=='-1':
+                for item in items:
+                    if item.support_category.id==support_category_id:
+                        results.append(item)
+            else:
+                for item in items:
+                    if item.support_category.id==support_category_id and item.registration_group.id==registration_group_id:
+                        results.append(item)
+            tokens=[]
+            for item in results:
+                token={}
+                token['id']=item.id
+                token['number']=item.number
+                token['name']=item.name
+                token['description']=item.description
+                token['unit']=item.unit
+                #this step needs improvement for deciding the correct type of price
+                token['price']=item.price_remote
+                tokens.append(token)
+            return Response(tokens,status=status.HTTP_200_OK)

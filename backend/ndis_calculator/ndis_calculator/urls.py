@@ -32,6 +32,7 @@ api_patterns = [
 
     path('participant/id', views.Participant.id, name='participant_id'),
     path('participant/<int:pk>', views.Participant.update, name='participant_update'),
+    path('support-items', views.SupportItem.getList, name='support_items_list'),
 ]
 
 urlpatterns = [
