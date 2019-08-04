@@ -248,8 +248,8 @@ class FormPersonalDetails extends React.Component {
 
   //  adds up the total of a given budget section
   addTotal(categories, new_amount, changed) {
-    var total = 0;
-    for (var i = 0; i < categories.length; i++) {
+    let total = 0;
+    for (let i = 0; i < categories.length; i++) {
       if (categories[i] === changed) {
         total += new_amount;
       } else if (this.state[categories[i]] !== "") {
