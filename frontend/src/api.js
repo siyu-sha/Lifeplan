@@ -5,9 +5,10 @@ axios.defaults.baseURL =
     ? "http://localhost:8000/api/v1/"
     : "http://localhost:8000/api/v1/";
 
-const setToken = () => {
-  axios.defaults.headers.common["Authorization"] =
-    "Bearer " + localStorage.getItem("access");
+const setToken = token => {
+  if (token !== null) {
+    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+  }
 };
 
 const Auth = {
@@ -21,4 +22,9 @@ const Auth = {
   register: request => {
     axios.post("auth/register", { ...request });
   }
+};
+
+export default {
+  Auth,
+  setToken
 };
