@@ -114,7 +114,15 @@ class SupportItem(APIView):
                 token['name']=item.name
                 token['description']=item.description
                 token['unit']=item.unit
-                #this step needs improvement for deciding the correct type of price
-                token['price']=item.price_remote
+                if postcode[0]==0 or postcode[0]==5 or postcode[0]==6 or postcode[0]==7:
+                    if item.price_NA_SA_TAS_WA is not None:
+                        token['price'] = item.price_NA_SA_TAS_WA
+                    else:
+                        token['price'] = item.price_national
+                else:
+                    if item.price_ACT_NSW_QLD_VIC is not None:
+                         token['price'] = item.price_ACT_NSW_QLD_VIC
+                    else:
+                        token['price'] = item.price_national
                 tokens.append(token)
             return Response(tokens,status=status.HTTP_200_OK)
