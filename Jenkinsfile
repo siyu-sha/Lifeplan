@@ -11,13 +11,13 @@ pipeline{
             parallel{
                 stage("Frontend Tests"){
                     agent{
-                        docker{
-                            image 'node'
+                        dockerfile{
+                            dir 'frontend'
+                            filename 'Dockerfile'
                             args '-v npm-cache:/root/.npm -e CI=true'
                         }
                     }
                     steps {
-                        sh "npm --prefix frontend/ --verbose install"
                         sh "npm --prefix frontend/ test --exit"
                     }
                 }

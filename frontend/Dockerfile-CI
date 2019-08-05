@@ -1,3 +1,4 @@
+# Deprecated - 5/8/19
 FROM node:alpine
 
 WORKDIR /app/frontend
