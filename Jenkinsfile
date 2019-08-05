@@ -14,7 +14,7 @@ pipeline{
                         dockerfile{
                             dir 'frontend'
                             filename 'Dockerfile'
-                            args '-v npm-cache:/root/.npm -e CI=true'
+                            args '-e CI=true'
                         }
                     }
                     steps {

@@ -6,4 +6,4 @@ RUN cd /app/frontend; npm install
 WORKDIR /app/frontend
 
 EXPOSE 3000
-COMMAND npm start
+CMD npm start
