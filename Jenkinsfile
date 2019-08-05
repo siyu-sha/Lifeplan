@@ -43,7 +43,7 @@ pipeline{
         stage("Setup Env Vars, Build and Run New Images"){
             when {
                 not {
-                    branch 'feature/xx/xx-CI-Improvements'
+                    branch 'develop'
                 }
             }
             steps{
@@ -52,9 +52,9 @@ pipeline{
                 sh "docker-compose -f docker-compose-CI.yml up -d"
             }
         }
-        stage("deploy to dev"){
+        stage("Deploy to Dev Environment"){
             when{
-                branch 'feature/xx/xx-CI-Improvements'
+                branch 'develop'
             }
             steps{
                 sh "./setup-env.dev.sh"
@@ -72,7 +72,7 @@ pipeline{
     post{
         always{
             script{
-                if (env.BRANCH_NAME != 'feature/xx/xx-CI-Improvements') {
+                if (env.BRANCH_NAME != 'develop') {
                     sh "docker-compose -f docker-compose-CI.yml down -v"
                 }
                 
