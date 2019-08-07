@@ -18,6 +18,7 @@ pipeline{
                         }
                     }
                     steps {
+                        sh "cat package.json"
                         sh "npm list -g"
                         sh "npm --prefix frontend/ test --exit"
                     }
