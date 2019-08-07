@@ -33,3 +33,4 @@ then
 else
     echo "React Health Check returned HTTP Response 200"
 fi
+echo "Health Check Completed"
