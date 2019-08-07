@@ -14,10 +14,11 @@ pipeline{
                         dockerfile{
                             dir 'frontend'
                             filename 'Dockerfile'
-                            args '-e CI=true'
+                            args '-v ./frontend:/app/frontend -e CI=true'
                         }
                     }
                     steps {
+                        sh "ls -la" 
                         sh "cat package.json"
                         sh "npm list -g"
                         sh "npm --prefix frontend/ test --exit"
