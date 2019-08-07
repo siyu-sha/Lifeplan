@@ -78,8 +78,7 @@ pipeline{
             script{
                 if (env.BRANCH_NAME != 'develop') {
                     sh "docker-compose -f docker-compose-CI.yml down -v"
-                }
-                
+                }       
             }
         }
     }
