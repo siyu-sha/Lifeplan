@@ -19,7 +19,7 @@ pipeline{
                     }
                     steps {
                         sh "ls -la" 
-                        sh "cat package.json"
+                        sh "cat frontend/package.json"
                         sh "npm list -g"
                         sh "npm --prefix frontend/ test --exit"
                     }
