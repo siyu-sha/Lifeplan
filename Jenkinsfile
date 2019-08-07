@@ -13,8 +13,8 @@ pipeline{
                     agent{
                         dockerfile{
                             dir 'frontend'
-                            filename 'Dockerfile'
-                            args '-v ./frontend:/app/frontend -e CI=true'
+                            filename 'Dockerfile-CI'
+                            args '-e CI=true'
                         }
                     }
                     steps {
