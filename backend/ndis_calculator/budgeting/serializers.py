@@ -3,15 +3,15 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from budgeting.models import *
 
-class ParticipantSerializer(serializers.ModelSerializer):
 
+class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode', )
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode',)
         read_only_fields = ('id',)
         extra_kwargs = {
-            'username': {'write_only':True},
-            'password': {'write_only':True}
+            'username': {'write_only': True},
+            'password': {'write_only': True}
         }
 
     def create(self, validated_data):
@@ -28,6 +28,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
             birth_year=validated_data['birth_year']
         )
         return user
+
+
 #
 # class ParticipantSerializer(serializers.Serializer):
 #     username = serializers.CharField(write_only=True)
@@ -73,6 +75,7 @@ class SupportCategorySerializer(serializers.ModelSerializer):
         model = SupportCategory
         fields = ['id', 'name']
 
+
 class SupportGroupSerializer(serializers.ModelSerializer):
     support_categories = SupportCategorySerializer(many=True, read_only=True)
 
@@ -84,7 +87,7 @@ class SupportGroupSerializer(serializers.ModelSerializer):
 class RegistrationGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationGroup
-        fields = ('id','number', 'name')
+        fields = ('id', 'number', 'name')
 
         def create(self, validated_data):
             group = RegistrationGroup.objects.create(
@@ -93,25 +96,29 @@ class RegistrationGroupSerializer(serializers.ModelSerializer):
             )
             return group
 
+
 class SupportItemSerializer(serializers.ModelSerializer):
     support_category = SupportCategorySerializer(many=False, read_only=True)
-    registration_group =RegistrationGroupSerializer(many=False, read_only=True)
+    registration_group = RegistrationGroupSerializer(many=False, read_only=True)
+
     class Meta:
         model = SupportItem
-        fields = ('id','support_category','registration_group','name', 'number', 'description','unit','price_NA_SA_TAS_WA','price_ACT_NSW_QLD_VIC','price_national','price_remote','price_very_remote')
+        fields = (
+        'id', 'support_category', 'registration_group', 'name', 'number', 'description', 'unit', 'price_NA_SA_TAS_WA',
+        'price_ACT_NSW_QLD_VIC', 'price_national', 'price_remote', 'price_very_remote')
 
     def create(self, validated_data):
         item = SupportItem.objects.create(
             support_category=validated_data['support_category'],
-            registration_group = validated_data['registration_group'],
-            name = validated_data['name'],
-            number = validated_data['number'],
-            description = validated_data['description'],
-            unit = validated_data['unit'],
-            price_NA_SA_TAS_WA = validated_data['price_NA_SA_TAS_WA'],
-            price_ACT_NSW_QLD_VIC = validated_data['price_ACT_NSW_QLD_VIC'],
-            price_national = validated_data['price_national'],
-            price_remote = validated_data['price_remote'],
-            price_very_remote = validated_data['price_very_remote']
+            registration_group=validated_data['registration_group'],
+            name=validated_data['name'],
+            number=validated_data['number'],
+            description=validated_data['description'],
+            unit=validated_data['unit'],
+            price_NA_SA_TAS_WA=validated_data['price_NA_SA_TAS_WA'],
+            price_ACT_NSW_QLD_VIC=validated_data['price_ACT_NSW_QLD_VIC'],
+            price_national=validated_data['price_national'],
+            price_remote=validated_data['price_remote'],
+            price_very_remote=validated_data['price_very_remote']
         )
         return item

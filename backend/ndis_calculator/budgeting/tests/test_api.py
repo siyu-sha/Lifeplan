@@ -6,7 +6,6 @@ from django.contrib.auth.hashers import check_password
 import datetime
 import json
 
-
 URL_AUTH_REGISTER = reverse('auth_register')
 URL_AUTH_LOGIN = reverse('auth_login')
 URL_AUTH_REFRESH = reverse('auth_refresh')
@@ -22,8 +21,6 @@ STUB_PARTICIPANT_DATA = {
 }
 
 
-
-
 class AuthenticationApiTests(APITestCase):
     # refresh = ''
 
@@ -31,20 +28,19 @@ class AuthenticationApiTests(APITestCase):
         # What does the below do?
         super(AuthenticationApiTests, self).setUp()
 
-
     # def setUp(self):
     #     return
-        # super(AuthenticationApiTests, self).setUp()
-        # url = reverse('auth_register')
-        # data = {
-        #         "email": "ayaya@azurlane.com",
-        #         "firstName": "IJN",
-        #         "lastName": "Ayanami",
-        #         "password": "DD45",
-        #         "postcode": 3000,
-        #         "birthYear": 1945
-        #     }
-        # response = self.client.post(url, data, format='json')
+    # super(AuthenticationApiTests, self).setUp()
+    # url = reverse('auth_register')
+    # data = {
+    #         "email": "ayaya@azurlane.com",
+    #         "firstName": "IJN",
+    #         "lastName": "Ayanami",
+    #         "password": "DD45",
+    #         "postcode": 3000,
+    #         "birthYear": 1945
+    #     }
+    # response = self.client.post(url, data, format='json')
 
     def create_stub_participant(self):
         return self.client.post(URL_AUTH_REGISTER, STUB_PARTICIPANT_DATA, format='json')
@@ -100,10 +96,7 @@ class AuthenticationApiTests(APITestCase):
         self.assertIn('tokens', response.data)
         participant = Participant.objects.get(id=response.data['id'])
 
-
-
         self.assert_equal_participant(STUB_PARTICIPANT_DATA, participant)
-
 
     def test_login(self):
         """
@@ -255,6 +248,7 @@ class ParticipantApiTests(APITestCase):
 
         self.assertEqual(participant_data, json.loads(response.content))
 
+
 class SupportGroupTests(APITestCase):
 
     def setUp(self):
@@ -264,16 +258,20 @@ class SupportGroupTests(APITestCase):
         response = self.client.get(self.URL_SUPPORT_GROUP_LIST)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for support_group in response.data:
-            #print(support_group)
+            # print(support_group)
             for support_category in support_group['support_categories']:
                 self.assertIn('id', support_category)
                 self.assertIn('name', support_category)
 
+
 class SupportItemTests(APITestCase):
 
     def test_support_item_list(self):
-        test_data=[{'id':204, 'number': '03_900100155_0130_1_1','name': 'Assistance Dog (Including Guide Dog) Ongoing Costs',
-                    'description': 'Assistance dog (including guide dog) ongoing costs',
-                    'unit': 'MON','price':222.00}]
-        response=self.client.get('/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5/',data=test_data);
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        test_data = [
+            {'id': 204, 'number': '03_900100155_0130_1_1', 'name': 'Assistance Dog (Including Guide Dog) Ongoing Costs',
+             'description': 'Assistance dog (including guide dog) ongoing costs',
+             'unit': 'MON', 'price': 222.00}]
+        response = self.client.get(
+            '/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5/',
+            data=test_data);
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

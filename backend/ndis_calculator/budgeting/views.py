@@ -45,7 +45,7 @@ class Authentication(APIView):
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
                 }
-                return Response({'id':user.id, 'tokens':tokens}, status=status.HTTP_201_CREATED)
+                return Response({'id': user.id, 'tokens': tokens}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -77,6 +77,7 @@ class Participant(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors)
 
+
 class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List all support groups and their support categories
@@ -85,6 +86,7 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SupportGroup.objects.all()
     serializer_class = SupportGroupSerializer
 
+
 class SupportItem(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -92,31 +94,32 @@ class SupportItem(APIView):
     @csrf_exempt
     def getList(request):
         if request.method == 'GET':
-            birth_year=request.GET.get('birth-year')
-            postcode=request.GET.get('postcode')
-            registration_group_id = request.GET.get('registration-grou-id',default='-1')
+            birth_year = request.GET.get('birth-year')
+            postcode = request.GET.get('postcode')
+            registration_group_id = request.GET.get('registration-grou-id', default='-1')
             support_category_id = request.GET.get('support-category-id')
-            if registration_group_id=='-1':
+            if registration_group_id == '-1':
                 items = SupportItem.objects.filter(support_category=support_category_id)
             else:
-                items = SupportItem.objects.filter(support_category=support_category_id,registration_group=registration_group_id)
-            tokens=[]
+                items = SupportItem.objects.filter(support_category=support_category_id,
+                                                   registration_group=registration_group_id)
+            tokens = []
             for item in items:
-                token={}
-                token['id']=item.id
-                token['number']=item.number
-                token['name']=item.name
-                token['description']=item.description
-                token['unit']=item.unit
-                if postcode[0]==0 or postcode[0]==5 or postcode[0]==6 or postcode[0]==7:
+                token = {}
+                token['id'] = item.id
+                token['number'] = item.number
+                token['name'] = item.name
+                token['description'] = item.description
+                token['unit'] = item.unit
+                if postcode[0] == 0 or postcode[0] == 5 or postcode[0] == 6 or postcode[0] == 7:
                     if item.price_NA_SA_TAS_WA is not None:
                         token['price'] = item.price_NA_SA_TAS_WA
                     else:
                         token['price'] = item.price_national
                 else:
                     if item.price_ACT_NSW_QLD_VIC is not None:
-                         token['price'] = item.price_ACT_NSW_QLD_VIC
+                        token['price'] = item.price_ACT_NSW_QLD_VIC
                     else:
                         token['price'] = item.price_national
                 tokens.append(token)
-            return Response(tokens,status=status.HTTP_200_OK)
+            return Response(tokens, status=status.HTTP_200_OK)
