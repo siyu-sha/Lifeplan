@@ -12,19 +12,33 @@ const setToken = token => {
 };
 
 const Auth = {
-  login: request => {
+  login: ({ email, password }) => {
     axios.post("auth/login", {
-      username: request.email,
-      password: request.password
+      username: email,
+      password
     });
   },
   // needs email, password, firstName, lastName, postcode, birthYear
-  register: request => {
-    axios.post("auth/register", { ...request });
+  register: ({ email, password, firstName, lastName, postcode, birthYear }) => {
+    axios.post("auth/register", { ...arguments[0] });
+  }
+};
+
+const SupportItem = {
+  get: ({
+    birthYear,
+    postcode,
+    supportCategoryID,
+    registrationGroupID = null
+  }) => {
+    axios.get(
+      `support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
+    );
   }
 };
 
 export default {
   Auth,
+  SupportItem,
   setToken
 };
