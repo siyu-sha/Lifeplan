@@ -52,7 +52,7 @@ class AuthenticationApiTests(APITestCase):
         participant = participant.__dict__
         for key in participant_data:
             if key == 'password':
-                ## doesn't get checked due to serializer
+                # doesn't get checked due to serializer
                 self.assertTrue(check_password(participant_data[key], participant[key]))
             elif key == 'firstName':
                 self.assertEqual(participant_data[key], participant["first_name"])
@@ -272,6 +272,6 @@ class SupportItemTests(APITestCase):
              'description': 'Assistance dog (including guide dog) ongoing costs',
              'unit': 'MON', 'price': 222.00}]
         response = self.client.get(
-            'http://localhost:8000/api/v1/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5');
+            'http://localhost:8000/api/v1/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
         self.assertEqual(response.content, test_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

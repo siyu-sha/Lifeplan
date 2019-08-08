@@ -89,12 +89,12 @@ class RegistrationGroupSerializer(serializers.ModelSerializer):
         model = RegistrationGroup
         fields = ('id', 'number', 'name')
 
-        def create(self, validated_data):
-            group = RegistrationGroup.objects.create(
-                number=validated_data['number'],
-                name=validated_data['name']
-            )
-            return group
+    def create(self, validated_data):
+        group = RegistrationGroup.objects.create(
+            number=validated_data['number'],
+            name=validated_data['name']
+        )
+        return group
 
 
 class SupportItemSerializer(serializers.ModelSerializer):
@@ -104,8 +104,10 @@ class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItem
         fields = (
-        'id', 'support_category', 'registration_group', 'name', 'number', 'description', 'unit', 'price_NA_SA_TAS_WA',
-        'price_ACT_NSW_QLD_VIC', 'price_national', 'price_remote', 'price_very_remote')
+            'id', 'support_category', 'registration_group', 'name', 'number',
+            'description', 'unit', 'price_NA_SA_TAS_WA', 'price_ACT_NSW_QLD_VIC',
+            'price_national', 'price_remote', 'price_very_remote'
+        )
 
     def create(self, validated_data):
         item = SupportItem.objects.create(
