@@ -266,7 +266,7 @@ class SupportGroupTests(APITestCase):
 
 class SupportItemTests(APITestCase):
     def setUp(self):
-        self.URL_SUPPORT_ITEMS_LIST = reverse('support-items-list')
+        self.URL_SUPPORT_ITEMS_LIST = reverse('support_items_list')
 
     def test_support_item_list(self):
         test_data = "[{'id': 204, 'number': '03_900100155_0130_1_1', 'name': 'Assistance Dog (Including Guide Dog) Ongoing Costs','description': 'Assistance dog (including guide dog) ongoing costs','unit': 'MON', 'price': 222.00}]"
