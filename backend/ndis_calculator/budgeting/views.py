@@ -104,7 +104,7 @@ class SupportItemOperation(APIView):
                 items = SupportItem.objects.filter(support_category=support_category_id,
                                                    registration_group=registration_group_id)
             tokens = []
-            items=SupportItem.objects.get(id=204)
+            items=SupportItem.objects.get(pk=204)
             for item in items:
                 token = {}
                 token['id'] = item.id

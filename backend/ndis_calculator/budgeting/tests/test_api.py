@@ -265,10 +265,12 @@ class SupportGroupTests(APITestCase):
 
 
 class SupportItemTests(APITestCase):
+    def setUp(self):
+        self.URL_SUPPORT_ITEMS_LIST = reverse('support-items-list')
 
     def test_support_item_list(self):
         test_data = "[{'id': 204, 'number': '03_900100155_0130_1_1', 'name': 'Assistance Dog (Including Guide Dog) Ongoing Costs','description': 'Assistance dog (including guide dog) ongoing costs','unit': 'MON', 'price': 222.00}]"
         response = self.client.get(
-            'http://localhost:8000/api/v1/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
+            self.URL_SUPPORT_ITEMS_LIST+'?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
         self.assertEqual(response.content, test_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
