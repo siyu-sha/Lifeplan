@@ -272,6 +272,6 @@ class SupportItemTests(APITestCase):
              'description': 'Assistance dog (including guide dog) ongoing costs',
              'unit': 'MON', 'price': 222.00}]
         response = self.client.get(
-            '/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5/',
-            data=test_data);
+            '/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5/');
+        self.assertEqual(response.content, test_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
