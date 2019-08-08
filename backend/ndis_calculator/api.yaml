@@ -70,7 +70,6 @@ paths:
     get:
       tags:
         - support group
-        - support category
       summary: Retrieves list of support groups and their support categories
       description: Retrieves list of support groups and their support categories in database order
       responses:
