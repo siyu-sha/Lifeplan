@@ -1,5 +1,6 @@
 # Generate random ports for Django and React
-#Django ports are gone. Further refactoring will see docker-compose split into a base file and override set
+# Django ports are gone. Further refactoring will see docker-compose split into a base file and override set.
+# Not run until AWS deployment is organised, and a port decided
 export REACT_PORT=80
 echo "react-port: $REACT_PORT"
 

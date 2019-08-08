@@ -1,6 +1,6 @@
 # Generate random ports for Django and React
-export DEPL_ENV="DEV"
-echop "environment: $DEPL_ENV"
+export DEPLOYMENT_ENV="DEV"
+echo "environment: $DEPLOYMENT_ENV"
 export DJANGO_PORT=8000
 echo "django-port: $DJANGO_PORT"
 export REACT_PORT=3000
