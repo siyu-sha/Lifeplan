@@ -21,3 +21,8 @@ to remove containers and clean up.
 ## Settings
 
 Django settings can be found in backend/ndis_calculator/ndis_calculator/settings.py. We will expand these settings to encompass production-ready settings. Only settings appropriate for development will be committed to the repository, production-ready will remain private.
+
+## Deployment
+
+If the develop branch is currently building, the app will be deployed at lachieblack.com:3000/8000 (Frontend/backend)
+Please note HTTPS is not currently enabled and as such, only enter dummy data over the internet!
