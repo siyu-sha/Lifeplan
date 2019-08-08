@@ -270,9 +270,10 @@ class SupportGroupTests(APITestCase):
                 self.assertIn('name', support_category)
 
 class SupportItemTests(APITestCase):
+
     def test_support_item_list(self):
         test_data=[{'id':204, 'number': '03_900100155_0130_1_1','name': 'Assistance Dog (Including Guide Dog) Ongoing Costs',
                     'description': 'Assistance dog (including guide dog) ongoing costs',
                     'unit': 'MON','price':222.00}]
-        response=self.client.get('/support-items/',{'birth-year':1996,'postcode':3051,'registration-group-id':22,'support-category-id':5},data=test_data);
+        response=self.client.get('/support-items?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5/',data=test_data);
         self.assertEqual(response.status_code,status.HTTP_200_OK)

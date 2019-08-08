@@ -96,12 +96,10 @@ class SupportItem(APIView):
             postcode=request.GET.get('postcode')
             registration_group_id = request.GET.get('registration-grou-id',default='-1')
             support_category_id = request.GET.get('support-category-id')
-            category=SupportCategory.objects.get(id=support_category_id)
             if registration_group_id=='-1':
-                items = SupportItem.objects.filter(support_category=category)
+                items = SupportItem.objects.filter(support_category=support_category_id)
             else:
-                group=RegistrationGroup.objects.get(id=registration_group_id)
-                items = SupportItem.objects.filter(support_category=category,registration_group=group)
+                items = SupportItem.objects.filter(support_category=support_category_id,registration_group=registration_group_id)
             tokens=[]
             for item in items:
                 token={}
