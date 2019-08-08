@@ -24,7 +24,7 @@ const Auth = {
   }
 };
 
-const SupportItem = {
+const SupportItems = {
   get: ({
     birthYear,
     postcode,
@@ -37,8 +37,13 @@ const SupportItem = {
   }
 };
 
+const SupportGroups = {
+  getAll: () => axios.get("support-groups")
+};
+
 export default {
   Auth,
-  SupportItem,
+  SupportGroups,
+  SupportItems,
   setToken
 };
