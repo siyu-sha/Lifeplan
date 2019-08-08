@@ -87,7 +87,7 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SupportGroupSerializer
 
 
-class SupportItem(APIView):
+class SupportItemOperation(APIView):
     permission_classes = (IsAuthenticated,)
 
     @api_view(['GET', ])
@@ -96,7 +96,7 @@ class SupportItem(APIView):
         if request.method == 'GET':
             birth_year = request.GET.get('birth-year')
             postcode = request.GET.get('postcode')
-            registration_group_id = request.GET.get('registration-grou-id', default='-1')
+            registration_group_id = request.GET.get('registration-group-id', default='-1')
             support_category_id = request.GET.get('support-category-id')
             if registration_group_id == '-1':
                 items = SupportItem.objects.filter(support_category=support_category_id)
