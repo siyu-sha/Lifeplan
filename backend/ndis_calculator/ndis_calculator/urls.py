@@ -35,7 +35,7 @@ api_patterns = [
     path('participant/id', Participant.id, name='participant_id'),
     path('participant/<int:pk>', Participant.update, name='participant_update'),
 
-    path('support-groups', support_group_list, name='support-group-list'),
+    path('support-groups', support_group_list, name='support_group_list'),
     path('support-items', support_item_list, name='support_items_list'),
 ]
 

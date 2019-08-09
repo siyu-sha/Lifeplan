@@ -253,7 +253,7 @@ class ParticipantApiTests(APITestCase):
 class SupportGroupTests(APITestCase):
 
     def setUp(self):
-        self.URL_SUPPORT_GROUP_LIST = reverse('support-group-list')
+        self.URL_SUPPORT_GROUP_LIST = reverse('support_group_list')
 
     def test_support_group_list(self):
         response = self.client.get(self.URL_SUPPORT_GROUP_LIST)
