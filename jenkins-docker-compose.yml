@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  jenkins5:
+    build:
+      context: ./
+      dockerfile: Jenkins-Dockerfile
+    restart: always
+    privileged: true
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+
+volumes:
+  jenkins-data:
+    external: true
