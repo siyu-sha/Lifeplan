@@ -5,6 +5,7 @@ from budgeting.models import Participant
 from django.contrib.auth.hashers import check_password
 import datetime
 import json
+from budgeting.models import *
 
 URL_AUTH_REGISTER = reverse('auth_register')
 URL_AUTH_LOGIN = reverse('auth_login')
@@ -265,12 +266,20 @@ class SupportGroupTests(APITestCase):
 
 
 class SupportItemTests(APITestCase):
+    fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
+
     def setUp(self):
+
         self.URL_SUPPORT_ITEMS_LIST = reverse('support_items_list')
 
     def test_support_item_list(self):
-        test_data = "[{'id': 204, 'number': '03_900100155_0130_1_1', 'name': 'Assistance Dog (Including Guide Dog) Ongoing Costs','description': 'Assistance dog (including guide dog) ongoing costs','unit': 'MON', 'price': 222.00}]"
-        response = self.client.get(
-            self.URL_SUPPORT_ITEMS_LIST+'?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
-        self.assertEqual(response.content, test_data)
+        response = self.client.get(self.URL_SUPPORT_ITEMS_LIST+'?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
+        for item in response.data:
+            test=SupportItem.objects.get(id=item['id'])
+            self.assertEqual(test.support_category.id, 5)
+            self.assertEqual(test.registration_group.id, 22)
+            if test.price_ACT_NSW_QLD_VIC is not None:
+                self.assertEqual( item['price'],test.price_ACT_NSW_QLD_VIC)
+            else:
+                self.assertEqual(item['price'], test.price_national)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
