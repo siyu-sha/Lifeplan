@@ -31,9 +31,9 @@ class SupportCategory(models.Model):
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
 
-
     def __str__(self):
         return self.name
+
 
 class SupportItem(models.Model):
     EACH = 'EA'

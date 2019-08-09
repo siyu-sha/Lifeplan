@@ -268,30 +268,23 @@ class SupportGroupTests(APITestCase):
 class SupportItemTests(APITestCase):
     fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
 
-
-
     def setUp(self):
-
         self.URL_SUPPORT_ITEMS_LIST = reverse('support_items_list')
         self.POSTCODE_RANGE = (200, 9999)
         self.REGISTRATION_GROUP_ID_RANGE = (8, 43)
-        self.SUPPORT_CATEGORY_ID_RANGE =  (3, 17)
-
-
+        self.SUPPORT_CATEGORY_ID_RANGE = (3, 17)
 
     def get_support_item_list(self, birth_year, postcode, registration_group, support_category):
         return self.client.get(self.URL_SUPPORT_ITEMS_LIST + f'?birth-year={birth_year}&postcode={postcode}&registration-group-id={registration_group}&support-category-id={support_category}')
 
     def test_support_item_list(self):
-        response = self.client.get(self.URL_SUPPORT_ITEMS_LIST+'?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
+        response = self.client.get(self.URL_SUPPORT_ITEMS_LIST + '?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
         for item in response.data:
-            test=SupportItem.objects.get(id=item['id'])
+            test = SupportItem.objects.get(id=item['id'])
             self.assertEqual(test.support_category.id, 5)
             self.assertEqual(test.registration_group.id, 22)
             if test.price_ACT_NSW_QLD_VIC is not None:
-                self.assertEqual(float(item['price']),test.price_ACT_NSW_QLD_VIC)
+                self.assertEqual(float(item['price']), test.price_ACT_NSW_QLD_VIC)
             else:
                 self.assertEqual(float(item['price']), test.price_national)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-

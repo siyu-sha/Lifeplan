@@ -30,7 +30,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
         return user
 
 
-#
 # class ParticipantSerializer(serializers.Serializer):
 #     username = serializers.CharField(write_only=True)
 #     email = serializers.EmailField()
@@ -90,10 +89,7 @@ class RegistrationGroupSerializer(serializers.ModelSerializer):
         fields = ['id', 'number', 'name']
 
 
-
 class SupportItemSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SupportItem
         fields = '__all__'
-

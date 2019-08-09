@@ -82,7 +82,6 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List all support groups and their support categories
     """
-
     queryset = SupportGroup.objects.all()
     serializer_class = SupportGroupSerializer
 
@@ -91,9 +90,7 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List support items filtered by query parameters
     """
-
     ACT_NSW_QLD_VIC = [(200, 299), (1000, 2999), (4000, 4999), (9000, 9999), (3000, 3999), (8000, 8999)]
-
 
     serializer_class = SupportItemSerializer
 
@@ -108,7 +105,7 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
         if registration_group_id is not None:
             queryset = queryset.filter(registration_group_id=registration_group_id)
 
-        queryset= queryset.filter(support_category_id=support_category_id)
+        queryset = queryset.filter(support_category_id=support_category_id)
 
         serializer = self.serializer_class(queryset, many=True)
 
@@ -120,7 +117,7 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
                         support_item['price'] = support_item['price_ACT_NSW_QLD_VIC']
                         break
             elif support_item['price_NT_SA_TAS_WA'] is not None:
-                    support_item['price'] = support_item['price_NT_SA_TAS_WA']
+                support_item['price'] = support_item['price_NT_SA_TAS_WA']
             else:
                 support_item['price'] = support_item['price_national']
 
@@ -132,7 +129,6 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
             support_item.pop('price_very_remote', None)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     # def getList(request):
     #     if request.method == 'GET':
