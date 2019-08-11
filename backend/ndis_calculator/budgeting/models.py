@@ -31,9 +31,9 @@ class SupportCategory(models.Model):
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
 
-
     def __str__(self):
         return self.name
+
 
 class SupportItem(models.Model):
     EACH = 'EA'
@@ -59,11 +59,14 @@ class SupportItem(models.Model):
     number = models.CharField(max_length=255, unique=True)
     description = models.TextField(default="No description provided")
     unit = models.CharField(max_length=3, choices=UNIT_CHOICES)
-    price_NA_SA_TAS_WA = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    price_NT_SA_TAS_WA = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_ACT_NSW_QLD_VIC = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_national = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_very_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class RegistrationGroup(models.Model):

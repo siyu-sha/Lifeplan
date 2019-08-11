@@ -16,9 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
-from budgeting import views
+from budgeting.views import SupportGroupViewSet, SupportItemViewSet, Authentication, Participant
 
-support_group_list = views.SupportGroupViewSet.as_view({
+support_group_list = SupportGroupViewSet.as_view({
+    'get': 'list'
+})
+
+support_item_list = SupportItemViewSet.as_view({
     'get': 'list'
 })
 
@@ -26,12 +30,13 @@ api_patterns = [
     # JWT
     path('auth/login', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
     path('auth/refresh', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
-    path('auth/register', views.Authentication.register, name='auth_register'),
+    path('auth/register', Authentication.register, name='auth_register'),
 
-    path('support-groups', support_group_list, name='support-group-list'),
+    path('participant/id', Participant.id, name='participant_id'),
+    path('participant/<int:pk>', Participant.update, name='participant_update'),
 
-    path('participant/id', views.Participant.id, name='participant_id'),
-    path('participant/<int:pk>', views.Participant.update, name='participant_update'),
+    path('support-groups', support_group_list, name='support_group_list'),
+    path('support-items', support_item_list, name='support_items_list'),
 ]
 
 urlpatterns = [
@@ -42,7 +47,7 @@ urlpatterns = [
     path('api/v1/', include(api_patterns)),
 
     # App
-    path('', views.DefaultView.as_view(), name='landing'),
-    path('hello', views.HelloView.as_view(), name='hello'),
+    # path('', views.DefaultView.as_view(), name='landing'),
+    # path('hello', views.HelloView.as_view(), name='hello'),
     # url(r'^api-auth/', include('rest_framework.urls'))
 ]
