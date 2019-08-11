@@ -102,6 +102,7 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
         registration_group_id = request.query_params.get('registration-group-id', None)
         support_category_id = request.query_params.get('support-category-id')
 
+
         if registration_group_id is not None:
             queryset = queryset.filter(registration_group_id=registration_group_id)
 
@@ -113,7 +114,7 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
             # check if postcode is in ACT_NSW_QLD_VIC
             if support_item['price_ACT_NSW_QLD_VIC'] is not None:
                 for postcode_range in self.ACT_NSW_QLD_VIC:
-                    if postcode_range[0] <= postcode <= postcode_range[1]:
+                    if postcode_range[0] <= int(postcode) <= postcode_range[1]:
                         support_item['price'] = support_item['price_ACT_NSW_QLD_VIC']
                         break
             elif support_item['price_NT_SA_TAS_WA'] is not None:
