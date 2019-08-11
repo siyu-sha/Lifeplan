@@ -20,7 +20,7 @@ const Auth = {
   },
   // needs email, password, firstName, lastName, postcode, birthYear
   register: ({ email, password, firstName, lastName, postcode, birthYear }) => {
-    axios.post("auth/register", { ...arguments[0] });
+    axios.post("auth/register", {});
   }
 };
 

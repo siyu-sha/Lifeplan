@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "@material-ui/core/Button/index";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel/index";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary/index";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails/index";
@@ -8,12 +7,13 @@ import InputAdornment from "@material-ui/core/InputAdornment/index";
 import Grid from "@material-ui/core/Grid/index";
 import Paper from "@material-ui/core/Paper/index";
 import Typography from "@material-ui/core/Typography/index";
-import TextField from "@material-ui/core/TextField/index";
 import withStyles from "@material-ui/core/styles/withStyles";
 import ValidatedTextField from "../../common/ValidatedTextField";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import { ChevronLeft, ChevronRight } from "@material-ui/icons";
+import Api from "../../api";
+import Button from "@material-ui/core/Button/index";
 
 const styles = theme => ({
   paper: {
@@ -36,25 +36,6 @@ const styles = theme => ({
   }
 });
 
-const core_categories = [
-  "assistanceDaily",
-  "transport",
-  "consumables",
-  "assistanceSocial"
-];
-const capital_categories = ["assistiveTechnology", "homeModifications"];
-const capacity_categories = [
-  "coordinationSupport",
-  "employment",
-  "livingArrangements",
-  "relationships",
-  "healthWellbeing",
-  "learning",
-  "lifeChoices",
-  "dailyLiving",
-  "communityParticipation"
-];
-
 var moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 var postcodeRegex = new RegExp(/^\d{0,4}$/);
 
@@ -68,32 +49,24 @@ function getYearFromToday() {
   return c;
 }
 
+function titleCase(str) {
+  str = str.toLowerCase().split(" ");
+  for (var i = 0; i < str.length; i++) {
+    str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+  }
+  return str.join(" ");
+}
+
 MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 
 class FormPersonalDetails extends React.Component {
   state = {
+    supportGroups: [],
+    groupComponent: [],
     postcode: "",
     birthYear: "",
     startDate: new Date(),
-    endDate: getYearFromToday(),
-    assistanceDaily: "",
-    transport: "",
-    consumables: "",
-    assistanceSocial: "",
-    assistiveTechnology: "",
-    homeModifications: "",
-    coordinationSupport: "",
-    livingArrangements: "",
-    communityParticipation: "",
-    employment: "",
-    relationships: "",
-    healthWellbeing: "",
-    learning: "",
-    lifeChoices: "",
-    dailyLiving: "",
-    coreTotal: 0,
-    capitalTotal: 0,
-    capacityTotal: 0
+    endDate: getYearFromToday()
   };
 
   // handle money input
@@ -110,27 +83,56 @@ class FormPersonalDetails extends React.Component {
       this.setState({ [input]: e.target.value });
 
       // update category total
-      if (core_categories.includes(input)) {
-        this.setState({
-          coreTotal: this.addTotal(core_categories, new_amount, input)
-        });
-      } else if (capital_categories.includes(input)) {
-        this.setState({
-          capitalTotal: this.addTotal(capital_categories, new_amount, input)
-        });
-      } else if (capacity_categories.includes(input)) {
-        this.setState({
-          capacityTotal: this.addTotal(capacity_categories, new_amount, input)
-        });
+      for (var i in this.state.supportGroups) {
+        let group = this.state.supportGroups[i];
+
+        if (
+          group.supportCategories
+            .map(function(category) {
+              return category.name;
+            })
+            .indexOf(input) != -1
+        ) {
+          var total = 0;
+          for (i = 0; i < group.supportCategories.length; i++) {
+            if (group.supportCategories[i].name === input) {
+              total += new_amount;
+            } else if (this.state[group.supportCategories[i].name] !== "") {
+              total += parseFloat(this.state[group.supportCategories[i].name]);
+            }
+          }
+          total = Math.round(total * 100) / 100;
+
+          this.setState({ [group.name]: total });
+        }
       }
     }
   };
+
+  //  adds up the total of a given budget section
+  addTotal(categories, new_amount, changed) {
+    var total = 0;
+    for (var i = 0; i < categories.length; i++) {
+      if (categories[i] === changed) {
+        total += new_amount;
+      } else if (this.state[categories[i]] !== "") {
+        total += parseFloat(this.state[categories[i]]);
+      }
+    }
+    total = Math.round(total * 100) / 100;
+    return total;
+  }
 
   // hnadle postcode input by limiting it to 4 digits (also works for year)
   handlePostCodeChange = input => e => {
     if (postcodeRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
     }
+  };
+
+  // handle date input
+  handleDateChange = input => date => {
+    this.setState({ [input]: date });
   };
 
   validate = () => {
@@ -157,72 +159,11 @@ class FormPersonalDetails extends React.Component {
 
     if (this.state.postcode.toString().length !== 4) {
       //this.log.console("postcode is not filled");
-      console.log(this.state.postcode);
       errors.postcode = "Invalid Postcode";
     }
 
     if (this.state.birthYear < 1900 || this.state.birthYear > 2019) {
       errors.birthYear = "Invalid Birth Year";
-    }
-
-    if (this.state.assistanceDaily < 0) {
-      errors.assistanceDaily = "Please Enter A Positive Number";
-    }
-
-    if (this.state.transport < 0) {
-      errors.transport = "Please Enter A Positive Number";
-    }
-
-    if (this.state.consumables < 0) {
-      errors.consumables = "Please Enter A Positive Number";
-    }
-
-    if (this.state.assistanceSocial < 0) {
-      errors.assistanceSocial = "Please Enter A Positive Number";
-    }
-
-    if (this.state.assistiveTechnology < 0) {
-      errors.assistiveTechnology = "Please Enter A Positive Number";
-    }
-
-    if (this.state.homeModifications < 0) {
-      errors.homeModifications = "Please Enter A Positive Number";
-    }
-
-    if (this.state.coordinationSupport < 0) {
-      errors.coordinationSupport = "Please Enter A Positive Number";
-    }
-
-    if (this.state.livingArrangements < 0) {
-      errors.livingArrangements = "Please Enter A Positive Number";
-    }
-
-    if (this.state.communityParticipation < 0) {
-      errors.communityParticipation = "Please Enter A Positive Number";
-    }
-
-    if (this.state.employment < 0) {
-      errors.employment = "Please Enter A Positive Number";
-    }
-
-    if (this.state.relationships < 0) {
-      errors.relationships = "Please Enter A Positive Number";
-    }
-
-    if (this.state.healthWellbeing < 0) {
-      errors.healthWellbeing = "Please Enter A Positive Number";
-    }
-
-    if (this.state.learning < 0) {
-      errors.learning = "Please Enter A Positive Number";
-    }
-
-    if (this.state.lifeChoices < 0) {
-      errors.lifeChoices = "Please Enter A Positive Number";
-    }
-
-    if (this.state.dailyLiving < 0) {
-      errors.dailyLiving = "Please Enter A Positive Number";
     }
 
     // if(this.state.start_date === null){
@@ -236,34 +177,32 @@ class FormPersonalDetails extends React.Component {
     return errors;
   };
 
-  // go to next page
-  handleNext = () => {
-    /* not yet implemented */
-  };
+  generateStateProperties = () => {
+    for (var i in this.state.supportGroups) {
+      let group = this.state.supportGroups[i];
+      this.setState({ [group.name]: 0 });
 
-  // handle date input
-  handleDateChange = input => date => {
-    this.setState({ [input]: date });
-  };
-
-  //  adds up the total of a given budget section
-  addTotal(categories, new_amount, changed) {
-    var total = 0;
-    for (var i = 0; i < categories.length; i++) {
-      if (categories[i] === changed) {
-        total += new_amount;
-      } else if (this.state[categories[i]] !== "") {
-        total += parseFloat(this.state[categories[i]]);
+      for (var j in group.supportCategories) {
+        let category = group.supportCategories[j];
+        this.setState({ [category.name]: "" });
       }
     }
-    total = Math.round(total * 100) / 100;
-    return total;
+  };
+
+  componentDidMount() {
+    Api.SupportGroups.getAll()
+      .then(response => {
+        this.setState({ supportGroups: response.data });
+        this.generateStateProperties();
+      })
+      .catch(err => console.log(err));
   }
 
   // render page
   render() {
     const { classes } = this.props;
     const errors = this.validate();
+
     return (
       <Paper className={classes.paper}>
         <ExpansionPanel defaultExpanded>
@@ -320,279 +259,49 @@ class FormPersonalDetails extends React.Component {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Core Support </Typography>
-            <Typography
-              variant="h6"
-              className={classes.sectionTotalColor}
-              inline
-            >
-              {" "}
-              &nbsp;|&nbsp;Total: ${this.state.coreTotal}
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="body1">
-                  Assistance with Daily Life
+
+        {this.state.supportGroups.map((group, index) => {
+          return (
+            <ExpansionPanel key={index}>
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="h6">{titleCase(group.name)}</Typography>
+                <Typography
+                  variant="h6"
+                  className={this.props.sectionTotalColor}
+                  inline="true"
+                >
+                  {" "}
+                  &nbsp;|&nbsp;Total: ${this.state[group.name]}
                 </Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("assistanceDaily")}
-                  value={this.state.assistanceDaily}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.assistanceDaily}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1">Transport</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("transport")}
-                  value={this.state.transport}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.transport}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1">Consumables</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("consumables")}
-                  value={this.state.consumables}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.consumables}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1">
-                  Assistance with Social and Community Participation
-                </Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("assistanceSocial")}
-                  value={this.state.assistanceSocial}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.assistanceSocial}
-                />
-              </Grid>
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Capital</Typography>
-            <Typography
-              variant="h6"
-              className={classes.sectionTotalColor}
-              inline
-            >
-              {" "}
-              &nbsp;|&nbsp;Total: ${this.state.capitalTotal}
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="body1">Assistive Technology</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("assistiveTechnology")}
-                  value={this.state.assistiveTechnology}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.assistiveTechnology}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1">Home Modifications</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("homeModifications")}
-                  value={this.state.homeModifications}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.homeModifications}
-                />
-              </Grid>
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6">Capacity Building</Typography>
-            <Typography
-              variant="h6"
-              className={classes.sectionTotalColor}
-              inline
-            >
-              {" "}
-              &nbsp;|&nbsp;Total: ${this.state.capacityTotal}
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="body1">
-                  Coordination of Supports
-                </Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("coordinationSupport")}
-                  value={this.state.coordinationSupport}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.coordinationSupport}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1">
-                  Improved Living Arrangements
-                </Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("livingArrangements")}
-                  value={this.state.livingArrangements}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.livingArrangements}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body1">
-                  Increased Social and Community Participation
-                </Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("communityParticipation")}
-                  value={this.state.communityParticipation}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.communityParticipation}
-                />
-              </Grid>{" "}
-              <Grid item xs={12}>
-                <Typography variant="body1">Find and Keep a Job</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("employment")}
-                  value={this.state.employment}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.employment}
-                />
-              </Grid>{" "}
-              <Grid item xs={12}>
-                <Typography variant="body1">Improved Relationships</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("relationships")}
-                  value={this.state.relationships}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.relationships}
-                />
-              </Grid>{" "}
-              <Grid item xs={12}>
-                <Typography variant="body1">
-                  Improved Health and Wellbeing
-                </Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("healthWellbeing")}
-                  value={this.state.healthWellbeing}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.healthWellbeing}
-                />
-              </Grid>{" "}
-              <Grid item xs={12}>
-                <Typography variant="body1">Improved Learning</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("learning")}
-                  value={this.state.learning}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.learning}
-                />
-              </Grid>{" "}
-              <Grid item xs={12}>
-                <Typography variant="body1">Improved Life Choices</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("lifeChoices")}
-                  value={this.state.lifeChoices}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.lifeChoices}
-                />
-              </Grid>{" "}
-              <Grid item xs={12}>
-                <Typography variant="body1">Improved Daily Living</Typography>
-                <ValidatedTextField
-                  className={classes.number}
-                  onChange={this.handleChange("dailyLiving")}
-                  value={this.state.dailyLiving}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    )
-                  }}
-                  error={errors.dailyLiving}
-                />
-              </Grid>
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <Grid container spacing={3}>
+                  {group.supportCategories.map((category, index) => {
+                    return (
+                      <Grid item xs={12} key={index}>
+                        <Typography variant="body1">
+                          {titleCase(category.name)}
+                        </Typography>
+                        <ValidatedTextField
+                          className={classes.number}
+                          onChange={this.handleChange(category.name)}
+                          value={this.state[category.name]}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                $
+                              </InputAdornment>
+                            )
+                          }}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          );
+        })}
         <Grid container justify="flex-end">
           <Button
             className={classes.button}
