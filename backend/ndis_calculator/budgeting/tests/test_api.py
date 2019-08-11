@@ -5,7 +5,7 @@ from budgeting.models import Participant
 from django.contrib.auth.hashers import check_password
 import datetime
 import json
-
+from budgeting.models import *
 
 URL_AUTH_REGISTER = reverse('auth_register')
 URL_AUTH_LOGIN = reverse('auth_login')
@@ -22,8 +22,6 @@ STUB_PARTICIPANT_DATA = {
 }
 
 
-
-
 class AuthenticationApiTests(APITestCase):
     # refresh = ''
 
@@ -31,20 +29,19 @@ class AuthenticationApiTests(APITestCase):
         # What does the below do?
         super(AuthenticationApiTests, self).setUp()
 
-
     # def setUp(self):
     #     return
-        # super(AuthenticationApiTests, self).setUp()
-        # url = reverse('auth_register')
-        # data = {
-        #         "email": "ayaya@azurlane.com",
-        #         "firstName": "IJN",
-        #         "lastName": "Ayanami",
-        #         "password": "DD45",
-        #         "postcode": 3000,
-        #         "birthYear": 1945
-        #     }
-        # response = self.client.post(url, data, format='json')
+    # super(AuthenticationApiTests, self).setUp()
+    # url = reverse('auth_register')
+    # data = {
+    #         "email": "ayaya@azurlane.com",
+    #         "firstName": "IJN",
+    #         "lastName": "Ayanami",
+    #         "password": "DD45",
+    #         "postcode": 3000,
+    #         "birthYear": 1945
+    #     }
+    # response = self.client.post(url, data, format='json')
 
     def create_stub_participant(self):
         return self.client.post(URL_AUTH_REGISTER, STUB_PARTICIPANT_DATA, format='json')
@@ -56,7 +53,7 @@ class AuthenticationApiTests(APITestCase):
         participant = participant.__dict__
         for key in participant_data:
             if key == 'password':
-                ## doesn't get checked due to serializer
+                # doesn't get checked due to serializer
                 self.assertTrue(check_password(participant_data[key], participant[key]))
             elif key == 'firstName':
                 self.assertEqual(participant_data[key], participant["first_name"])
@@ -100,10 +97,7 @@ class AuthenticationApiTests(APITestCase):
         self.assertIn('tokens', response.data)
         participant = Participant.objects.get(id=response.data['id'])
 
-
-
         self.assert_equal_participant(STUB_PARTICIPANT_DATA, participant)
-
 
     def test_login(self):
         """
@@ -255,16 +249,42 @@ class ParticipantApiTests(APITestCase):
 
         self.assertEqual(participant_data, json.loads(response.content))
 
+
 class SupportGroupTests(APITestCase):
 
     def setUp(self):
-        self.URL_SUPPORT_GROUP_LIST = reverse('support-group-list')
+        self.URL_SUPPORT_GROUP_LIST = reverse('support_group_list')
 
     def test_support_group_list(self):
         response = self.client.get(self.URL_SUPPORT_GROUP_LIST)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for support_group in response.data:
-            #print(support_group)
+            # print(support_group)
             for support_category in support_group['support_categories']:
                 self.assertIn('id', support_category)
                 self.assertIn('name', support_category)
+
+
+class SupportItemTests(APITestCase):
+    fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
+
+    def setUp(self):
+        self.URL_SUPPORT_ITEMS_LIST = reverse('support_items_list')
+        self.POSTCODE_RANGE = (200, 9999)
+        self.REGISTRATION_GROUP_ID_RANGE = (8, 43)
+        self.SUPPORT_CATEGORY_ID_RANGE = (3, 17)
+
+    def get_support_item_list(self, birth_year, postcode, registration_group, support_category):
+        return self.client.get(self.URL_SUPPORT_ITEMS_LIST + f'?birth-year={birth_year}&postcode={postcode}&registration-group-id={registration_group}&support-category-id={support_category}')
+
+    def test_support_item_list(self):
+        response = self.client.get(self.URL_SUPPORT_ITEMS_LIST + '?birth-year=1996&postcode=3051&registration-group-id=22&support-category-id=5')
+        for item in response.data:
+            test = SupportItem.objects.get(id=item['id'])
+            self.assertEqual(test.support_category.id, 5)
+            self.assertEqual(test.registration_group.id, 22)
+            if test.price_ACT_NSW_QLD_VIC is not None:
+                self.assertEqual(float(item['price']), test.price_ACT_NSW_QLD_VIC)
+            else:
+                self.assertEqual(float(item['price']), test.price_national)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

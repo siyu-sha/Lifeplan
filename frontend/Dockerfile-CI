@@ -1,7 +1,13 @@
 FROM node:alpine
 
+#Npm install
+COPY ./package.json /app/frontend/package.json
+COPY ./package-lock.json /app/frontend/package-lock.json
 WORKDIR /app/frontend
-COPY . /app/frontend/
+RUN npm install --verbose
 
+# Copy Source, Expose, Run Entry
+COPY . /app/frontend/
 EXPOSE 3000
-ENTRYPOINT ./entrypoint.sh
+
+CMD ./entrypoint.sh

@@ -3,15 +3,15 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from budgeting.models import *
 
-class ParticipantSerializer(serializers.ModelSerializer):
 
+class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode', )
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode',)
         read_only_fields = ('id',)
         extra_kwargs = {
-            'username': {'write_only':True},
-            'password': {'write_only':True}
+            'username': {'write_only': True},
+            'password': {'write_only': True}
         }
 
     def create(self, validated_data):
@@ -28,7 +28,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
             birth_year=validated_data['birth_year']
         )
         return user
-#
+
+
 # class ParticipantSerializer(serializers.Serializer):
 #     username = serializers.CharField(write_only=True)
 #     email = serializers.EmailField()
@@ -73,6 +74,7 @@ class SupportCategorySerializer(serializers.ModelSerializer):
         model = SupportCategory
         fields = ['id', 'name']
 
+
 class SupportGroupSerializer(serializers.ModelSerializer):
     support_categories = SupportCategorySerializer(many=True, read_only=True)
 
@@ -81,3 +83,13 @@ class SupportGroupSerializer(serializers.ModelSerializer):
         fields = ['name', 'support_categories']
 
 
+class RegistrationGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegistrationGroup
+        fields = ['id', 'number', 'name']
+
+
+class SupportItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SupportItem
+        fields = '__all__'
