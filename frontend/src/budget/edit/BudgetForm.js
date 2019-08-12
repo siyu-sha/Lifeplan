@@ -90,7 +90,7 @@ class FormPersonalDetails extends React.Component {
             .map(function(category) {
               return category.name;
             })
-            .indexOf(input) != -1
+            .indexOf(input) !== -1
         ) {
           var total = 0;
           for (i = 0; i < group.supportCategories.length; i++) {
