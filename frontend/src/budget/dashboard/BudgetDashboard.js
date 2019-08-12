@@ -174,7 +174,7 @@ export default class BudgetDashBoard extends React.Component {
             {/*  categories={data.coreSupports}*/}
             {/*/>*/}
             <BudgetCategorySection sectionName="Capital">
-              {data.capital.map(value => {
+              {data.capital.map((value, index) => {
                 return (
                   <Grid item xs={12} sm={6} md={4} lg={3}>
                     <BudgetCategoryCard
@@ -182,13 +182,14 @@ export default class BudgetDashBoard extends React.Component {
                       openSupports={() =>
                         this.handleOpenSupports("capital", value.category)
                       }
+                      key={index}
                     />
                   </Grid>
                 );
               })}
             </BudgetCategorySection>
             <BudgetCategorySection sectionName="Capacity Building">
-              {data.capacityBuilding.map(value => {
+              {data.capacityBuilding.map((value, index) => {
                 return (
                   <Grid item xs={12} sm={6} md={4} lg={3}>
                     <BudgetCategoryCard
@@ -199,6 +200,7 @@ export default class BudgetDashBoard extends React.Component {
                           value.category
                         )
                       }
+                      key={index}
                     />
                   </Grid>
                 );

@@ -82,8 +82,6 @@ class SignIn extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, remember } = this.state;
-
     // send email and password
   };
 
