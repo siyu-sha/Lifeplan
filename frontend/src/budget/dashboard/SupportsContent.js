@@ -2,7 +2,6 @@ import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Toolbar from "@material-ui/core/Toolbar";
 import DialogContent from "@material-ui/core/DialogContent";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { NAV_BAR_HEIGHT } from "../../common/theme";

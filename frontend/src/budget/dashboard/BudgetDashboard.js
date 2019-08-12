@@ -6,11 +6,8 @@ import { CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import Button from "@material-ui/core/Button";
 import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
-
-const MAX_AMOUNT = 10000;
 
 function generateData() {
   const mainGroups = {
