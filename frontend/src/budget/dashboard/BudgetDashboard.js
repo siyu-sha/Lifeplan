@@ -49,7 +49,7 @@ function generateData() {
   //     allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
   //   });
   // });
-  mainGroups.capital.map(value => {
+  mainGroups.capital.forEach(value => {
     const maxAmount = 5000; //Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
     const allocatedAmount = 0; //Math.round(Math.random() * maxAmount * 100) / 100;
     const color = [0, 0, Math.floor(Math.random() * (255 - 64 - 64)) + 64];
@@ -62,7 +62,7 @@ function generateData() {
     });
   });
   let count = 1;
-  mainGroups.capacityBuilding.map(value => {
+  mainGroups.capacityBuilding.forEach(value => {
     const maxAmount = count * 10000;
     count += 1;
     const allocatedAmount = 0; // Math.round(Math.random() * maxAmount * 100) / 100;
