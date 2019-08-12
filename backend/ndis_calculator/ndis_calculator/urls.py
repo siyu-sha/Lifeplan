@@ -20,7 +20,7 @@ from budgeting.views import SupportGroupViewSet
 from budgeting.views import SupportItemViewSet
 from budgeting.views import Authentication
 from budgeting.views import Participant
-from budgeting.views import HelloView
+from budgeting.views import DefaultView
 
 support_group_list = SupportGroupViewSet.as_view({
     'get': 'list'
@@ -51,7 +51,7 @@ urlpatterns = [
     path('api/v1/', include(api_patterns)),
 
     # Health Check
-    path('healthCheck', HelloView.as_view(), name="healthCheck")
+    path('healthCheck', DefaultView.as_view(), name="healthCheck")
     # App
     # path('', views.DefaultView.as_view(), name='landing'),
     # path('hello', views.HelloView.as_view(), name='hello'),
