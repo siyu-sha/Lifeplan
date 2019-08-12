@@ -16,11 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
-from budgeting.views import SupportGroupViewSet
-from budgeting.views import SupportItemViewSet
+from budgeting.views import DefaultView
 from budgeting.views import Authentication
 from budgeting.views import Participant
-from budgeting.views import DefaultView
+from budgeting.views import SupportGroupViewSet
+from budgeting.views import SupportItemViewSet
 
 support_group_list = SupportGroupViewSet.as_view({
     'get': 'list'
@@ -52,6 +52,7 @@ urlpatterns = [
 
     # Health Check
     path('healthCheck', DefaultView.as_view(), name="healthCheck")
+
     # App
     # path('', views.DefaultView.as_view(), name='landing'),
     # path('hello', views.HelloView.as_view(), name='hello'),
