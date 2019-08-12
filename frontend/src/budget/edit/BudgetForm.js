@@ -62,7 +62,6 @@ MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 class FormPersonalDetails extends React.Component {
   state = {
     supportGroups: [],
-    groupComponent: [],
     postcode: "",
     birthYear: "",
     startDate: new Date(),
@@ -285,7 +284,7 @@ class FormPersonalDetails extends React.Component {
                         <ValidatedTextField
                           className={classes.number}
                           onChange={this.handleChange(category.name)}
-                          value={this.state[category.name]}
+                          value={this.state[category.name] || ""}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start">
