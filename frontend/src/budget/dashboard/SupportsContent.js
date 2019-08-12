@@ -13,6 +13,7 @@ import TextField from "@material-ui/core/TextField";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from "@material-ui/icons/Save";
 import EditIcon from "@material-ui/icons/Edit";
+import * as R from "ramda";
 
 const useStyles = makeStyles({
   navBar: {
@@ -95,28 +96,42 @@ export default class SupportsContent extends React.Component {
       return obj.name === nameQuery;
     });
     const copy = Object.assign({}, result[0]);
-    this.state.selectedSupport = this.state.userSupports.length;
+    this.setState({ selectedSupport: this.state.userSupports.length });
     this.state.userSupports.push(copy);
     if (result[0].isLabor) {
       this.goToPage("editSupport");
     } else {
-      this.state.userSupports[this.state.selectedSupport].cost =
-        result[0].price;
+      this.setState({
+        userSupports: R.set(
+          R.lensProp("cost"),
+          result[0].price,
+          this.state.userSupports
+        )
+      });
       // TODO: replace with api call
       this.props.addAllocated(result[0].price);
       this.goToPage("userSupportsList");
     }
   };
 
+  updateSelectedSupportProperty = (property, value) => {
+    this.setState({
+      userSupports: R.set(
+        R.lensProp(this.state.selectedSupport),
+        R.set(
+          R.lensProp(property),
+          value,
+          this.state.userSupports[this.state.selectedSupport]
+        ),
+        this.state.userSupports
+      )
+    });
+  };
+
   // update one of the four hours fields for a given support
   updateHours = fieldType => e => {
-    console.log("updateHours");
     if (hoursRegex.test(e.target.value)) {
-      console.log("passTest");
-      console.log(e.target.value);
-      this.state.userSupports[this.state.selectedSupport][fieldType] =
-        e.target.value;
-      console.log(this.state.userSupports[this.state.selectedSupport]);
+      this.updateSelectedSupportProperty(fieldType, e.target.value);
     }
   };
 
@@ -146,7 +161,7 @@ export default class SupportsContent extends React.Component {
     }
     cost = cost * this.state.userSupports[this.state.selectedSupport].price;
     cost = Math.round(cost * 100) / 100;
-    this.state.userSupports[this.state.selectedSupport]["cost"] = cost;
+    this.updateSelectedSupportProperty("cost", cost);
     // TODO: replace with api call
     this.props.addAllocated(cost);
     this.goToPage("userSupportsList");

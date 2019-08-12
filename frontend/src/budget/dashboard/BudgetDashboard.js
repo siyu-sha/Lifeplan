@@ -91,7 +91,6 @@ export default class BudgetDashBoard extends React.Component {
   }
 
   handleAddAllocated = (mainGroup, category, amount) => {
-    console.log(mainGroup, category);
     this.setState({
       data: {
         ...this.state.data,

@@ -77,8 +77,6 @@ class SignUp extends React.Component {
 
     const { email, password, accept } = this.state;
 
-    console.log("I was triggered" + email + password + accept + "test");
-
     // send email and password
   };
 
