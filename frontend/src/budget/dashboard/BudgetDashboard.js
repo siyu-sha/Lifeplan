@@ -176,7 +176,7 @@ export default class BudgetDashBoard extends React.Component {
             <BudgetCategorySection sectionName="Capital">
               {data.capital.map((value, index) => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                     <BudgetCategoryCard
                       {...value}
                       openSupports={() =>
@@ -191,7 +191,7 @@ export default class BudgetDashBoard extends React.Component {
             <BudgetCategorySection sectionName="Capacity Building">
               {data.capacityBuilding.map((value, index) => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                     <BudgetCategoryCard
                       {...value}
                       openSupports={() =>
