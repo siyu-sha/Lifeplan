@@ -55,6 +55,5 @@ urlpatterns = [
 
     # App
     path('', DefaultView.as_view(), name='landing'),
-    # path('hello', views.HelloView.as_view(), name='hello'),
     # url(r'^api-auth/', include('rest_framework.urls'))
 ]
