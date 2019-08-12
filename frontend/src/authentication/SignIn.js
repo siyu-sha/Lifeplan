@@ -82,6 +82,11 @@ class SignIn extends React.Component {
 
     event.preventDefault();
 
+    const { email, password, remember } = this.state;
+
+    console.log(
+      "I was triggered" + email + password + remember + "handleSubmit"
+    );
     // send email and password
   };
 

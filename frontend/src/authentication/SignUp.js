@@ -75,7 +75,9 @@ class SignUp extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, accept } = this.state;
+    const { email, password, accept, firstName, lastName } = this.state;
+
+    console.log("I was triggered" + email + password + accept + "test");
 
     // send email and password
   };
