@@ -26,14 +26,9 @@ const useStyles = makeStyles({
   }
 });
 
-export default function SupportItemSelector({
-  supportCategoryID,
-  supportCategoryName,
-  birthYear,
-  postcode
-}) {
+export default function SupportItemSelector(props) {
+  const { birthYear, postcode, supportCategoryID, supportCategoryName } = props;
   // React Hooks
-  const [open, setOpen] = useState(true);
   const [supportItems, setSupportItems] = useState([]);
   const [registrationGroupID, setRegistrationGroupID] = useState(null);
   const [planItems, setPlanItems] = useState([]);
@@ -58,12 +53,10 @@ export default function SupportItemSelector({
     });
   }, [birthYear, postcode, supportCategoryID, registrationGroupID]);
 
-  function handleClickOpen() {
-    setOpen(true);
-  }
+  function handleClickOpen() {}
 
   function handleClose() {
-    setOpen(false);
+    props.onClose();
   }
 
   function handleSelectSupportItem(supportItem) {
@@ -185,15 +178,14 @@ export default function SupportItemSelector({
 
   return (
     <div>
-      {console.log(planItems)}
       <Dialog
         fullScreen={!matchesSm}
         fullWidth
         maxWidth="md"
-        open={open}
+        open={props.open}
         onClose={handleClose}
       >
-        <DialogTitle>Hi</DialogTitle>
+        <DialogTitle>{props.supportCategoryName}</DialogTitle>
         <DialogContent className={classes.dialogContent}>
           <Select
             inputId={"support-item-select"}
