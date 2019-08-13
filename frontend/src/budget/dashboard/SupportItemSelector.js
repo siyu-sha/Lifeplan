@@ -19,6 +19,10 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import DialogActions from "@material-ui/core/DialogActions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import _ from "lodash";
+import InfoIcon from "@material-ui/icons/Info";
+import SearchIcon from "@material-ui/icons/Search";
+import Tooltip from "@material-ui/core/Tooltip";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 const useStyles = makeStyles({
   dialogContent: {
@@ -65,7 +69,6 @@ export default function SupportItemSelector(props) {
     planItem.supportItemID = planItem.id;
     planItem.quantity = 1;
     delete planItem.id;
-
     setPlanItems([planItem, ...planItems]);
   }
 
@@ -110,6 +113,14 @@ export default function SupportItemSelector(props) {
           <div key={planItem.planItemID}>
             <ListItem>
               <ListItemText primary={planItem.name} />
+              <ListItemSecondaryAction>
+                <Tooltip
+                  disableTouchListener
+                  title={planItem.description || "No description"}
+                >
+                  <InfoIcon />
+                </Tooltip>
+              </ListItemSecondaryAction>
             </ListItem>
             <Grid
               container
@@ -185,7 +196,7 @@ export default function SupportItemSelector(props) {
         open={props.open}
         onClose={handleClose}
       >
-        <DialogTitle>{props.supportCategoryName}</DialogTitle>
+        <DialogTitle>{props.supportCategoryName} supports</DialogTitle>
         <DialogContent className={classes.dialogContent}>
           <Select
             inputId={"support-item-select"}
