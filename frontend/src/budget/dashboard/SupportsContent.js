@@ -2,7 +2,6 @@ import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Toolbar from "@material-ui/core/Toolbar";
 import DialogContent from "@material-ui/core/DialogContent";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { NAV_BAR_HEIGHT } from "../../common/theme";
@@ -14,6 +13,8 @@ import TextField from "@material-ui/core/TextField";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from "@material-ui/icons/Save";
 import EditIcon from "@material-ui/icons/Edit";
+import * as R from "ramda";
+import update from "immutability-helper";
 
 const useStyles = makeStyles({
   navBar: {
@@ -96,28 +97,36 @@ export default class SupportsContent extends React.Component {
       return obj.name === nameQuery;
     });
     const copy = Object.assign({}, result[0]);
-    this.state.selectedSupport = this.state.userSupports.length;
-    this.state.userSupports.push(copy);
+    this.setState({ selectedSupport: this.state.userSupports.length });
     if (result[0].isLabor) {
       this.goToPage("editSupport");
     } else {
-      this.state.userSupports[this.state.selectedSupport].cost =
-        result[0].price;
+      copy.cost = result[0].price;
+      //this.updateSelectedSupportProperty("cost", result[0].price);
       // TODO: replace with api call
       this.props.addAllocated(result[0].price);
       this.goToPage("userSupportsList");
     }
+    this.state.userSupports.push(copy);
+  };
+
+  updateSelectedSupportProperty = (property, value) => {
+    let support = R.set(
+      R.lensProp(property),
+      value,
+      this.state.userSupports[this.state.selectedSupport]
+    );
+    this.setState({
+      userSupports: update(this.state.userSupports, {
+        [this.state.selectedSupport]: { $set: support }
+      })
+    });
   };
 
   // update one of the four hours fields for a given support
   updateHours = fieldType => e => {
-    console.log("updateHours");
     if (hoursRegex.test(e.target.value)) {
-      console.log("passTest");
-      console.log(e.target.value);
-      this.state.userSupports[this.state.selectedSupport][fieldType] =
-        e.target.value;
-      console.log(this.state.userSupports[this.state.selectedSupport]);
+      this.updateSelectedSupportProperty(fieldType, e.target.value);
     }
   };
 
@@ -147,7 +156,7 @@ export default class SupportsContent extends React.Component {
     }
     cost = cost * this.state.userSupports[this.state.selectedSupport].price;
     cost = Math.round(cost * 100) / 100;
-    this.state.userSupports[this.state.selectedSupport]["cost"] = cost;
+    this.updateSelectedSupportProperty("cost", cost);
     // TODO: replace with api call
     this.props.addAllocated(cost);
     this.goToPage("userSupportsList");
@@ -340,7 +349,6 @@ function ChooseNewSupport(props) {
 // Page where user changes the hours of their labour support
 function EditSupport(props) {
   const classes = useStyles();
-  const { weekend } = props.userSupports[props.selectedSupport];
   return (
     <DialogContent>
       <Grid container spacing={2}>
@@ -360,7 +368,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("weekday")}
-            value={props.userSupports[props.selectedSupport].weekday}
+            value={props.userSupports[props.selectedSupport].weekday || ""}
           />
         </Grid>
         <Grid item xs={6}>
@@ -369,7 +377,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("weekend")}
-            value={weekend}
+            value={props.userSupports[props.selectedSupport].weekend || ""}
           />
         </Grid>
         <Grid item xs={6}>
@@ -378,7 +386,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("holiday")}
-            value={props.userSupports[props.selectedSupport].holiday}
+            value={props.userSupports[props.selectedSupport].holiday || ""}
           />
         </Grid>
         <Grid item xs={6}>
@@ -387,7 +395,7 @@ function EditSupport(props) {
           <TextField
             className={classes.number}
             onChange={props.updateHours("holidayAfter")}
-            value={props.userSupports[props.selectedSupport].holidayAfter}
+            value={props.userSupports[props.selectedSupport].holidayAfter || ""}
           />
         </Grid>
         <Grid item xs={12} align="center">

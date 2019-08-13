@@ -8,7 +8,6 @@ import InputAdornment from "@material-ui/core/InputAdornment/index";
 import Grid from "@material-ui/core/Grid/index";
 import Paper from "@material-ui/core/Paper/index";
 import Typography from "@material-ui/core/Typography/index";
-import TextField from "@material-ui/core/TextField/index";
 import withStyles from "@material-ui/core/styles/withStyles";
 import ValidatedTextField from "../../common/ValidatedTextField";
 import MomentUtils from "@date-io/moment";
