@@ -49,6 +49,7 @@ function getYearFromToday() {
   return c;
 }
 
+// processes a string to capitalise the first letter every word
 function titleCase(str) {
   str = str.toLowerCase().split(" ");
   for (var i = 0; i < str.length; i++) {
