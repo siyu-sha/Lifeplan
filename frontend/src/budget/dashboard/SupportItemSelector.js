@@ -46,7 +46,7 @@ export default function SupportItemSelector({
     api.SupportItems.get({
       birthYear: 1,
       postcode: 3000,
-      supportCategoryID: 12,
+      supportCategoryID: 7,
       registrationGroupID
     }).then(response => {
       setSupportItems(
@@ -70,6 +70,7 @@ export default function SupportItemSelector({
     const planItem = { ...supportItem };
     planItem.planItemID = planItems.length;
     planItem.supportItemID = planItem.id;
+    planItem.quantity = 1;
     delete planItem.id;
 
     setPlanItems([planItem, ...planItems]);
@@ -77,6 +78,34 @@ export default function SupportItemSelector({
 
   function handleDelete(planItem) {
     setPlanItems(_.difference(planItems, [planItem]));
+  }
+
+  function handleChangeUnitPrice(event, planItem) {
+    setPlanItems(
+      planItems.map(item => {
+        if (planItem.planItemID === item.planItemID) {
+          return {
+            ...item,
+            price: event.target.value
+          };
+        }
+        return item;
+      })
+    );
+  }
+
+  function handleChangeUnits(event, planItem) {
+    setPlanItems(
+      planItems.map(item => {
+        if (planItem.planItemID === item.planItemID) {
+          return {
+            ...item,
+            quantity: event.target.value
+          };
+        }
+        return item;
+      })
+    );
   }
 
   function planItemList() {
@@ -94,29 +123,35 @@ export default function SupportItemSelector({
               spacing={2}
               justify={matchesMd ? "center" : "flex-end"}
             >
-              <Grid item xs={4} md={3}>
+              <Grid item xs={5} md={3}>
                 <FormControl>
                   <InputLabel htmlFor="unit-price">Unit Price</InputLabel>
                   <Input
                     id="unit-price"
-                    value={planItem.price || 0}
+                    value={planItem.price || ""}
                     startAdornment={
                       <InputAdornment position="start">$</InputAdornment>
                     }
+                    endAdornment={
+                      <InputAdornment position="end">
+                        /{planItem.unit.toLowerCase()}
+                      </InputAdornment>
+                    }
+                    placeholder="Type here"
+                    onChange={event => handleChangeUnitPrice(event, planItem)}
                   />
                 </FormControl>
               </Grid>
               <Grid item xs={3} md={3}>
                 <FormControl>
-                  <InputLabel htmlFor="units">Units</InputLabel>
+                  <InputLabel shrink htmlFor="units">
+                    Units Required (yearly)
+                  </InputLabel>
                   <Input
                     id="units"
-                    value={0}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        {planItem.unit}
-                      </InputAdornment>
-                    }
+                    value={planItem.quantity}
+                    placeholder="Type here"
+                    onChange={event => handleChangeUnits(event, planItem)}
                   />
                 </FormControl>
               </Grid>
@@ -125,7 +160,8 @@ export default function SupportItemSelector({
                   <InputLabel htmlFor="total">Total</InputLabel>
                   <Input
                     id="total"
-                    value={((planItem.price * 100) / 10).toFixed(2)}
+                    value={(planItem.price * planItem.quantity).toFixed(2)}
+                    readOnly
                     startAdornment={
                       <InputAdornment position="start">$</InputAdornment>
                     }
