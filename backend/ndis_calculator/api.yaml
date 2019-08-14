@@ -2,7 +2,7 @@ openapi: 3.0.2
 
 info:
   title: ndis_calculator
-  version: 1.0.0
+  version: 1.0.1
 
 servers:
   - url: http://localhost:8000/api/v1
@@ -117,7 +117,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SupportItem"
-
+                  
+  /participants/{participantID}/plans/{planID}/plan-categories/{planCategoryID}/plan-items:
+    post:
+      tags:
+        - support item
+      summary: Create a support item for a participant's plan.
+      description: Create a support item for a participant in one of his existing plans under the correct category.
+      parameters:
+        - $ref: "#/components/parameters/ParticipantID"
+        - $ref: "#/components/parameters/PlanID"
+        - $ref: "#/components/parameters/PlanCategoryID"
+      responses:
+        "201":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: supprort item id
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+          
 components:
   schemas:
     SupportGroup:
@@ -203,3 +226,20 @@ components:
       required: true
       schema:
         type: integer
+
+    PlanID:
+      name: planID
+      in: path
+      description: plan ID
+      required: true
+      schema:
+        type: integer
+        
+    PlanCategoryID:
+      name: planCategoryID
+      in: path
+      description: Plan Category ID
+      required: true
+      schema:
+        type: integer
+
