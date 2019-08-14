@@ -8,10 +8,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 
-const stubProps = {
-  category: "Assistive Technology"
-};
-
 class SupportsPopup extends React.Component {
   handleClose = () => {
     this.props.closeSupports();
