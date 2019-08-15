@@ -6,7 +6,6 @@ import { CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
 import SupportItemSelector from "./SupportItemSelector";
 

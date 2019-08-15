@@ -96,7 +96,7 @@ export default function SupportItemSelector(props) {
   }
 
   function handleSelectSupportItem(supportItem) {
-    const planItem = { ...spupportItem };
+    const planItem = { ...supportItem };
     planItem.planItemID = planItems.length;
     planItem.supportItemID = planItem.id;
     planItem.quantity = 1;
