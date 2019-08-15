@@ -121,13 +121,23 @@ paths:
   /participants/{participantID}/plans/{planID}/plan-categories/{planCategoryID}/plan-items:
     post:
       tags:
-        - support item
-      summary: Create a support item for a participant's plan.
-      description: Create a support item for a participant in one of his existing plans under the correct category.
+        - plan item
+      summary: Create a plan item for a participant's plan.
+      description: Create a plan item for a participant in one of his existing plans under the correct category.
       parameters:
         - $ref: "#/components/parameters/ParticipantID"
         - $ref: "#/components/parameters/PlanID"
         - $ref: "#/components/parameters/PlanCategoryID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                supportItemID:
+                  type: integer
+                  example: 144
       responses:
         "201":
           description: success
@@ -135,7 +145,9 @@ paths:
             application/json:
               schema:
                 type: integer
-                description: supprort item id
+                description: plan item id
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthenticated"
         "403":
@@ -217,6 +229,8 @@ components:
       description: Unauthenticated
     Unauthorised:
       description: Unauthorised to access this resource
+    BadRequest:
+      description: Wrong parameters
 
   parameters:
     ParticipantID:
