@@ -230,7 +230,7 @@ components:
     Unauthorised:
       description: Unauthorised to access this resource
     BadRequest:
-      description: Wrong parameters
+      description: Bad Request
 
   parameters:
     ParticipantID:
