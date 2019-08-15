@@ -33,11 +33,6 @@ class App extends Component {
             <Route path="/supports" component={SupportsPopup} />
             <Route path="/authentication/signin" component={SignIn} />
             <Route path="/authentication/signup" component={SignUp} />
-
-            <Route
-              patth="/support-item-selector"
-              component={SupportItemSelector}
-            />
           </Switch>
         </main>
       </BrowserRouter>
