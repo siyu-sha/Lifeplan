@@ -1,6 +1,6 @@
 FROM node:alpine
 
-#Npm install
+# Npm install
 COPY ./package.json /app/frontend/package.json
 COPY ./package-lock.json /app/frontend/package-lock.json
 WORKDIR /app/frontend
