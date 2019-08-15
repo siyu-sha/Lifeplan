@@ -11,6 +11,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
+import Api from "../api";
+import { browserHistory } from "react-router";
 
 const styles = theme => ({
   main: {
@@ -79,11 +81,36 @@ class SignUp extends React.Component {
 
     console.log("I was triggered" + email + password + accept + "test");
 
+    const Reginfo = {
+      email: this.state.email,
+      password: this.state.password,
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      postcode: this.state.postcode,
+      birthYear: this.state.birthYear
+    };
+
+    Api.Auth.register(Reginfo)
+      .then(responese => {
+        //console.log(responese.data);
+        const token = responese.data.tokens;
+        console.log(
+          "the received token is: " +
+            token.access +
+            ", and refresh component is " +
+            token.refresh
+        );
+        Api.setToken(token);
+        this.props.history.push("/");
+      })
+      .catch(err => console.log(err));
+
     // send email and password
   };
 
   render() {
     const { classes } = this.props;
+    const { submitted } = this.state;
     const email = "email";
     const pwd = "password";
     const marginSize = "normal";
