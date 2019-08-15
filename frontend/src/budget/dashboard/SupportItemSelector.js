@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
 import api from "../../api";
 import { DialogContent } from "@material-ui/core";
-import Select from "react-select";
+import ReactSelect from "react-select";
 import { useTheme } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -20,9 +19,12 @@ import DialogActions from "@material-ui/core/DialogActions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import _ from "lodash";
 import InfoIcon from "@material-ui/icons/Info";
-import SearchIcon from "@material-ui/icons/Search";
 import Tooltip from "@material-ui/core/Tooltip";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+
+const LOCAL_STORAGE_KEY = "supportCategory";
+// Temporary
+const loggedIn = false;
 
 const useStyles = makeStyles({
   dialogContent: {
@@ -41,6 +43,7 @@ export default function SupportItemSelector(props) {
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   const classes = useStyles();
 
+  // api call to load support items
   useEffect(() => {
     api.SupportItems.get({
       birthYear: 1,
@@ -57,7 +60,36 @@ export default function SupportItemSelector(props) {
     });
   }, [birthYear, postcode, supportCategoryID, registrationGroupID]);
 
-  function handleClickOpen() {}
+  // load plan items from backend (logged in) or local storage
+  useEffect(() => {
+    if (loggedIn) {
+    } else {
+      const supportCategory = JSON.parse(
+        localStorage.getItem(LOCAL_STORAGE_KEY)
+      );
+      if (
+        supportCategory != null &&
+        supportCategory[supportCategoryID] != null
+      ) {
+        setPlanItems(supportCategory[supportCategoryID]);
+      }
+    }
+  }, [supportCategoryID]);
+
+  // save plan items (not logged in) into local storage
+  useEffect(() => {
+    if (!loggedIn) {
+      const supportCategory = JSON.parse(
+        localStorage.getItem(LOCAL_STORAGE_KEY)
+      )
+        ? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_KEY))
+        : {};
+
+      supportCategory[supportCategoryID] = planItems;
+
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(supportCategory));
+    }
+  });
 
   function handleClose() {
     props.onClose();
@@ -70,10 +102,14 @@ export default function SupportItemSelector(props) {
     planItem.quantity = 1;
     delete planItem.id;
     setPlanItems([planItem, ...planItems]);
+
+    //saveToLocalStorage(planItems);
   }
 
   function handleDelete(planItem) {
     setPlanItems(_.difference(planItems, [planItem]));
+
+    //saveToLocalStorage(planItems);
   }
 
   function handleChangeUnitPrice(event, planItem) {
@@ -196,15 +232,16 @@ export default function SupportItemSelector(props) {
         open={props.open}
         onClose={handleClose}
       >
-        <DialogTitle>{props.supportCategoryName} supports</DialogTitle>
+        <DialogTitle>{supportCategoryName} supports</DialogTitle>
         <DialogContent className={classes.dialogContent}>
-          <Select
+          <ReactSelect
             inputId={"support-item-select"}
             placeholder={"Search for support items"}
             options={supportItems}
             value={null}
             onChange={handleSelectSupportItem}
           />
+
           {planItemList()}
         </DialogContent>
         <DialogActions>
