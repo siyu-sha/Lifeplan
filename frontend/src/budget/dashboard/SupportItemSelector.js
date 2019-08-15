@@ -185,7 +185,7 @@ export default function SupportItemSelector(props) {
               <Grid item xs={3} md={3}>
                 <FormControl>
                   <InputLabel shrink htmlFor="units">
-                    Units Required (yearly)
+                    Units
                   </InputLabel>
                   <Input
                     id="units"
