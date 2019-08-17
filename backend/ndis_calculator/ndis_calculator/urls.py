@@ -41,6 +41,8 @@ api_patterns = [
 
     path('support-groups', support_group_list, name='support_group_list'),
     path('support-items', support_item_list, name='support_items_list'),
+
+    path('participants/<int:participantID>/plans/<int:planID>/plan-categories/<int:planCategoryID>/plan-items', PlanItem.create, name='plan_item_create'),
 ]
 
 urlpatterns = [

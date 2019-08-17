@@ -123,6 +123,15 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class PlanItem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @api_view(['POST', ])
+    @csrf_exempt
+    def create(request):
+        support_item_id=request.data.get("supportItemID")
+
+
     # def getList(request):
     #     if request.method == 'GET':
     #         # birth_year = request.query_params.get('birth-year')
