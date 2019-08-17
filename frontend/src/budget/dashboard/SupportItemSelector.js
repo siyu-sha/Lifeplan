@@ -20,7 +20,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import _ from "lodash";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
 
 const LOCAL_STORAGE_KEY = "supportCategory";
 // Temporary
@@ -36,10 +36,10 @@ export default function SupportItemSelector(props) {
   const { birthYear, postcode, supportCategoryID, supportCategoryName } = props;
   // React Hooks
   const [supportItems, setSupportItems] = useState([]);
+  const [selectedPlanItemID, setSelectedPlanItemID] = useState(null);
   const [registrationGroupID, setRegistrationGroupID] = useState(null);
   const [planItems, setPlanItems] = useState([]);
   const theme = useTheme();
-  const matchesSm = useMediaQuery(theme.breakpoints.up("sm"));
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   const classes = useStyles();
 
@@ -48,7 +48,7 @@ export default function SupportItemSelector(props) {
     api.SupportItems.get({
       birthYear: 1,
       postcode: 3000,
-      supportCategoryID: 7,
+      supportCategoryID: 9,
       registrationGroupID
     }).then(response => {
       setSupportItems(
@@ -100,6 +100,8 @@ export default function SupportItemSelector(props) {
     planItem.planItemID = planItems.length;
     planItem.supportItemID = planItem.id;
     planItem.quantity = 1;
+    planItem.maxPrice = supportItem.price;
+    setSelectedPlanItemID(planItem.planItemID);
     delete planItem.id;
     setPlanItems([planItem, ...planItems]);
 
@@ -140,84 +142,139 @@ export default function SupportItemSelector(props) {
     );
   }
 
-  function planItemList() {
+  function renderPlanItemHeader(planItem) {
+    return (
+      <Grid container alignItems="center">
+        <Grid item>
+          <ListItemIcon>
+            <Tooltip
+              disableTouchListener
+              title={planItem.description || "No description"}
+            >
+              <InfoIcon />
+            </Tooltip>
+          </ListItemIcon>
+        </Grid>
+        <Grid item xs>
+          <ListItemText primary={planItem.name} />
+        </Grid>
+      </Grid>
+    );
+  }
+
+  function renderPriceLabel(planItem) {
+    let prefix = "Unit Price ";
+    let suffix = "(No Limit)";
+    if (planItem.maxPrice != null) {
+      suffix = `(Max $${planItem.maxPrice})`;
+      if (matchesMd) {
+        return prefix + suffix;
+      } else if (parseFloat(planItem.price) > parseFloat(planItem.maxPrice)) {
+        return suffix;
+      }
+    }
+    return prefix + suffix;
+  }
+
+  function renderPlanItemBody(planItem) {
+    return (
+      <Grid
+        container
+        spacing={matchesMd ? 2 : 1}
+        justify={"flex-end"}
+        alignItems="flex-end"
+      >
+        <Grid item xs={6} md>
+          <FormControl
+            fullWidth
+            error={
+              planItem.maxPrice != null &&
+              parseFloat(planItem.price) > parseFloat(planItem.maxPrice)
+            }
+          >
+            <InputLabel htmlFor="unit-price">
+              {renderPriceLabel(planItem)}
+            </InputLabel>
+            <Input
+              id="unit-price"
+              value={planItem.price || ""}
+              startAdornment={
+                <InputAdornment position="start">$</InputAdornment>
+              }
+              endAdornment={
+                <InputAdornment position="end">
+                  /{planItem.unit.toLowerCase()}
+                </InputAdornment>
+              }
+              placeholder="Type here"
+              onChange={event => handleChangeUnitPrice(event, planItem)}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <FormControl fullWidth>
+            <InputLabel shrink htmlFor="units">
+              {matchesMd ? "Units (yearly)" : "Units"}
+            </InputLabel>
+            <Input
+              id="units"
+              value={planItem.quantity}
+              placeholder="Type here"
+              onChange={event => handleChangeUnits(event, planItem)}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={4} md>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="total">Total</InputLabel>
+            <Input
+              id="total"
+              value={(planItem.price * planItem.quantity).toFixed(2)}
+              readOnly
+              startAdornment={
+                <InputAdornment position="start">$</InputAdornment>
+              }
+            />
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <Button
+            onClick={() => handleDelete(planItem)}
+            variant="outlined"
+            color="primary"
+          >
+            Delete
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  function renderPlanItem(planItem) {
+    return (
+      <ListItem
+        onClick={() => setSelectedPlanItemID(null)}
+        selected={planItem.planItemID === selectedPlanItemID}
+      >
+        <Grid container>
+          <Grid item xs={12}>
+            {renderPlanItemHeader(planItem)}
+          </Grid>
+          <Grid item xs={12}>
+            {renderPlanItemBody(planItem)}
+          </Grid>
+        </Grid>
+      </ListItem>
+    );
+  }
+
+  function renderPlanItemList() {
     return planItems.length === 0 ? (
       <div>Add some first</div>
     ) : (
       <List>
-        {planItems.map(planItem => (
-          <div key={planItem.planItemID}>
-            <ListItem>
-              <ListItemText primary={planItem.name} />
-              <ListItemSecondaryAction>
-                <Tooltip
-                  disableTouchListener
-                  title={planItem.description || "No description"}
-                >
-                  <InfoIcon />
-                </Tooltip>
-              </ListItemSecondaryAction>
-            </ListItem>
-            <Grid
-              container
-              spacing={2}
-              justify={matchesMd ? "center" : "flex-end"}
-            >
-              <Grid item xs={5} md={3}>
-                <FormControl>
-                  <InputLabel htmlFor="unit-price">Unit Price</InputLabel>
-                  <Input
-                    id="unit-price"
-                    value={planItem.price || ""}
-                    startAdornment={
-                      <InputAdornment position="start">$</InputAdornment>
-                    }
-                    endAdornment={
-                      <InputAdornment position="end">
-                        /{planItem.unit.toLowerCase()}
-                      </InputAdornment>
-                    }
-                    placeholder="Type here"
-                    onChange={event => handleChangeUnitPrice(event, planItem)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={3} md={3}>
-                <FormControl>
-                  <InputLabel shrink htmlFor="units">
-                    Units
-                  </InputLabel>
-                  <Input
-                    id="units"
-                    value={planItem.quantity}
-                    placeholder="Type here"
-                    onChange={event => handleChangeUnits(event, planItem)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={4} md={3}>
-                <FormControl>
-                  <InputLabel htmlFor="total">Total</InputLabel>
-                  <Input
-                    id="total"
-                    value={(planItem.price * planItem.quantity).toFixed(2)}
-                    readOnly
-                    startAdornment={
-                      <InputAdornment position="start">$</InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item>
-                <Button
-                  onClick={() => handleDelete(planItem)}
-                  variant="contained"
-                >
-                  Delete
-                </Button>
-              </Grid>
-            </Grid>
-          </div>
+        {planItems.map((planItem, index) => (
+          <div key={index}>{renderPlanItem(planItem)}</div>
         ))}
       </List>
     );
@@ -226,7 +283,7 @@ export default function SupportItemSelector(props) {
   return (
     <div>
       <Dialog
-        fullScreen={!matchesSm}
+        fullScreen={!matchesMd}
         fullWidth
         maxWidth="md"
         open={props.open}
@@ -242,7 +299,7 @@ export default function SupportItemSelector(props) {
             onChange={handleSelectSupportItem}
           />
 
-          {planItemList()}
+          {renderPlanItemList()}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Save & Close</Button>
