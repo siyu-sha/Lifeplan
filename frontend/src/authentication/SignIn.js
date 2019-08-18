@@ -87,7 +87,6 @@ class SignIn extends React.Component {
     console.log(
       "I was triggered" + email + password + remember + "handleSubmit"
     );
-
     // send email and password
   };
 

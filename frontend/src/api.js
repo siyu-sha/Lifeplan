@@ -13,7 +13,7 @@ const setToken = token => {
 
 const Auth = {
   login: ({ email, password }) => {
-    axios.post("auth/login", {
+    return axios.post("auth/login", {
       username: email,
       password
     });
@@ -38,14 +38,16 @@ const SupportItems = {
     supportCategoryID,
     registrationGroupID = null
   }) => {
-    axios.get(
+    return axios.get(
       `support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
     );
   }
 };
 
 const SupportGroups = {
-  getAll: () => axios.get("support-groups")
+  getAll: () => {
+    return axios.get("support-groups");
+  }
 };
 
 export default {
