@@ -128,19 +128,20 @@ class PlanItem(APIView):
 
     @api_view(['POST', ])
     @csrf_exempt
-    def create(request,participantID,planID,planCategoryID):
+    def create(request,participantID,planGoalID,planCategoryID):
         support_item_id=request.data.get("supportItemID")
         price=request.data.get("price")
         number=request.data.get("number")
         try:
-            new_item=SupportItem.objects.get(pk=support_item_id)
-            participant=models.Participant.objects.get(pk=participantID)
-            plan=Plan.objects.get(pk=planID)
-            planCategory=PlanCategory.objects.get(pk=planCategoryID)
+            SupportItem.objects.get(pk=support_item_id)
+            models.Participant.objects.get(pk=participantID)
+            PlanGoal.objects.get(pk=planGoalID)
+            PlanCategory.objects.get(pk=planCategoryID)
         except :
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-
+            plan_item=PlanItem(plan_category=planCategoryID,support_item=support_item_id,plan_goal=planGoalID,quantity=number,price_actual=price)
+            plan_item.save()
             return Response(status=status.HTTP_200_OK)
 
 
