@@ -117,9 +117,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SupportItem"
-                  
-  /participants/{participantID}/plans/{planID}/plan-categories/{planCategoryID}/plan-items:
-    post:
+
+  ? /participants/{participantID}/plans/{planID}/plan-categories/{planCategoryID}/plan-items
+  : post:
       tags:
         - plan item
       summary: Create a plan item for a participant's plan.
@@ -152,7 +152,7 @@ paths:
           $ref: "#/components/responses/Unauthenticated"
         "403":
           $ref: "#/components/responses/Unauthorised"
-          
+
 components:
   schemas:
     SupportGroup:
@@ -248,7 +248,7 @@ components:
       required: true
       schema:
         type: integer
-        
+
     PlanCategoryID:
       name: planCategoryID
       in: path
@@ -256,4 +256,3 @@ components:
       required: true
       schema:
         type: integer
-
