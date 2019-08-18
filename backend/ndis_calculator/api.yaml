@@ -119,45 +119,48 @@ paths:
                   $ref: "#/components/schemas/SupportItem"
 
   ? /participants/{participantID}/plans/{planID}/plan-categories/{planCategoryID}/plan-items
-  : post:
-      tags:
-        - plan item
-      summary: Create a plan item for a participant's plan.
-      description: Create a plan item for a participant in one of his existing plans under the correct category.
-      parameters:
-        - $ref: "#/components/parameters/ParticipantID"
-        - $ref: "#/components/parameters/PlanID"
-        - $ref: "#/components/parameters/PlanCategoryID"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                supportItemID:
-                  type: integer
-                  example: 144
-      responses:
-        "201":
-          description: success
+    : post:
+        tags:
+          - plan item
+        summary: Create a plan item for a participant's plan.
+        description: Create a plan item for a participant in one of his existing plans under the correct category.
+        parameters:
+          - $ref: "#/components/parameters/ParticipantID"
+          - $ref: "#/components/parameters/PlanID"
+          - $ref: "#/components/parameters/PlanCategoryID"
+        requestBody:
+          required: true
           content:
             application/json:
               schema:
-                type: integer
-                description: plan item id
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthenticated"
-        "403":
-          $ref: "#/components/responses/Unauthorised"
+                type: object
+                properties:
+                  supportItemID:
+                    type: integer
+                    example: 144
+        responses:
+          "201":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: integer
+                  description: plan item id
+          "400":
+            $ref: "#/components/responses/BadRequest"
+          "401":
+            $ref: "#/components/responses/Unauthenticated"
+          "403":
+            $ref: "#/components/responses/Unauthorised"
 
 components:
   schemas:
     SupportGroup:
       type: object
       properties:
+        id:
+          type: integer
+          example: 1
         name:
           type: string
           example: "Capital"
