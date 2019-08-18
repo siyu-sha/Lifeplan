@@ -21,6 +21,7 @@ from budgeting.views import Authentication
 from budgeting.views import Participant
 from budgeting.views import SupportGroupViewSet
 from budgeting.views import SupportItemViewSet
+from budgeting.views import PlanItem
 
 support_group_list = SupportGroupViewSet.as_view({
     'get': 'list'
