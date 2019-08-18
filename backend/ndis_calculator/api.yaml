@@ -138,6 +138,12 @@ paths:
                 supportItemID:
                   type: integer
                   example: 144
+                price:
+                  type: number
+                  example: 120.22
+                number:
+                  type: integer
+                  example: 1
       responses:
         "201":
           description: success
