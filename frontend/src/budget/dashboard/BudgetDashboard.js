@@ -8,6 +8,7 @@ import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
 import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
+import api from "../../api";
 
 function generateData() {
   const mainGroups = {
@@ -49,19 +50,21 @@ function generateData() {
   //     allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
   //   });
   // });
+  let count = 1;
   mainGroups.capital.forEach(value => {
     const maxAmount = 5000; //Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
     const allocatedAmount = 0; //Math.round(Math.random() * maxAmount * 100) / 100;
     const color = [0, 0, Math.floor(Math.random() * (255 - 64 - 64)) + 64];
     data.capital.push({
       category: value,
+      id: count,
       total: maxAmount,
       allocated: allocatedAmount,
       totalColor: `rgba(${color[0]},${color[1]},${color[2]},1)`,
       allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
     });
   });
-  let count = 1;
+
   mainGroups.capacityBuilding.forEach(value => {
     const maxAmount = count * 10000;
     count += 1;
@@ -69,6 +72,7 @@ function generateData() {
     const color = [0, Math.floor(Math.random() * (255 - 64 - 64)) + 64, 0];
     data.capacityBuilding.push({
       category: value,
+      id: count,
       total: maxAmount,
       allocated: allocatedAmount,
       totalColor: `rgba(${color[0]},${color[1]},${color[2]},1)`,
@@ -77,6 +81,42 @@ function generateData() {
   });
 
   return data;
+}
+
+/**
+ * assign the data from backend to the view
+ * @param newMainGroup the responded data from server
+ * @return newData the new reconstructed data from back end
+ */
+function backendDataReturn(newMainGroup) {
+  let newData = {};
+  let newCount = 1;
+
+  newMainGroup.forEach(newValue => {
+    let newKey = newValue["name"];
+    let categories = newValue["supportCategories"];
+
+    newData[newKey] = [];
+    categories.forEach(value => {
+      const maxAmount = newCount * 10000; //Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
+      newCount += 1;
+      const allocatedAmount = 0; //Math.round(Math.random() * maxAmount * 100) / 100;
+      const color = [0, 0, Math.floor(Math.random() * (255 - 64 - 64)) + 64];
+
+      const dataValue = {
+        category: value.name,
+        id: value.id,
+        total: maxAmount,
+        allocated: allocatedAmount,
+        totalColor: `rgba(${color[0]},${color[1]},${color[2]},1)`,
+        allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
+      };
+
+      newData[newKey].push(dataValue);
+    });
+  });
+
+  return newData;
 }
 
 export default class BudgetDashBoard extends React.Component {
@@ -88,6 +128,16 @@ export default class BudgetDashBoard extends React.Component {
       activeMainGroup: null,
       activeCategory: null
     };
+  }
+
+  componentDidMount() {
+    api.SupportGroups.getAll()
+      .then(response => {
+        this.setState({ data: { ...backendDataReturn(response.data) } });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   handleAddAllocated = (mainGroup, category, amount) => {
@@ -173,39 +223,32 @@ export default class BudgetDashBoard extends React.Component {
             {/*  sectionName="Core Supports"*/}
             {/*  categories={data.coreSupports}*/}
             {/*/>*/}
-            <BudgetCategorySection sectionName="Capital">
-              {data.capital.map((value, index) => {
-                return (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                    <BudgetCategoryCard
-                      {...value}
-                      openSupports={() =>
-                        this.handleOpenSupports("capital", value.category)
-                      }
-                      key={index}
-                    />
-                  </Grid>
-                );
-              })}
-            </BudgetCategorySection>
-            <BudgetCategorySection sectionName="Capacity Building">
-              {data.capacityBuilding.map((value, index) => {
-                return (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                    <BudgetCategoryCard
-                      {...value}
-                      openSupports={() =>
-                        this.handleOpenSupports(
-                          "capacityBuilding",
-                          value.category
-                        )
-                      }
-                      key={index}
-                    />
-                  </Grid>
-                );
-              })}
-            </BudgetCategorySection>
+            {Object.keys(data).map((dataKey, dataIndex) => {
+              return (
+                <BudgetCategorySection sectionName={dataKey} key={dataIndex}>
+                  {data[dataKey].map((value, index) => {
+                    return (
+                      <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={4}
+                        lg={3}
+                        key={value.id || index}
+                      >
+                        <BudgetCategoryCard
+                          {...value}
+                          openSupports={() =>
+                            this.handleOpenSupports(dataKey, value.category)
+                          }
+                          key={value.id || index}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </BudgetCategorySection>
+              );
+            })}
           </Grid>
         </Grid>
         <SupportsPopup
