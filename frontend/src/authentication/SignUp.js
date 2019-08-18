@@ -59,7 +59,8 @@ class SignUp extends React.Component {
     postcode: "",
     birthYear: "",
     accept: false,
-    submitted: false
+    submitted: false,
+    submittedSuccess: true
   };
 
   handleInput = event => {
@@ -103,7 +104,12 @@ class SignUp extends React.Component {
         Api.setToken(token);
         this.props.history.push("/");
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log("this is the err " + err);
+        this.setState({ submittedSuccess: false });
+        //console.log("submittedSuccess is " + this.state.submittedSuccess);
+        //console.log("error message " + err.response.data.mes);
+      });
 
     // send email and password
   };
@@ -130,6 +136,7 @@ class SignUp extends React.Component {
           <Typography component={"h1"} variant={"h5"}>
             Sign Up
           </Typography>
+
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={email}>Email Address</InputLabel>
@@ -200,6 +207,18 @@ class SignUp extends React.Component {
               }
               label="Click to accept our Terms & Conditions"
             />
+            {!this.state.submittedSuccess && (
+              <Typography
+                variant="button"
+                display="block"
+                gutterBottom
+                align="center"
+                color="error"
+              >
+                invalid email address
+              </Typography>
+            )}
+
             <Button
               type="submit"
               variant="contained"
