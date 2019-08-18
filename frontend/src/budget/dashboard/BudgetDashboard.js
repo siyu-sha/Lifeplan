@@ -6,8 +6,8 @@ import { CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
+import SupportItemSelector from "./SupportItemSelector";
 
 function generateData() {
   const mainGroups = {
@@ -86,8 +86,26 @@ export default class BudgetDashBoard extends React.Component {
       data: { ...generateData() },
       openSupports: false,
       activeMainGroup: null,
-      activeCategory: null
+      activeCategory: null,
+      supportCategoryID: 7,
+      supportCategoryName: "Assistive technology",
+      birthYear: 1990,
+      postcode: 3000
     };
+  }
+
+  componentDidMount() {
+    const isLoggedIn = true;
+    // TODO: handle logged in
+    const data = isLoggedIn
+      ? {}
+      : {
+          birthYear: localStorage.getItem("birthYear"),
+          postcode: localStorage.getItem("postcode")
+        };
+    this.setState({
+      ...data
+    });
   }
 
   handleAddAllocated = (mainGroup, category, amount) => {
@@ -131,6 +149,14 @@ export default class BudgetDashBoard extends React.Component {
       });
     });
     const available = total - allocated;
+
+    const {
+      supportCategoryID,
+      supportCategoryName,
+      birthYear,
+      postcode
+    } = this.state;
+
     return (
       <div className="root">
         <Grid container justify="center">
@@ -208,12 +234,13 @@ export default class BudgetDashBoard extends React.Component {
             </BudgetCategorySection>
           </Grid>
         </Grid>
-        <SupportsPopup
+        <SupportItemSelector
           open={this.state.openSupports}
-          closeSupports={this.handleCloseSupports}
-          addAllocated={this.handleAddAllocated}
-          mainGroup={this.state.activeMainGroup}
-          category={this.state.activeCategory}
+          supportCategoryID={supportCategoryID}
+          supportCategoryName={supportCategoryName}
+          birthYear={birthYear}
+          postcode={postcode}
+          onClose={this.handleCloseSupports}
         />
       </div>
     );
