@@ -6,9 +6,9 @@ import { CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
 import api from "../../api";
+import SupportItemSelector from "./SupportItemSelector";
 
 function generateData() {
   const mainGroups = {
@@ -120,24 +120,47 @@ function backendDataReturn(newMainGroup) {
 }
 
 export default class BudgetDashBoard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: { ...generateData() },
-      openSupports: false,
-      activeMainGroup: null,
-      activeCategory: null
-    };
-  }
+  state = {
+    supportGroupData: null,
+    data: { ...generateData() },
+    openSupports: false,
+    activeMainGroup: null,
+    activeCategory: null,
+    supportCategoryID: 7,
+    supportCategoryName: "Assistive technology",
+    birthYear: 1990,
+    postcode: 3000
+  };
 
   componentDidMount() {
+    const isLoggedIn = false;
+
+    let planData = {};
+
     api.SupportGroups.getAll()
       .then(response => {
+        console.log(response.data);
         this.setState({ data: { ...backendDataReturn(response.data) } });
       })
       .catch(error => {
         console.log(error);
       });
+
+    if (isLoggedIn) {
+      // TODO: get plan data from backend
+      // TODO: get birth year and postcode from backend
+    } else {
+      // get categories from local storage
+    }
+    const data = isLoggedIn
+      ? {}
+      : {
+          birthYear: localStorage.getItem("birthYear"),
+          postcode: localStorage.getItem("postcode")
+        };
+    this.setState({
+      ...data
+    });
   }
 
   handleAddAllocated = (mainGroup, category, amount) => {
@@ -181,6 +204,14 @@ export default class BudgetDashBoard extends React.Component {
       });
     });
     const available = total - allocated;
+
+    const {
+      supportCategoryID,
+      supportCategoryName,
+      birthYear,
+      postcode
+    } = this.state;
+
     return (
       <div className="root">
         <Grid container justify="center">
@@ -251,12 +282,13 @@ export default class BudgetDashBoard extends React.Component {
             })}
           </Grid>
         </Grid>
-        <SupportsPopup
+        <SupportItemSelector
           open={this.state.openSupports}
-          closeSupports={this.handleCloseSupports}
-          addAllocated={this.handleAddAllocated}
-          mainGroup={this.state.activeMainGroup}
-          category={this.state.activeCategory}
+          supportCategoryID={supportCategoryID}
+          supportCategoryName={supportCategoryName}
+          birthYear={birthYear}
+          postcode={postcode}
+          onClose={this.handleCloseSupports}
         />
       </div>
     );
