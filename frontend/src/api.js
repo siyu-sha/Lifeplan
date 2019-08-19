@@ -12,12 +12,17 @@ const setToken = token => {
 };
 
 const Auth = {
-  login: ({ email, password }) => {
-    axios.post("auth/login", {
-      username: email,
-      password
-    });
+  //log in submitted data format: {username : username, password : password}
+  login: function({ username, passward }) {
+    return axios.post("auth/login", arguments[0]);
   },
+
+  //({ email, password }) => {
+  //axios.post("auth/login", {
+  //username: email,
+  //password: password
+  //});
+  //},
   // needs email, password, firstName, lastName, postcode, birthYear
   register: function({
     email,
@@ -27,6 +32,8 @@ const Auth = {
     postcode,
     birthYear
   }) {
+    console.log("argu 0 is ");
+    console.log(arguments[0]);
     return axios.post("auth/register", arguments[0]);
   }
 };

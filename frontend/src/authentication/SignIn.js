@@ -12,6 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { Grid } from "@material-ui/core";
+import Api from "../api";
 
 const styles = theme => ({
   main: {
@@ -64,7 +65,9 @@ class SignIn extends React.Component {
     email: "",
     password: "",
     remember: false,
-    submitted: false
+    submitted: false,
+    loggedIn: false,
+    loggedInFailure: false
   };
 
   handleInput = event => {
@@ -88,6 +91,28 @@ class SignIn extends React.Component {
       "I was triggered" + email + password + remember + "handleSubmit"
     );
 
+    const logInfo = {
+      username: this.state.email,
+      password: this.state.password
+    };
+
+    Api.Auth.login(logInfo)
+      .then(responese => {
+        console.log("the received responese is : ");
+        console.log(responese.data.refresh);
+        this.setState({
+          loggedIn: true
+        });
+        const token = "token";
+        localStorage.setItem(token, responese.data.refresh);
+      })
+      .catch(err => {
+        console.log("this is the err " + err);
+        this.setState({
+          loggedInFailure: true
+        });
+      });
+
     // send email and password
   };
 
@@ -108,6 +133,28 @@ class SignIn extends React.Component {
           <Typography component={"h1"} variant={"h5"}>
             Sign in
           </Typography>
+          {this.state.loggedIn && (
+            <Typography
+              variant="button"
+              display="block"
+              gutterBottom
+              align="center"
+              color="error"
+            >
+              logged in successfully
+            </Typography>
+          )}
+          {this.state.loggedInFailure && (
+            <Typography
+              variant="button"
+              display="block"
+              gutterBottom
+              align="center"
+              color="error"
+            >
+              Incorrect password or username
+            </Typography>
+          )}
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={margin_size} required fullWidth>
               <InputLabel htmlFor={email}>Email Address</InputLabel>
