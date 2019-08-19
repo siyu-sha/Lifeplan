@@ -294,7 +294,7 @@ class CreatePlanItem(APITestCase):
     fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
 
     def setUp(self):
-        self.URL_CREATE_PLAN_ITEM = "http://localhost:8000/api/v1/participants/0/plan-goals/0/plan-categories/0/plan-items"
+        self.URL_CREATE_PLAN_ITEM =reverse('plan_item_create', kwargs={'participantID':0,'planGoalID':0,'planCategoryID':0})
         self.TEST_DATA={"supportItemID": 144,"price": 120.22,"number": 1}
 
     def test_create_plan_item(self):
