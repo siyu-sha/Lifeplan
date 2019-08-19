@@ -203,10 +203,13 @@ components:
       properties:
         id:
           type: integer
-          example: 41
+          example: 7
+        number:
+          type: integer
+          example: 101
         name:
           type: string
-          example: "Early Intervention Supports For Early Childhood"
+          example: "Accommodation / Tenancy Assistance"
 
     Plan:
       type: object
