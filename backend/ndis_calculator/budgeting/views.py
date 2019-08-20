@@ -94,7 +94,6 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
         registration_group_id = request.query_params.get('registration-group-id', None)
         support_category_id = request.query_params.get('support-category-id')
 
-
         if registration_group_id is not None:
             queryset = queryset.filter(registration_group_id=registration_group_id)
 
@@ -123,31 +122,32 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class PlanItem(APIView):
     permission_classes = (IsAuthenticated,)
 
     @api_view(['POST', ])
     @csrf_exempt
-    def create(request,participantID,planGoalID,planCategoryID):
-        support_item_id=request.data.get("supportItemID")
-        price=request.data.get("price")
-        number=request.data.get("number")
+    def create(request, participantID, planGoalID, planCategoryID):
+        support_item_id = request.data.get("supportItemID")
+        price = request.data.get("price")
+        number = request.data.get("number")
         try:
             SupportItem.objects.get(pk=support_item_id)
             models.Participant.objects.get(pk=participantID)
             PlanGoal.objects.get(pk=planGoalID)
             PlanCategory.objects.get(pk=planCategoryID)
-        except :
+        except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            plan_item=PlanItem(plan_category=planCategoryID,support_item=support_item_id,plan_goal=planGoalID,quantity=number,price_actual=price)
+            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id, plan_goal=planGoalID, quantity=number, price_actual=price)
             serializer = PlanItemSerializer(data=plan_item)
             if serializer.is_valid():
                 serializer.save()
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_200_OK)
-        
+
     # def getList(request):
     #     if request.method == 'GET':
     #         # birth_year = request.query_params.get('birth-year')

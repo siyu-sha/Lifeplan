@@ -289,14 +289,15 @@ class SupportItemTests(APITestCase):
                 self.assertEqual(float(item['price']), test.price_national)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-#Needs updating after adding information in database
+
+# Needs updating after adding information in database
 class CreatePlanItem(APITestCase):
     fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
 
     def setUp(self):
-        self.URL_CREATE_PLAN_ITEM =reverse('plan_item_create', kwargs={'participantID':0,'planGoalID':0,'planCategoryID':0})
-        self.TEST_DATA={"supportItemID": 144,"price": 120.22,"number": 1}
+        self.URL_CREATE_PLAN_ITEM = reverse('plan_item_create', kwargs={'participantID': 0, 'planGoalID': 0, 'planCategoryID': 0})
+        self.TEST_DATA = {"supportItemID": 144, "price": 120.22, "number": 1}
 
     def test_create_plan_item(self):
-        response = self.client.post(self.URL_CREATE_PLAN_ITEM,self.TEST_DATA)
+        response = self.client.post(self.URL_CREATE_PLAN_ITEM, self.TEST_DATA)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
