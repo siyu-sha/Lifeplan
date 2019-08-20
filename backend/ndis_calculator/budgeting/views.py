@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 from .serializers import *
 from rest_framework import status, viewsets
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Create your views here.
@@ -137,10 +138,11 @@ class PlanItem(APIView):
             models.Participant.objects.get(pk=participantID)
             PlanGoal.objects.get(pk=planGoalID)
             PlanCategory.objects.get(pk=planCategoryID)
-        except:
+        except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id, plan_goal=planGoalID, quantity=number, price_actual=price)
+            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id, plan_goal=planGoalID,
+                                 quantity=number, price_actual=price)
             serializer = PlanItemSerializer(data=plan_item)
             if serializer.is_valid():
                 serializer.save()
