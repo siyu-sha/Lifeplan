@@ -1,7 +1,9 @@
 import axios from "axios";
 
 axios.defaults.baseURL =
-  process.env.NODE_ENV === "production" ? "/api/v1" : "/api/v1";
+  process.env.NODE_ENV === "production"
+    ? "http://lachieblack.com:8000/api/v1"
+    : "http://localhost:8000/api/v1";
 
 const setToken = token => {
   if (token !== null) {
@@ -9,11 +11,9 @@ const setToken = token => {
   }
 };
 
-console.log(axios.defaults.headers);
-
 const Auth = {
   login: ({ email, password }) => {
-    return axios.post("auth/login", {
+    return axios.post("/auth/login", {
       username: email,
       password
     });
@@ -27,7 +27,7 @@ const Auth = {
     postcode,
     birthYear
   }) {
-    return axios.post("auth/register", arguments[0]);
+    return axios.post("/auth/register", arguments[0]);
   }
 };
 
@@ -39,14 +39,14 @@ const SupportItems = {
     registrationGroupID = null
   }) => {
     return axios.get(
-      `support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
+      `/support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
     );
   }
 };
 
 const SupportGroups = {
   all: () => {
-    return axios.get("support-groups");
+    return axios.get("/support-groups");
   }
 };
 
