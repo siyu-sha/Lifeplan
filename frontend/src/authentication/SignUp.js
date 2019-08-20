@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Api from "../api";
 import { browserHistory } from "react-router";
+import AlertMessage from "../common/AlertMessage";
 
 const styles = theme => ({
   main: {
@@ -60,7 +61,8 @@ class SignUp extends React.Component {
     birthYear: "",
     accept: false,
     submitted: false,
-    submittedSuccess: true
+    submittedSuccess: true,
+    alertMessage: "Oops"
   };
 
   handleInput = event => {
@@ -80,7 +82,9 @@ class SignUp extends React.Component {
 
     const { email, password, accept, firstName, lastName } = this.state;
 
-    console.log("I was triggered" + email + password + accept + "test");
+    //console.log("I was triggered" + email + password + accept + "test");
+
+    var errors = [];
 
     const Reginfo = {
       email: this.state.email,
@@ -92,21 +96,38 @@ class SignUp extends React.Component {
     };
 
     Api.Auth.register(Reginfo)
-      .then(responese => {
+      .then(response => {
         //console.log(responese.data);
-        const token = responese.data.tokens;
+        const token = response.data.tokens;
         console.log(
           "the received token is: " +
             token.access +
             ", and refresh component is " +
             token.refresh
         );
+        //console.log("response status is " + response.status);
+        //console.log("updated!!!!!!!!!!!!!!!");
         Api.setToken(token);
         this.props.history.push("/");
       })
       .catch(err => {
-        console.log("this is the err " + err);
+        //console.log("this is the err " + err);
         this.setState({ submittedSuccess: false });
+        //console.log("error response status is " + err.response.status);
+        //console.log("error response data is " + err.response.data);
+        //console.log("error response header is " + err.response.headers);
+
+        let keys = Object.keys(err.response.data);
+
+        for (let key of keys) {
+          //console.log(key);
+          //console.log(err.response.data[key].toString());
+          errors.push(err.response.data[key].toString());
+        }
+        //console.log(errors);
+        this.setState({
+          alertMessage: errors[0]
+        });
         //console.log("submittedSuccess is " + this.state.submittedSuccess);
         //console.log("error message " + err.response.data.mes);
       });
@@ -130,6 +151,9 @@ class SignUp extends React.Component {
       <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
+          {!this.state.submittedSuccess && (
+            <AlertMessage messages={this.state.alertMessage} />
+          )}
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
@@ -207,17 +231,6 @@ class SignUp extends React.Component {
               }
               label="Click to accept our Terms & Conditions"
             />
-            {!this.state.submittedSuccess && (
-              <Typography
-                variant="button"
-                display="block"
-                gutterBottom
-                align="center"
-                color="error"
-              >
-                invalid email address
-              </Typography>
-            )}
 
             <Button
               type="submit"

@@ -32,8 +32,6 @@ const Auth = {
     postcode,
     birthYear
   }) {
-    console.log("argu 0 is ");
-    console.log(arguments[0]);
     return axios.post("auth/register", arguments[0]);
   }
 };
