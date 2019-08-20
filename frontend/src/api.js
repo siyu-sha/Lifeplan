@@ -1,15 +1,15 @@
 import axios from "axios";
 
 axios.defaults.baseURL =
-  process.env.NODE_ENV === "production"
-    ? "http://localhost:8000/api/v1/"
-    : "http://localhost:8000/api/v1/";
+  process.env.NODE_ENV === "production" ? "/api/v1" : "/api/v1";
 
 const setToken = token => {
   if (token !== null) {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
   }
 };
+
+console.log(axios.defaults.headers);
 
 const Auth = {
   login: ({ email, password }) => {
