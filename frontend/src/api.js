@@ -45,7 +45,7 @@ const SupportItems = {
 };
 
 const SupportGroups = {
-  getAll: () => {
+  all: () => {
     return axios.get("support-groups");
   }
 };
