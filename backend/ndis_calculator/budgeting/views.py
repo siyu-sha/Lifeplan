@@ -141,12 +141,13 @@ class PlanItem(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             plan_item=PlanItem(plan_category=planCategoryID,support_item=support_item_id,plan_goal=planGoalID,quantity=number,price_actual=price)
-            plan_item.save()
+            serializer = PlanItemSerializer(data=plan_item)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_200_OK)
-
-
-
-
+        
     # def getList(request):
     #     if request.method == 'GET':
     #         # birth_year = request.query_params.get('birth-year')
