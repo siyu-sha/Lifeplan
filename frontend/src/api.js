@@ -8,6 +8,7 @@ axios.defaults.baseURL =
 const setToken = token => {
   if (token !== null) {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    localStorage.setItem("token", token);
   }
 };
 

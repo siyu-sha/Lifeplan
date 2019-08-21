@@ -16,7 +16,7 @@ const PLAN_CATEGORIES = "planCategories";
 
 function calculateAllocated(planItems) {
   let allocated = 0;
-  planItems.map(planItem => {
+  _.forEach(planItems, planItem => {
     allocated += planItem.quantity * planItem.priceActual;
   });
   return allocated;
@@ -65,38 +65,29 @@ export default class BudgetDashBoard extends React.Component {
 
   // load plan categories, birthYear and postcode either from backend if logged in else from local storage
   loadState = () => {
-    let planCategories = {};
-    let birthYear = 1990;
-    let postcode = 3000;
     if (isLoggedIn) {
       // todo: call backend
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
-      let cachedBirthYear = localStorage.getItem("birthYear");
-      let cachedPostcode = localStorage.getItem("postcode");
-      if (cachedPlanCategories == null) {
-        _.map(this.state.supportGroups, supportGroup => {
-          _.map(supportGroup.supportCategories, supportCategory => {
-            planCategories[supportCategory.id] = {
-              budget: 1000,
-              planItems: []
-            };
-          });
+      const cachedBirthYear = localStorage.getItem("birthYear");
+      const cachedPostcode = localStorage.getItem("postcode");
+      if (
+        cachedPostcode != null &&
+        cachedBirthYear != null &&
+        cachedPlanCategories != null
+      ) {
+        const planCategories = JSON.parse(cachedPlanCategories);
+        const birthYear = parseInt(cachedBirthYear);
+        const postcode = parseInt(cachedPostcode);
+        this.setState({
+          planCategories,
+          birthYear,
+          postcode
         });
-        cachedPlanCategories = JSON.stringify(planCategories);
-        localStorage.setItem(PLAN_CATEGORIES, cachedPlanCategories);
       } else {
-        planCategories = JSON.parse(cachedPlanCategories);
+        this.props.history.push("/budget/edit");
       }
-      birthYear = cachedBirthYear ? parseInt(cachedBirthYear) : birthYear;
-      postcode = cachedPostcode ? parseInt(cachedPostcode) : postcode;
     }
-
-    this.setState({
-      planCategories,
-      birthYear,
-      postcode
-    });
   };
 
   findSupportCategory = () => {
@@ -184,41 +175,52 @@ export default class BudgetDashBoard extends React.Component {
 
   renderPlanCategories = () => {
     return _.map(this.state.supportGroups, supportGroup => {
-      return (
-        <BudgetCategorySection
-          sectionName={supportGroup.name}
-          key={supportGroup.id}
-        >
-          {_.map(supportGroup.supportCategories, supportCategory => {
-            const planCategory = this.state.planCategories[supportCategory.id];
-            if (planCategory.budget > 0) {
-              return (
-                <Grid
-                  key={supportCategory.id}
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                >
-                  <BudgetCategoryCard
-                    {...{
-                      category: supportCategory.name,
-                      total: planCategory.budget,
-                      allocated: calculateAllocated(planCategory.planItems),
-                      totalColor: LIGHT_BLUE,
-                      allocatedColor: DARK_BLUE
-                    }}
-                    openSupports={() =>
-                      this.handleOpenSupports(supportCategory.id)
-                    }
-                  />
-                </Grid>
-              );
-            }
-          })}
-        </BudgetCategorySection>
-      );
+      let renderedPlanCategories = [];
+      _.forEach(supportGroup.supportCategories, supportCategory => {
+        const planCategory = this.state.planCategories[supportCategory.id];
+        if (planCategory.budget > 0) {
+          renderedPlanCategories.push(planCategory);
+        }
+      });
+      if (renderedPlanCategories.length !== 0) {
+        return (
+          <BudgetCategorySection
+            sectionName={supportGroup.name}
+            key={supportGroup.id}
+          >
+            {_.map(supportGroup.supportCategories, supportCategory => {
+              const planCategory = this.state.planCategories[
+                supportCategory.id
+              ];
+              if (planCategory.budget > 0) {
+                return (
+                  <Grid
+                    key={supportCategory.id}
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                  >
+                    <BudgetCategoryCard
+                      {...{
+                        category: supportCategory.name,
+                        total: planCategory.budget,
+                        allocated: calculateAllocated(planCategory.planItems),
+                        totalColor: LIGHT_BLUE,
+                        allocatedColor: DARK_BLUE
+                      }}
+                      openSupports={() =>
+                        this.handleOpenSupports(supportCategory.id)
+                      }
+                    />
+                  </Grid>
+                );
+              }
+            })}
+          </BudgetCategorySection>
+        );
+      }
     });
   };
 

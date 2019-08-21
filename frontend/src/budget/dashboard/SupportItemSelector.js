@@ -39,7 +39,7 @@ export default function SupportItemSelector(props) {
   // React Hooks
   const [supportItems, setSupportItems] = useState([]);
   const [highlightAddedPlanItem, setHighlightAddedPlanItem] = useState(false);
-  const [registrationGroupId, setRegistrationGroupId] = useState(null);
+  const [registrationGroupId] = useState(null);
   const theme = useTheme();
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   const classes = useStyles();
