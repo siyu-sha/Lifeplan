@@ -146,13 +146,17 @@ class SignUp extends React.Component {
     const postCode = "postcode";
     const birthYear = "birthYear";
     const accept = "accept";
+    const alertVariant = "warning";
 
     return (
       <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
           {!this.state.submittedSuccess && (
-            <AlertMessage messages={this.state.alertMessage} />
+            <AlertMessage
+              messages={this.state.alertMessage}
+              variant={alertVariant}
+            />
           )}
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />

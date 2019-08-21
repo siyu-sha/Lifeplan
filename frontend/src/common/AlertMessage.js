@@ -86,7 +86,7 @@ MySnackbarContentWrapper.propTypes = {
 export default function AlertMessage(props) {
   const [open, setOpen] = React.useState(true);
   //const status = this.props.status;
-  const { messages } = props;
+  const { messages, variant } = props;
 
   function handleClose(event, reason) {
     console.log("triggerred closed");
@@ -110,7 +110,7 @@ export default function AlertMessage(props) {
       >
         <MySnackbarContentWrapper
           onClose={handleClose}
-          variant="warning"
+          variant={variant}
           message={messages}
         />
       </Snackbar>
@@ -119,5 +119,6 @@ export default function AlertMessage(props) {
 }
 
 AlertMessage.propTypes = {
-  messages: PropTypes.string.isRequired
+  messages: PropTypes.string.isRequired,
+  variant: PropTypes.oneOf(["error", "info", "success", "warning"]).isRequired
 };

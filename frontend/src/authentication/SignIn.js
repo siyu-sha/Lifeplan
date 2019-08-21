@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { Grid } from "@material-ui/core";
 import Api from "../api";
+import AlertMessage from "../common/AlertMessage";
 
 const styles = theme => ({
   main: {
@@ -67,7 +68,10 @@ class SignIn extends React.Component {
     remember: false,
     submitted: false,
     loggedIn: false,
-    loggedInFailure: false
+    loggedInFailure: false,
+    alertVariant: "",
+    displayMessage: "",
+    alertVariant: ""
   };
 
   handleInput = event => {
@@ -97,19 +101,26 @@ class SignIn extends React.Component {
     };
 
     Api.Auth.login(logInfo)
-      .then(responese => {
-        console.log("the received responese is : ");
-        console.log(responese.data.refresh);
+      .then(response => {
+        console.log("the received response is : ");
+        console.log(response.data.refresh);
         this.setState({
-          loggedIn: true
+          loggedIn: true,
+          displayMessage: "Login succeeds",
+          alertVariant: "success"
         });
         const token = "token";
-        localStorage.setItem(token, responese.data.refresh);
+        const refresh = "refresh";
+        localStorage.setItem(token, response.data.token);
+        localStorage.setItem(refresh, response.data.response);
+        Api.setToken(response.data.token);
       })
       .catch(err => {
         console.log("this is the err " + err);
         this.setState({
-          loggedInFailure: true
+          loggedInFailure: true,
+          displayMessage: "Login Failed. Incorrect username or password",
+          alertVariant: "error"
         });
       });
 
@@ -134,26 +145,16 @@ class SignIn extends React.Component {
             Sign in
           </Typography>
           {this.state.loggedIn && (
-            <Typography
-              variant="button"
-              display="block"
-              gutterBottom
-              align="center"
-              color="error"
-            >
-              logged in successfully
-            </Typography>
+            <AlertMessage
+              messages={this.state.displayMessage}
+              variant={this.state.alertVariant}
+            />
           )}
           {this.state.loggedInFailure && (
-            <Typography
-              variant="button"
-              display="block"
-              gutterBottom
-              align="center"
-              color="error"
-            >
-              Incorrect password or username
-            </Typography>
+            <AlertMessage
+              messages={this.state.displayMessage}
+              variant={this.state.alertVariant}
+            />
           )}
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={margin_size} required fullWidth>
