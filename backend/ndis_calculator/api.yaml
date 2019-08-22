@@ -117,16 +117,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SupportItem"
-                  
-  /participants/{participantID}/plans/{planID}/plan-categories/{planCategoryID}/plan-items:
-    post:
+
+  /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
+  : post:
       tags:
         - plan item
       summary: Create a plan item for a participant's plan.
-      description: Create a plan item for a participant in one of his existing plans under the correct category.
+      description: Create a plan item for a plan in one of his existing goals under the correct category.
       parameters:
         - $ref: "#/components/parameters/ParticipantID"
-        - $ref: "#/components/parameters/PlanID"
+        - $ref: "#/components/parameters/PlanGoalID"
         - $ref: "#/components/parameters/PlanCategoryID"
       requestBody:
         required: true
@@ -138,6 +138,12 @@ paths:
                 supportItemID:
                   type: integer
                   example: 144
+                price:
+                  type: number
+                  example: 120.22
+                number:
+                  type: integer
+                  example: 1
       responses:
         "201":
           description: success
@@ -152,7 +158,7 @@ paths:
           $ref: "#/components/responses/Unauthenticated"
         "403":
           $ref: "#/components/responses/Unauthorised"
-          
+
 components:
   schemas:
     SupportGroup:
@@ -203,13 +209,10 @@ components:
       properties:
         id:
           type: integer
-          example: 7
-        number:
-          type: integer
-          example: 101
+          example: 41
         name:
           type: string
-          example: "Accommodation / Tenancy Assistance"
+          example: "Early Intervention Supports For Early Childhood"
 
     Plan:
       type: object
@@ -251,7 +254,7 @@ components:
       required: true
       schema:
         type: integer
-        
+
     PlanCategoryID:
       name: planCategoryID
       in: path
@@ -260,3 +263,10 @@ components:
       schema:
         type: integer
 
+    PlanGoalID:
+      name: planGoalID
+      in: path
+      description: plan goal ID
+      required: true
+      schema:
+        type: integer
