@@ -5,10 +5,9 @@ import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
 //TODO: update this line to use @material-ui/styles
 import { makeStyles } from "@material-ui/core/styles";
-import { DARK_BLUE, LIGHT_BLUE, NAV_BAR_HEIGHT } from "../common/theme";
+import { NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
 import classNames from "classnames";
-import { palette } from "@material-ui/system";
 
 const useStyles = makeStyles(theme => ({
   home: {

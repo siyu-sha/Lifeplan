@@ -35,6 +35,8 @@ pipeline{
                         sh "./setup-env.sh"
                         sh "docker-compose -f docker-compose-CI.test.yml build"
                         sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
+                        sh 'docker cp "$(docker-compose -f docker-compose-CI.test.yml ps -a -q django)":app/ndis_calculator/coverage.xml ./backend/ndis_calculator/coverage.xml'
+                        cobertura coberturaReportFile: 'backend/ndis_calculator/coverage.xml' 
                     }
                     post{
                         always{
@@ -62,7 +64,7 @@ pipeline{
             }
             steps{
                 sh "./setup-env.dev.sh"
-                sh "docker-compose -f docker-compose-prod.yml down"
+                sh "docker-compose -f docker-compose-prod.yml down -v"
                 sh "docker-compose -f docker-compose-prod.yml build"
                 sh "docker-compose -f docker-compose-prod.yml up -d"
             }

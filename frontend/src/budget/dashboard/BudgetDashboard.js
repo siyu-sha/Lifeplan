@@ -6,11 +6,8 @@ import { CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import Button from "@material-ui/core/Button";
-import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
-
-const MAX_AMOUNT = 10000;
+import SupportItemSelector from "./SupportItemSelector";
 
 function generateData() {
   const mainGroups = {
@@ -52,7 +49,7 @@ function generateData() {
   //     allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
   //   });
   // });
-  mainGroups.capital.map(value => {
+  mainGroups.capital.forEach(value => {
     const maxAmount = 5000; //Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
     const allocatedAmount = 0; //Math.round(Math.random() * maxAmount * 100) / 100;
     const color = [0, 0, Math.floor(Math.random() * (255 - 64 - 64)) + 64];
@@ -65,7 +62,7 @@ function generateData() {
     });
   });
   let count = 1;
-  mainGroups.capacityBuilding.map(value => {
+  mainGroups.capacityBuilding.forEach(value => {
     const maxAmount = count * 10000;
     count += 1;
     const allocatedAmount = 0; // Math.round(Math.random() * maxAmount * 100) / 100;
@@ -89,12 +86,29 @@ export default class BudgetDashBoard extends React.Component {
       data: { ...generateData() },
       openSupports: false,
       activeMainGroup: null,
-      activeCategory: null
+      activeCategory: null,
+      supportCategoryID: 7,
+      supportCategoryName: "Assistive technology",
+      birthYear: 1990,
+      postcode: 3000
     };
   }
 
+  componentDidMount() {
+    const isLoggedIn = true;
+    // TODO: handle logged in
+    const data = isLoggedIn
+      ? {}
+      : {
+          birthYear: localStorage.getItem("birthYear"),
+          postcode: localStorage.getItem("postcode")
+        };
+    this.setState({
+      ...data
+    });
+  }
+
   handleAddAllocated = (mainGroup, category, amount) => {
-    console.log(mainGroup, category);
     this.setState({
       data: {
         ...this.state.data,
@@ -135,6 +149,14 @@ export default class BudgetDashBoard extends React.Component {
       });
     });
     const available = total - allocated;
+
+    const {
+      supportCategoryID,
+      supportCategoryName,
+      birthYear,
+      postcode
+    } = this.state;
+
     return (
       <div className="root">
         <Grid container justify="center">
@@ -178,23 +200,24 @@ export default class BudgetDashBoard extends React.Component {
             {/*  categories={data.coreSupports}*/}
             {/*/>*/}
             <BudgetCategorySection sectionName="Capital">
-              {data.capital.map(value => {
+              {data.capital.map((value, index) => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                     <BudgetCategoryCard
                       {...value}
                       openSupports={() =>
                         this.handleOpenSupports("capital", value.category)
                       }
+                      key={index}
                     />
                   </Grid>
                 );
               })}
             </BudgetCategorySection>
             <BudgetCategorySection sectionName="Capacity Building">
-              {data.capacityBuilding.map(value => {
+              {data.capacityBuilding.map((value, index) => {
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                     <BudgetCategoryCard
                       {...value}
                       openSupports={() =>
@@ -203,6 +226,7 @@ export default class BudgetDashBoard extends React.Component {
                           value.category
                         )
                       }
+                      key={index}
                     />
                   </Grid>
                 );
@@ -210,12 +234,13 @@ export default class BudgetDashBoard extends React.Component {
             </BudgetCategorySection>
           </Grid>
         </Grid>
-        <SupportsPopup
+        <SupportItemSelector
           open={this.state.openSupports}
-          closeSupports={this.handleCloseSupports}
-          addAllocated={this.handleAddAllocated}
-          mainGroup={this.state.activeMainGroup}
-          category={this.state.activeCategory}
+          supportCategoryID={supportCategoryID}
+          supportCategoryName={supportCategoryName}
+          birthYear={birthYear}
+          postcode={postcode}
+          onClose={this.handleCloseSupports}
         />
       </div>
     );

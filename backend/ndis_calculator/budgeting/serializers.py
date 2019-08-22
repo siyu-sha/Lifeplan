@@ -93,3 +93,9 @@ class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItem
         fields = '__all__'
+
+
+class PlanItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanItem
+        fields = '__all__'

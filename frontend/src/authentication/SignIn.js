@@ -95,6 +95,7 @@ class SignIn extends React.Component {
       "I was triggered" + email + password + remember + "handleSubmit"
     );
 
+
     const logInfo = {
       username: this.state.email,
       password: this.state.password
@@ -123,6 +124,7 @@ class SignIn extends React.Component {
           alertVariant: "error"
         });
       });
+
 
     // send email and password
   };

@@ -3,7 +3,6 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Theme from "./theme/Theme";
 import Home from "./home/Home";
 import BudgetEdit from "./budget/edit/BudgetEdit.js";
-import SupportsPopup from "./budget/dashboard/SupportsPopup";
 import "./App.css";
 import NavBar from "./common/NavBar";
 import BudgetDashboard from "./budget/dashboard/BudgetDashboard";
@@ -30,7 +29,6 @@ class App extends Component {
               path="/DoughnutChart/Body/DoughnutChart"
               component={DoughnutChartPage}
             />
-            <Route path="/supports" component={SupportsPopup} />
             <Route path="/authentication/signin" component={SignIn} />
             <Route path="/authentication/signup" component={SignUp} />
 

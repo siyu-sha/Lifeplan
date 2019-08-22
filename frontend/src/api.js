@@ -3,7 +3,7 @@ import axios from "axios";
 axios.defaults.baseURL =
   process.env.NODE_ENV === "production"
     ? "http://localhost:8000/api/v1/"
-    : "http://localhost:8000/api/v1/";
+    : "http://lachieblack.com:8000/api/v1/";
 
 const setToken = token => {
   if (token !== null) {
@@ -12,9 +12,11 @@ const setToken = token => {
 };
 
 const Auth = {
+
   //log in submitted data format: {username : username, password : password}
   login: function({ username, passward }) {
     return axios.post("auth/login", arguments[0]);
+
   },
 
   //({ email, password }) => {
@@ -43,14 +45,16 @@ const SupportItems = {
     supportCategoryID,
     registrationGroupID = null
   }) => {
-    axios.get(
+    return axios.get(
       `support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
     );
   }
 };
 
 const SupportGroups = {
-  getAll: () => axios.get("support-groups")
+  getAll: () => {
+    return axios.get("support-groups");
+  }
 };
 
 export default {

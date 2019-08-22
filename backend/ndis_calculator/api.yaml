@@ -2,7 +2,7 @@ openapi: 3.0.2
 
 info:
   title: ndis_calculator
-  version: 1.0.0
+  version: 1.0.1
 
 servers:
   - url: http://localhost:8000/api/v1
@@ -118,6 +118,47 @@ paths:
                 items:
                   $ref: "#/components/schemas/SupportItem"
 
+  /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
+  : post:
+      tags:
+        - plan item
+      summary: Create a plan item for a participant's plan.
+      description: Create a plan item for a plan in one of his existing goals under the correct category.
+      parameters:
+        - $ref: "#/components/parameters/ParticipantID"
+        - $ref: "#/components/parameters/PlanGoalID"
+        - $ref: "#/components/parameters/PlanCategoryID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                supportItemID:
+                  type: integer
+                  example: 144
+                price:
+                  type: number
+                  example: 120.22
+                number:
+                  type: integer
+                  example: 1
+      responses:
+        "201":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: plan item id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Unauthorised"
+
 components:
   schemas:
     SupportGroup:
@@ -194,12 +235,38 @@ components:
       description: Unauthenticated
     Unauthorised:
       description: Unauthorised to access this resource
+    BadRequest:
+      description: Bad Request
 
   parameters:
     ParticipantID:
       name: participantID
       in: path
       description: participant ID
+      required: true
+      schema:
+        type: integer
+
+    PlanID:
+      name: planID
+      in: path
+      description: plan ID
+      required: true
+      schema:
+        type: integer
+
+    PlanCategoryID:
+      name: planCategoryID
+      in: path
+      description: Plan Category ID
+      required: true
+      schema:
+        type: integer
+
+    PlanGoalID:
+      name: planGoalID
+      in: path
+      description: plan goal ID
       required: true
       schema:
         type: integer

@@ -26,6 +26,11 @@ export const CustomTheme = createMuiTheme({
         // borderRadius: 25,
         fontWeight: 550
       }
+    },
+    MuiTooltip: {
+      tooltip: {
+        fontSize: "10"
+      }
     }
   }
   // props: {
