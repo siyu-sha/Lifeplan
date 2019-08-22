@@ -288,3 +288,17 @@ class SupportItemTests(APITestCase):
             else:
                 self.assertEqual(float(item['price']), test.price_national)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class RegistrationGroupTests(APITestCase):
+
+    def setUp(self):
+        self.URL_REGISTRATION_GROUP_LIST = reverse('registration_group_list')
+
+    def test_registration_group_list(self):
+        response = self.client.get(self.URL_REGISTRATION_GROUP_LIST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for registration_group in response.data:
+            self.assertIn('id', registration_group)
+            self.assertIn('number', registration_group)
+            self.assertIn('name', registration_group)
