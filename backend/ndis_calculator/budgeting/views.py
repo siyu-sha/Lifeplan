@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 from .serializers import *
 from rest_framework import status, viewsets
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Create your views here.
@@ -78,6 +79,14 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SupportGroupSerializer
 
 
+class RegistrationGroupViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all Registration groups
+    """
+    queryset = RegistrationGroup.objects.all()
+    serializer_class = RegistrationGroupSerializer
+
+
 class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List support items filtered by query parameters
@@ -93,7 +102,6 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
         postcode = request.query_params.get('postcode')
         registration_group_id = request.query_params.get('registration-group-id', None)
         support_category_id = request.query_params.get('support-category-id')
-
 
         if registration_group_id is not None:
             queryset = queryset.filter(registration_group_id=registration_group_id)
@@ -122,6 +130,33 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
             support_item.pop('price_very_remote', None)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PlanItem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @api_view(['POST', ])
+    @csrf_exempt
+    def create(request, participantID, planGoalID, planCategoryID):
+        support_item_id = request.data.get("supportItemID")
+        price = request.data.get("price")
+        number = request.data.get("number")
+        try:
+            SupportItem.objects.get(pk=support_item_id)
+            models.Participant.objects.get(pk=participantID)
+            PlanGoal.objects.get(pk=planGoalID)
+            PlanCategory.objects.get(pk=planCategoryID)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id, plan_goal=planGoalID,
+                                 quantity=number, price_actual=price)
+            serializer = PlanItemSerializer(data=plan_item)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
 
     # def getList(request):
     #     if request.method == 'GET':
