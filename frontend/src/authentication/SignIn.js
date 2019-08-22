@@ -106,7 +106,7 @@ class SignIn extends React.Component {
         console.log(response.data.refresh);
         this.setState({
           loggedIn: true,
-          displayMessage: "Login succeeds",
+          displayMessage: "Login successful",
           alertVariant: "success"
         });
         const token = "token";
