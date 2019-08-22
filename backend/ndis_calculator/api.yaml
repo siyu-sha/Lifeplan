@@ -118,7 +118,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/SupportItem"
 
-  ? /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
+  /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
   : post:
       tags:
         - plan item

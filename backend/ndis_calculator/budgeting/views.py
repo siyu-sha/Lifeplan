@@ -79,6 +79,14 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SupportGroupSerializer
 
 
+class RegistrationGroupViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all Registration groups
+    """
+    queryset = RegistrationGroup.objects.all()
+    serializer_class = RegistrationGroupSerializer
+
+
 class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List support items filtered by query parameters

@@ -289,7 +289,6 @@ class SupportItemTests(APITestCase):
                 self.assertEqual(float(item['price']), test.price_national)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
 # Needs updating after adding information in database
 class CreatePlanItem(APITestCase):
     fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
@@ -301,3 +300,17 @@ class CreatePlanItem(APITestCase):
     def test_create_plan_item(self):
         response = self.client.post(self.URL_CREATE_PLAN_ITEM, self.TEST_DATA)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class RegistrationGroupTests(APITestCase):
+
+    def setUp(self):
+        self.URL_REGISTRATION_GROUP_LIST = reverse('registration_group_list')
+
+    def test_registration_group_list(self):
+        response = self.client.get(self.URL_REGISTRATION_GROUP_LIST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for registration_group in response.data:
+            self.assertIn('id', registration_group)
+            self.assertIn('number', registration_group)
+            self.assertIn('name', registration_group)
+
