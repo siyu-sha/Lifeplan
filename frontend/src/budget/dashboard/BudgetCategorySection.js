@@ -40,9 +40,6 @@ export default function BudgetCategorySection(props) {
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <Grid container spacing={4}>
-          <Grid item xs={12}>
-            <Divider className={classes.secondary} />
-          </Grid>
           <Grid item container spacing={2}>
             {props.children}
           </Grid>

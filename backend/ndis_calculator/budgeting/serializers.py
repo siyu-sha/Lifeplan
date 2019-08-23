@@ -80,7 +80,7 @@ class SupportGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SupportGroup
-        fields = ['name', 'support_categories']
+        fields = ['id', 'name', 'support_categories']
 
 
 class RegistrationGroupSerializer(serializers.ModelSerializer):
@@ -92,4 +92,10 @@ class RegistrationGroupSerializer(serializers.ModelSerializer):
 class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItem
+        fields = '__all__'
+
+
+class PlanItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanItem
         fields = '__all__'

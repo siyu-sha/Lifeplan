@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from .validators import *
+from .managers import CustomUserManager
 from ndis_calculator import settings
 
 
@@ -8,6 +9,8 @@ from ndis_calculator import settings
 
 
 class Participant(AbstractUser):
+    objects = CustomUserManager()
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -26,7 +29,8 @@ class SupportGroup(models.Model):
 
 
 class SupportCategory(models.Model):
-    support_group = models.ForeignKey(SupportGroup, related_name='support_categories', on_delete=models.PROTECT)
+    support_group = models.ForeignKey(SupportGroup, related_name='support_categories',
+                                      on_delete=models.PROTECT)
 
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)

@@ -64,7 +64,7 @@ pipeline{
             }
             steps{
                 sh "./setup-env.dev.sh"
-                sh "docker-compose -f docker-compose-prod.yml down"
+                sh "docker-compose -f docker-compose-prod.yml down -v"
                 sh "docker-compose -f docker-compose-prod.yml build"
                 sh "docker-compose -f docker-compose-prod.yml up -d"
             }

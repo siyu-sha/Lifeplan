@@ -10,12 +10,12 @@ const useStyles = makeStyles({
   }
 });
 
-export default function BudgetForm() {
+export default function BudgetForm(props) {
   const classes = useStyles();
   return (
     <Grid container className={classes.home} justify="center">
       <Grid item xs={11} sm={8} md={6} lg={5}>
-        <FormPersonalDetails />
+        <FormPersonalDetails history={props.history} />
       </Grid>
     </Grid>
   );
