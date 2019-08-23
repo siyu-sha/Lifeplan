@@ -8,23 +8,17 @@ axios.defaults.baseURL =
 const setToken = token => {
   if (token !== null) {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    localStorage.setItem("token", token);
   }
 };
 
 const Auth = {
-
-  //log in submitted data format: {username : username, password : password}
-  login: function({ username, passward }) {
-    return axios.post("auth/login", arguments[0]);
-
+  login: ({ email, password }) => {
+    return axios.post("/auth/login", {
+      username: email,
+      password
+    });
   },
-
-  //({ email, password }) => {
-  //axios.post("auth/login", {
-  //username: email,
-  //password: password
-  //});
-  //},
   // needs email, password, firstName, lastName, postcode, birthYear
   register: function({
     email,
@@ -34,7 +28,7 @@ const Auth = {
     postcode,
     birthYear
   }) {
-    return axios.post("auth/register", arguments[0]);
+    return axios.post("/auth/register", arguments[0]);
   }
 };
 
@@ -46,14 +40,14 @@ const SupportItems = {
     registrationGroupID = null
   }) => {
     return axios.get(
-      `support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
+      `/support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
     );
   }
 };
 
 const SupportGroups = {
-  getAll: () => {
-    return axios.get("support-groups");
+  all: () => {
+    return axios.get("/support-groups");
   }
 };
 

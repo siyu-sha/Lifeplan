@@ -80,7 +80,7 @@ class SupportGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SupportGroup
-        fields = ['name', 'support_categories']
+        fields = ['id', 'name', 'support_categories']
 
 
 class RegistrationGroupSerializer(serializers.ModelSerializer):
