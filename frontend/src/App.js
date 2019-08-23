@@ -9,7 +9,6 @@ import BudgetDashboard from "./budget/dashboard/BudgetDashboard";
 import DoughnutChartPage from "./DoughnutChart/Body/DoughnutChartPage";
 import SignIn from "./authentication/SignIn";
 import SignUp from "./authentication/SignUp";
-import SupportItemSelector from "./budget/dashboard/SupportItemSelector";
 
 class App extends Component {
   render() {
@@ -31,11 +30,6 @@ class App extends Component {
             />
             <Route path="/authentication/signin" component={SignIn} />
             <Route path="/authentication/signup" component={SignUp} />
-
-            <Route
-              patth="/support-item-selector"
-              component={SupportItemSelector}
-            />
           </Switch>
         </main>
       </BrowserRouter>
