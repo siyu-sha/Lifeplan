@@ -22,10 +22,6 @@ import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 
-const LOCAL_STORAGE_KEY = "supportCategory";
-// Temporary
-const loggedIn = false;
-
 const useStyles = makeStyles({
   dialogContent: {
     minHeight: 400
@@ -33,12 +29,17 @@ const useStyles = makeStyles({
 });
 
 export default function SupportItemSelector(props) {
-  const { birthYear, postcode, supportCategoryID, supportCategoryName } = props;
+  const {
+    birthYear,
+    postcode,
+    planCategory,
+    supportCategory,
+    setPlanItems
+  } = props;
   // React Hooks
   const [supportItems, setSupportItems] = useState([]);
-  const [selectedPlanItemID, setSelectedPlanItemID] = useState(null);
-  const [registrationGroupID, setRegistrationGroupID] = useState(null);
-  const [planItems, setPlanItems] = useState([]);
+  const [highlightAddedPlanItem, setHighlightAddedPlanItem] = useState(false);
+  const [registrationGroupId] = useState(null);
   const theme = useTheme();
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   const classes = useStyles();
@@ -46,10 +47,10 @@ export default function SupportItemSelector(props) {
   // api call to load support items
   useEffect(() => {
     api.SupportItems.get({
-      birthYear: 1,
-      postcode: 3000,
-      supportCategoryID: 9,
-      registrationGroupID
+      birthYear: birthYear,
+      postcode: postcode,
+      supportCategoryID: supportCategory.id,
+      registrationGroupId
     }).then(response => {
       setSupportItems(
         response.data.map(supportItem => {
@@ -58,69 +59,44 @@ export default function SupportItemSelector(props) {
         })
       );
     });
-  }, [birthYear, postcode, supportCategoryID, registrationGroupID]);
+  }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
   // load plan items from backend (logged in) or local storage
-  useEffect(() => {
-    if (loggedIn) {
-    } else {
-      const supportCategory = JSON.parse(
-        localStorage.getItem(LOCAL_STORAGE_KEY)
-      );
-      if (
-        supportCategory != null &&
-        supportCategory[supportCategoryID] != null
-      ) {
-        setPlanItems(supportCategory[supportCategoryID]);
-      }
-    }
-  }, [supportCategoryID]);
+  useEffect(() => {}, [supportCategory]);
 
   // save plan items (not logged in) into local storage
-  useEffect(() => {
-    if (!loggedIn) {
-      const supportCategory = JSON.parse(
-        localStorage.getItem(LOCAL_STORAGE_KEY)
-      )
-        ? JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_KEY))
-        : {};
-
-      supportCategory[supportCategoryID] = planItems;
-
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(supportCategory));
-    }
-  });
+  useEffect(() => {});
 
   function handleClose() {
     props.onClose();
   }
 
   function handleSelectSupportItem(supportItem) {
-    const planItem = { ...supportItem };
-    planItem.planItemID = planItems.length;
-    planItem.supportItemID = planItem.id;
-    planItem.quantity = 1;
-    planItem.maxPrice = supportItem.price;
-    setSelectedPlanItemID(planItem.planItemID);
-    delete planItem.id;
+    const planItem = {
+      supportItemId: supportItem.id,
+      quantity: 1,
+      priceActual: supportItem.price
+    };
+    const { planItems } = planCategory;
     setPlanItems([planItem, ...planItems]);
+    setHighlightAddedPlanItem(true);
 
     //saveToLocalStorage(planItems);
   }
 
   function handleDelete(planItem) {
-    setPlanItems(_.difference(planItems, [planItem]));
+    setPlanItems(_.difference(planCategory.planItems, [planItem]));
 
-    //saveToLocalStorage(planItems);
+    //saveToLocalStorage(planCategory.planItems);
   }
 
   function handleChangeUnitPrice(event, planItem) {
     setPlanItems(
-      planItems.map(item => {
-        if (planItem.planItemID === item.planItemID) {
+      planCategory.planItems.map((item, index) => {
+        if (planItem === item) {
           return {
             ...item,
-            price: event.target.value
+            priceActual: event.target.value
           };
         }
         return item;
@@ -130,8 +106,8 @@ export default function SupportItemSelector(props) {
 
   function handleChangeUnits(event, planItem) {
     setPlanItems(
-      planItems.map(item => {
-        if (planItem.planItemID === item.planItemID) {
+      planCategory.planItems.map(item => {
+        if (planItem === item) {
           return {
             ...item,
             quantity: event.target.value
@@ -142,41 +118,43 @@ export default function SupportItemSelector(props) {
     );
   }
 
-  function renderPlanItemHeader(planItem) {
+  function renderPlanItemHeader(planItem, supportItem) {
     return (
       <Grid container alignItems="center">
         <Grid item>
           <ListItemIcon>
             <Tooltip
               disableTouchListener
-              title={planItem.description || "No description"}
+              title={supportItem.description || "No description"}
             >
               <InfoIcon />
             </Tooltip>
           </ListItemIcon>
         </Grid>
         <Grid item xs>
-          <ListItemText primary={planItem.name} />
+          <ListItemText primary={supportItem.name} />
         </Grid>
       </Grid>
     );
   }
 
-  function renderPriceLabel(planItem) {
+  function renderPriceLabel(planItem, supportItem) {
     let prefix = "Unit Price ";
     let suffix = "(No Limit)";
-    if (planItem.maxPrice != null) {
-      suffix = `(Max $${planItem.maxPrice})`;
+    if (supportItem.price != null) {
+      suffix = `(Max $${supportItem.price})`;
       if (matchesMd) {
         return prefix + suffix;
-      } else if (parseFloat(planItem.price) > parseFloat(planItem.maxPrice)) {
+      } else if (
+        parseFloat(planItem.priceActual) > parseFloat(supportItem.price)
+      ) {
         return suffix;
       }
     }
     return prefix + suffix;
   }
 
-  function renderPlanItemBody(planItem) {
+  function renderPlanItemBody(planItem, supportItem) {
     return (
       <Grid
         container
@@ -188,22 +166,22 @@ export default function SupportItemSelector(props) {
           <FormControl
             fullWidth
             error={
-              planItem.maxPrice != null &&
-              parseFloat(planItem.price) > parseFloat(planItem.maxPrice)
+              supportItem.price != null &&
+              parseFloat(planItem.priceActual) > parseFloat(supportItem.price)
             }
           >
             <InputLabel htmlFor="unit-price">
-              {renderPriceLabel(planItem)}
+              {renderPriceLabel(planItem, supportItem)}
             </InputLabel>
             <Input
               id="unit-price"
-              value={planItem.price || ""}
+              value={planItem.priceActual || ""}
               startAdornment={
                 <InputAdornment position="start">$</InputAdornment>
               }
               endAdornment={
                 <InputAdornment position="end">
-                  /{planItem.unit.toLowerCase()}
+                  /{supportItem.unit.toLowerCase()}
                 </InputAdornment>
               }
               placeholder="Type here"
@@ -229,7 +207,7 @@ export default function SupportItemSelector(props) {
             <InputLabel htmlFor="total">Total</InputLabel>
             <Input
               id="total"
-              value={(planItem.price * planItem.quantity).toFixed(2)}
+              value={(planItem.priceActual * planItem.quantity).toFixed(2)}
               readOnly
               startAdornment={
                 <InputAdornment position="start">$</InputAdornment>
@@ -250,31 +228,38 @@ export default function SupportItemSelector(props) {
     );
   }
 
-  function renderPlanItem(planItem) {
+  function renderPlanItem(planItem, index) {
+    console.log(supportItems);
+    const supportItem = _.find(supportItems, supportItem => {
+      return supportItem.id === planItem.supportItemId;
+    });
+
     return (
-      <ListItem
-        onClick={() => setSelectedPlanItemID(null)}
-        selected={planItem.planItemID === selectedPlanItemID}
-      >
-        <Grid container>
-          <Grid item xs={12}>
-            {renderPlanItemHeader(planItem)}
+      supportItem != null && (
+        <ListItem
+          onClick={() => setHighlightAddedPlanItem(false)}
+          selected={highlightAddedPlanItem && index === 0}
+        >
+          <Grid container>
+            <Grid item xs={12}>
+              {renderPlanItemHeader(planItem, supportItem)}
+            </Grid>
+            <Grid item xs={12}>
+              {renderPlanItemBody(planItem, supportItem)}
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            {renderPlanItemBody(planItem)}
-          </Grid>
-        </Grid>
-      </ListItem>
+        </ListItem>
+      )
     );
   }
 
   function renderPlanItemList() {
-    return planItems.length === 0 ? (
+    return planCategory.planItems.length === 0 ? (
       <div>Add some first</div>
     ) : (
       <List>
-        {planItems.map((planItem, index) => (
-          <div key={index}>{renderPlanItem(planItem)}</div>
+        {planCategory.planItems.map((planItem, index) => (
+          <div key={index}>{renderPlanItem(planItem, index)}</div>
         ))}
       </List>
     );
@@ -289,7 +274,7 @@ export default function SupportItemSelector(props) {
         open={props.open}
         onClose={handleClose}
       >
-        <DialogTitle>{supportCategoryName} supports</DialogTitle>
+        <DialogTitle>{supportCategory.name} supports</DialogTitle>
         <DialogContent className={classes.dialogContent}>
           <ReactSelect
             inputId={"support-item-select"}
@@ -298,7 +283,8 @@ export default function SupportItemSelector(props) {
             value={null}
             onChange={handleSelectSupportItem}
           />
-
+          {/* prevent loading until API call has finished */}
+          {console.log(supportItems)}
           {renderPlanItemList()}
         </DialogContent>
         <DialogActions>

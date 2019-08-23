@@ -8,12 +8,13 @@ axios.defaults.baseURL =
 const setToken = token => {
   if (token !== null) {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    localStorage.setItem("token", token);
   }
 };
 
 const Auth = {
   login: ({ email, password }) => {
-    return axios.post("auth/login", {
+    return axios.post("/auth/login", {
       username: email,
       password
     });
@@ -27,7 +28,7 @@ const Auth = {
     postcode,
     birthYear
   }) {
-    return axios.post("auth/register", arguments[0]);
+    return axios.post("/auth/register", arguments[0]);
   }
 };
 
@@ -39,14 +40,14 @@ const SupportItems = {
     registrationGroupID = null
   }) => {
     return axios.get(
-      `support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
+      `/support-items?birth-year=${birthYear}&postcode=${postcode}&support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
     );
   }
 };
 
 const SupportGroups = {
-  getAll: () => {
-    return axios.get("support-groups");
+  all: () => {
+    return axios.get("/support-groups");
   }
 };
 
