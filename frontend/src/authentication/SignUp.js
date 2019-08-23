@@ -11,6 +11,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
+import Api from "../api";
+import { browserHistory } from "react-router";
+import AlertMessage from "../common/AlertMessage";
 
 const styles = theme => ({
   main: {
@@ -57,7 +60,9 @@ class SignUp extends React.Component {
     postcode: "",
     birthYear: "",
     accept: false,
-    submitted: false
+    submitted: false,
+    submittedSuccess: true,
+    alertMessage: "Oops"
   };
 
   handleInput = event => {
@@ -77,13 +82,62 @@ class SignUp extends React.Component {
 
     const { email, password, accept, firstName, lastName } = this.state;
 
-    console.log("I was triggered" + email + password + accept + "test");
+    //console.log("I was triggered" + email + password + accept + "test");
+
+    var errors = [];
+
+    const Reginfo = {
+      email: this.state.email,
+      password: this.state.password,
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      postcode: this.state.postcode,
+      birthYear: this.state.birthYear
+    };
+
+    Api.Auth.register(Reginfo)
+      .then(response => {
+        //console.log(responese.data);
+        const token = response.data.tokens;
+        console.log(
+          "the received token is: " +
+            token.access +
+            ", and refresh component is " +
+            token.refresh
+        );
+        //console.log("response status is " + response.status);
+        //console.log("updated!!!!!!!!!!!!!!!");
+        Api.setToken(token);
+        this.props.history.push("/");
+      })
+      .catch(err => {
+        //console.log("this is the err " + err);
+        this.setState({ submittedSuccess: false });
+        //console.log("error response status is " + err.response.status);
+        //console.log("error response data is " + err.response.data);
+        //console.log("error response header is " + err.response.headers);
+
+        let keys = Object.keys(err.response.data);
+
+        for (let key of keys) {
+          //console.log(key);
+          //console.log(err.response.data[key].toString());
+          errors.push(err.response.data[key].toString());
+        }
+        //console.log(errors);
+        this.setState({
+          alertMessage: errors[0]
+        });
+        //console.log("submittedSuccess is " + this.state.submittedSuccess);
+        //console.log("error message " + err.response.data.mes);
+      });
 
     // send email and password
   };
 
   render() {
     const { classes } = this.props;
+    const { submitted } = this.state;
     const email = "email";
     const pwd = "password";
     const marginSize = "normal";
@@ -92,17 +146,25 @@ class SignUp extends React.Component {
     const postCode = "postcode";
     const birthYear = "birthYear";
     const accept = "accept";
+    const alertVariant = "warning";
 
     return (
       <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
+          {!this.state.submittedSuccess && (
+            <AlertMessage
+              messages={this.state.alertMessage}
+              variant={alertVariant}
+            />
+          )}
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component={"h1"} variant={"h5"}>
             Sign Up
           </Typography>
+
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin={marginSize} required fullWidth>
               <InputLabel htmlFor={email}>Email Address</InputLabel>
@@ -173,6 +235,7 @@ class SignUp extends React.Component {
               }
               label="Click to accept our Terms & Conditions"
             />
+
             <Button
               type="submit"
               variant="contained"

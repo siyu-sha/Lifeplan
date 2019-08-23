@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -263,10 +264,12 @@ export default function SupportItemSelector(props) {
         ))}
       </List>
     );
+
   }
 
   return (
     <div>
+
       <Dialog
         fullScreen={!matchesMd}
         fullWidth
@@ -290,6 +293,7 @@ export default function SupportItemSelector(props) {
         <DialogActions>
           <Button onClick={handleClose}>Save & Close</Button>
         </DialogActions>
+
       </Dialog>
     </div>
   );
