@@ -33,7 +33,6 @@ class BudgetCategoryCard extends Component {
           title={category}
           titleTypographyProps={{ variant: "h6" }}
           className={classNames(classes.cardHeader, classes.noVerticalPadding)}
-          style={{ color: totalColor }}
         />
         <CardContent className={classes.noVerticalPadding}>
           <Doughnut

@@ -11,13 +11,17 @@ pipeline{
             parallel{
                 stage("Frontend Tests"){
                     agent{
-                        docker{
-                            image 'node'
-                            args '-v npm-cache:/root/.npm -e CI=true'
+                        dockerfile{
+                            dir 'frontend'
+                            filename 'Dockerfile-CI'
+                            args '-e CI=true'
                         }
                     }
                     steps {
-                        sh "npm --prefix frontend/ --verbose install"
+                        sh "ls -la" 
+                        sh "cat frontend/package.json"
+                        sh "npm --prefix frontend/ install --verbose"
+                        sh "npm list -g"
                         sh "npm --prefix frontend/ test --exit"
                     }
                 }
@@ -31,20 +35,38 @@ pipeline{
                         sh "./setup-env.sh"
                         sh "docker-compose -f docker-compose-CI.test.yml build"
                         sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
+                        sh 'docker cp "$(docker-compose -f docker-compose-CI.test.yml ps -a -q django)":app/ndis_calculator/coverage.xml ./backend/ndis_calculator/coverage.xml'
+                        cobertura coberturaReportFile: 'backend/ndis_calculator/coverage.xml' 
                     }
                     post{
                         always{
-                            sh "docker-compose -f docker-compose-CI.test.yml down --rmi local -v"
+                            sh "docker-compose -f docker-compose-CI.test.yml down -v"
                         }
                     }
                 }
             }
         }
         stage("Setup Env Vars, Build and Run New Images"){
+            when {
+                not {
+                    branch 'develop'
+                }
+            }
             steps{
                 sh "./setup-env.sh"
                 sh "docker-compose -f docker-compose-CI.yml build"
                 sh "docker-compose -f docker-compose-CI.yml up -d"
+            }
+        }
+        stage("Deploy to Dev Environment"){
+            when{
+                branch 'develop'
+            }
+            steps{
+                sh "./setup-env.dev.sh"
+                sh "docker-compose -f docker-compose-prod.yml down -v"
+                sh "docker-compose -f docker-compose-prod.yml build"
+                sh "docker-compose -f docker-compose-prod.yml up -d"
             }
         }
         stage("Run Health Check Script"){
@@ -55,7 +77,11 @@ pipeline{
     }
     post{
         always{
-            sh "docker-compose -f docker-compose-CI.yml down --rmi local -v"
+            script{
+                if (env.BRANCH_NAME != 'develop') {
+                    sh "docker-compose -f docker-compose-CI.yml down -v"
+                }       
+            }
         }
     }
 }

@@ -1,0 +1,233 @@
+[
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 8,
+    "fields": { "number": 101, "name": "Accommodation / Tenancy Assistance" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 9,
+    "fields": {
+      "number": 107,
+      "name": "Daily Personal Activities (Assist Personal Activities)"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 10,
+    "fields": {
+      "number": 104,
+      "name": "High Intensity Daily Personal Activities (Assist Integrate School/Ed)"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 11,
+    "fields": { "number": 120, "name": "Household Tasks" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 12,
+    "fields": {
+      "number": 115,
+      "name": "Assistance With Daily Life Tasks In A Group Or Shared Living Arrangement"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 13,
+    "fields": {
+      "number": 117,
+      "name": "Development Of Daily Living And Life Skills"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 14,
+    "fields": {
+      "number": 108,
+      "name": "Assistance With Travel/Transport Arrangements"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 15,
+    "fields": {
+      "number": 103,
+      "name": "Assistive Products For Personal Care And Safety"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 16,
+    "fields": { "number": 135, "name": "Customised Prosthetics" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 17,
+    "fields": { "number": 121, "name": "Interpreting And Translation" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 18,
+    "fields": { "number": 105, "name": "Personal Mobility Equipment" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 19,
+    "fields": { "number": 113, "name": "Vision Equipment" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 20,
+    "fields": { "number": 122, "name": "Hearing Equipment" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 21,
+    "fields": {
+      "number": 124,
+      "name": "Communication And Information Equipment"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 22,
+    "fields": {
+      "number": 130,
+      "name": "Assistance Animals (Other Innovative Supports)"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 23,
+    "fields": {
+      "number": 125,
+      "name": "Participation In Community, Social And Civic Activities"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 24,
+    "fields": { "number": 136, "name": "Group And Centre Based Activities" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 25,
+    "fields": { "number": 109, "name": "Vehicle Modifications" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 26,
+    "fields": { "number": 112, "name": "Assistive Equipment For Recreation" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 27,
+    "fields": {
+      "number": 123,
+      "name": "Assistive Products For Household Tasks"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 28,
+    "fields": {
+      "number": 111,
+      "name": "Home Modification Design And Construction"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 29,
+    "fields": {
+      "number": 119,
+      "name": "Specialised Hearing Services (Equipment Special Assess Setup)"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 30,
+    "fields": { "number": 134, "name": "Hearing Services" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 31,
+    "fields": { "number": 131, "name": "Specialised Disability Accommodation" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 32,
+    "fields": {
+      "number": 106,
+      "name": "Assistance In Coordinating Or Managing Life Stages, Transitions And Supports"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 33,
+    "fields": { "number": 132, "name": "Support Coordination" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 34,
+    "fields": { "number": 116, "name": "Innovative Community Participation" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 35,
+    "fields": { "number": 128, "name": "Therapeutic Supports" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 36,
+    "fields": { "number": 133, "name": "Specialised Supported Employment" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 37,
+    "fields": {
+      "number": 102,
+      "name": "Assist To Access/Maintain Employ/Ed (Assist Access/Maintain Employ)"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 38,
+    "fields": { "number": 110, "name": "Behaviour Support" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 39,
+    "fields": {
+      "number": 126,
+      "name": "Exercise Physiology And Physical Wellbeing Activities (Physical Wellbeing)"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 40,
+    "fields": {
+      "number": 127,
+      "name": "Management Of Funding For Supports In Participants Plan"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 41,
+    "fields": {
+      "number": 118,
+      "name": "Early Intervention Supports For Early Childhood"
+    }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 42,
+    "fields": { "number": 114, "name": "Community Nursing Care For High Needs" }
+  },
+  {
+    "model": "budgeting.registrationgroup",
+    "pk": 43,
+    "fields": { "number": 129, "name": "Specialised Driver Training" }
+  }
+]

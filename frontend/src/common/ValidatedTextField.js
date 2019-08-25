@@ -19,13 +19,16 @@ export default class ValidatedTextField extends Component {
   };
 
   render() {
-    const showError = this.state.clickedAway && this.props.error;
+    const { error, errortext } = this.props;
+    console.log(error);
+    const showError =
+      errortext != null && (error === true || this.state.clickedAway === true);
     return (
       <ClickAwayListener onClickAway={this.handleClickAway}>
         <TextField
           onClick={this.handleClick}
           {...this.props}
-          helperText={this.props.helperText || (showError && this.props.error)}
+          helperText={showError === true ? errortext : this.props.helperText}
           error={showError}
         />
       </ClickAwayListener>

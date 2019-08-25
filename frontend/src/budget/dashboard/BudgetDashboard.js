@@ -6,117 +6,106 @@ import { CardContent } from "@material-ui/core";
 import _ from "lodash";
 import { Doughnut } from "react-chartjs-2";
 import CardHeader from "@material-ui/core/CardHeader";
-import Button from "@material-ui/core/Button";
-import SupportsPopup from "./SupportsPopup";
 import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
+import api from "../../api";
+import SupportItemSelector from "./SupportItemSelector";
+import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 
-const MAX_AMOUNT = 10000;
+const isLoggedIn = false;
+const PLAN_CATEGORIES = "planCategories";
 
-function generateData() {
-  const mainGroups = {
-    //coreSupports: ["Core Supports"],
-    capital: [
-      "Assistive Technology"
-      // "Home Modifications"
-    ],
-    capacityBuilding: [
-      //"Coordination of Supports",
-      //"Improved Living Arrangements",
-      //"Increased Social and Community Participation",
-      //"Find and Keep a Job",
-      //"Improved Relationships",
-      //"Improved Health and Wellbeing",
-      "Improved Learning",
-      //"Improved Life Choices",
-      "Improved Daily Living"
-    ]
-  };
-  let data = {
-    //coreSupports: [],
-    capital: [],
-    capacityBuilding: []
-  };
-  // mainGroups.coreSupports.map(value => {
-  //   const maxAmount = Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
-  //   const allocatedAmount = Math.round(Math.random() * maxAmount * 100) / 100;
-  //   const color = [
-  //     Math.random() * 255,
-  //     Math.random() * 255,
-  //     Math.random() * 255
-  //   ];
-  //   data.coreSupports.push({
-  //     category: value,
-  //     total: maxAmount,
-  //     allocated: allocatedAmount,
-  //     totalColor: `rgba(${color[0]},${color[1]},${color[2]},1)`,
-  //     allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
-  //   });
-  // });
-  mainGroups.capital.map(value => {
-    const maxAmount = 5000; //Math.round(Math.random() * MAX_AMOUNT * 100) / 100;
-    const allocatedAmount = 0; //Math.round(Math.random() * maxAmount * 100) / 100;
-    const color = [0, 0, Math.floor(Math.random() * (255 - 64 - 64)) + 64];
-    data.capital.push({
-      category: value,
-      total: maxAmount,
-      allocated: allocatedAmount,
-      totalColor: `rgba(${color[0]},${color[1]},${color[2]},1)`,
-      allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
-    });
+function calculateAllocated(planItems) {
+  let allocated = 0;
+  _.forEach(planItems, planItem => {
+    allocated += planItem.quantity * planItem.priceActual;
   });
-  let count = 1;
-  mainGroups.capacityBuilding.map(value => {
-    const maxAmount = count * 10000;
-    count += 1;
-    const allocatedAmount = 0; // Math.round(Math.random() * maxAmount * 100) / 100;
-    const color = [0, Math.floor(Math.random() * (255 - 64 - 64)) + 64, 0];
-    data.capacityBuilding.push({
-      category: value,
-      total: maxAmount,
-      allocated: allocatedAmount,
-      totalColor: `rgba(${color[0]},${color[1]},${color[2]},1)`,
-      allocatedColor: `rgba(${color[0]},${color[1]},${color[2]},0.5)`
-    });
-  });
-
-  return data;
+  return allocated;
 }
 
 export default class BudgetDashBoard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: { ...generateData() },
-      openSupports: false,
-      activeMainGroup: null,
-      activeCategory: null
-    };
-  }
-
-  handleAddAllocated = (mainGroup, category, amount) => {
-    console.log(mainGroup, category);
-    this.setState({
-      data: {
-        ...this.state.data,
-        [mainGroup]: this.state.data[mainGroup].map(value => {
-          if (value.category === category) {
-            return {
-              ...value,
-              allocated: value.allocated + amount
-            };
-          } else {
-            return value;
-          }
-        })
-      }
-    });
+  state = {
+    supportGroups: [],
+    planCategories: {},
+    openSupports: false,
+    activeCategory: null,
+    birthYear: 1990,
+    postcode: 3000
   };
 
-  handleOpenSupports = (mainGroup, category) => {
+  componentDidMount() {
+    // call backend to load all plan groups and corresponding categories
+    api.SupportGroups.all()
+      .then(response => {
+        this.setState({ supportGroups: [...response.data] }, this.loadState);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    const personalData = isLoggedIn
+      ? {}
+      : {
+          birthYear: localStorage.getItem("birthYear"),
+          postcode: localStorage.getItem("postcode")
+        };
     this.setState({
-      openSupports: true,
-      activeMainGroup: mainGroup,
-      activeCategory: category
+      ...personalData
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapShot) {
+    if (!isLoggedIn && this.state.planCategories !== prevState.planCategories) {
+      console.log(this.state.planCategories);
+      localStorage.setItem(
+        PLAN_CATEGORIES,
+        JSON.stringify(this.state.planCategories)
+      );
+    }
+  }
+
+  // load plan categories, birthYear and postcode either from backend if logged in else from local storage
+  loadState = () => {
+    if (isLoggedIn) {
+      // todo: call backend
+    } else {
+      let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
+      const cachedBirthYear = localStorage.getItem("birthYear");
+      const cachedPostcode = localStorage.getItem("postcode");
+      if (
+        cachedPostcode != null &&
+        cachedBirthYear != null &&
+        cachedPlanCategories != null
+      ) {
+        const planCategories = JSON.parse(cachedPlanCategories);
+        const birthYear = parseInt(cachedBirthYear);
+        const postcode = parseInt(cachedPostcode);
+        this.setState({
+          planCategories,
+          birthYear,
+          postcode
+        });
+      } else {
+        this.props.history.push("/budget/edit");
+      }
+    }
+  };
+
+  findSupportCategory = () => {
+    let result = null;
+    _.forEach(this.state.supportGroups, supportGroup => {
+      _.forEach(supportGroup.supportCategories, supportCategory => {
+        if (supportCategory.id === this.state.activeCategory) {
+          result = supportCategory;
+        }
+      });
+    });
+    return result;
+  };
+
+  handleOpenSupports = supportCategoryId => {
+    console.log(supportCategoryId);
+    this.setState({ activeCategory: supportCategoryId }, () => {
+      this.setState({ openSupports: true });
     });
   };
 
@@ -124,99 +113,142 @@ export default class BudgetDashBoard extends React.Component {
     this.setState({ openSupports: false });
   };
 
-  render() {
-    const { data } = this.state;
+  handleSetPlanItems = planItems => {
+    this.setState({
+      planCategories: {
+        ...this.state.planCategories,
+        [this.state.activeCategory]: {
+          ...this.state.planCategories[this.state.activeCategory],
+          planItems: planItems
+        }
+      }
+    });
+    if (isLoggedIn) {
+      // todo: call backend to save changes
+    }
+  };
+
+  renderSummary = () => {
     let total = 0;
     let allocated = 0;
-    _.map(data, mainGroup => {
-      _.map(mainGroup, category => {
-        total += category.total;
-        allocated += category.allocated;
-      });
+    _.map(this.state.planCategories, planCategory => {
+      if (planCategory.budget !== 0) {
+        total += planCategory.budget;
+        allocated += calculateAllocated(planCategory.planItems);
+      }
     });
     const available = total - allocated;
     return (
+      <Card>
+        <CardHeader title="Budget Summary" />
+        <CardContent>
+          <Grid container>
+            <Grid item xs={12} sm={8} md={6} lg={4}>
+              <Doughnut
+                legend={{
+                  // display:false,
+                  position: "right",
+                  onClick: () => {}
+                }}
+                data={{
+                  labels: [
+                    `Allocated: $${allocated}`,
+                    `Available: $${available}`
+                  ],
+                  datasets: [
+                    {
+                      data: [allocated, available],
+                      backgroundColor: [DARK_BLUE, LIGHT_BLUE]
+                    }
+                  ]
+                }}
+                options={{
+                  tooltips: { enabled: false }
+                }}
+              />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  renderPlanCategories = () => {
+    return _.map(this.state.supportGroups, supportGroup => {
+      let renderedPlanCategories = [];
+      _.forEach(supportGroup.supportCategories, supportCategory => {
+        const planCategory = this.state.planCategories[supportCategory.id];
+        if (planCategory.budget > 0) {
+          renderedPlanCategories.push(planCategory);
+        }
+      });
+      if (renderedPlanCategories.length !== 0) {
+        return (
+          <BudgetCategorySection
+            sectionName={supportGroup.name}
+            key={supportGroup.id}
+          >
+            {_.map(supportGroup.supportCategories, supportCategory => {
+              const planCategory = this.state.planCategories[
+                supportCategory.id
+              ];
+              if (planCategory.budget > 0) {
+                return (
+                  <Grid
+                    key={supportCategory.id}
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                  >
+                    <BudgetCategoryCard
+                      {...{
+                        category: supportCategory.name,
+                        total: planCategory.budget,
+                        allocated: calculateAllocated(planCategory.planItems),
+                        totalColor: LIGHT_BLUE,
+                        allocatedColor: DARK_BLUE
+                      }}
+                      openSupports={() =>
+                        this.handleOpenSupports(supportCategory.id)
+                      }
+                    />
+                  </Grid>
+                );
+              }
+            })}
+          </BudgetCategorySection>
+        );
+      }
+    });
+  };
+
+  render() {
+    const { planCategories, birthYear, postcode } = this.state;
+
+    return (
       <div className="root">
         <Grid container justify="center">
-          <Grid item xs={12} md={11} xl={10}>
-            <Card>
-              <CardHeader title="Budget Summary" />
-              <CardContent>
-                <Grid container>
-                  <Grid item xs={12} sm={8} md={6} lg={4}>
-                    <Doughnut
-                      legend={{
-                        // display:false,
-                        position: "right",
-                        onClick: () => {}
-                      }}
-                      data={{
-                        labels: [
-                          `Allocated: $${allocated}`,
-                          `Available: $${available}`
-                        ],
-                        datasets: [
-                          {
-                            data: [allocated, available],
-                            backgroundColor: [
-                              "rgba(255,0,0,0.5)",
-                              "rgba(255,0,0,1)"
-                            ]
-                          }
-                        ]
-                      }}
-                      options={{
-                        tooltips: { enabled: false }
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-            {/*<BudgetCategorySection*/}
-            {/*  sectionName="Core Supports"*/}
-            {/*  categories={data.coreSupports}*/}
-            {/*/>*/}
-            <BudgetCategorySection sectionName="Capital">
-              {data.capital.map(value => {
-                return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <BudgetCategoryCard
-                      {...value}
-                      openSupports={() =>
-                        this.handleOpenSupports("capital", value.category)
-                      }
-                    />
-                  </Grid>
-                );
-              })}
-            </BudgetCategorySection>
-            <BudgetCategorySection sectionName="Capacity Building">
-              {data.capacityBuilding.map(value => {
-                return (
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <BudgetCategoryCard
-                      {...value}
-                      openSupports={() =>
-                        this.handleOpenSupports(
-                          "capacityBuilding",
-                          value.category
-                        )
-                      }
-                    />
-                  </Grid>
-                );
-              })}
-            </BudgetCategorySection>
-          </Grid>
+          {this.state.planCategories !== {} && (
+            <Grid item xs={12} md={11} xl={10}>
+              {this.renderSummary()}
+              {Object.keys(planCategories).length !== 0 &&
+                this.renderPlanCategories()}
+            </Grid>
+          )}
         </Grid>
-        <SupportsPopup
-          open={this.state.openSupports}
-          closeSupports={this.handleCloseSupports}
-          addAllocated={this.handleAddAllocated}
-          mainGroup={this.state.activeMainGroup}
-          category={this.state.activeCategory}
-        />
+        {this.state.openSupports && (
+          <SupportItemSelector
+            open={this.state.openSupports}
+            supportCategory={this.findSupportCategory()}
+            birthYear={birthYear}
+            postcode={postcode}
+            onClose={this.handleCloseSupports}
+            planCategory={this.state.planCategories[this.state.activeCategory]}
+            setPlanItems={this.handleSetPlanItems}
+          />
+        )}
       </div>
     );
   }

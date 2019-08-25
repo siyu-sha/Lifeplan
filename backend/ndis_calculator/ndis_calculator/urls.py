@@ -16,16 +16,41 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
-from budgeting import views
+from budgeting.views import DefaultView
+from budgeting.views import Authentication
+from budgeting.views import Participant
+from budgeting.views import SupportGroupViewSet
+from budgeting.views import SupportItemViewSet
+from budgeting.views import PlanItem
+from budgeting.views import RegistrationGroupViewSet
+
+support_group_list = SupportGroupViewSet.as_view({
+    'get': 'list'
+})
+
+support_item_list = SupportItemViewSet.as_view({
+    'get': 'list'
+})
+
+registration_group_list = RegistrationGroupViewSet.as_view({
+    'get': 'list'
+})
 
 api_patterns = [
     # JWT
     path('auth/login', jwt_views.TokenObtainPairView.as_view(), name='auth_login'),
     path('auth/refresh', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
-    path('auth/register', views.Authentication.register, name='auth_register'),
+    path('auth/register', Authentication.register, name='auth_register'),
 
-    path('participant/id', views.Participant.id, name='participant_id'),
-    path('participant/<int:pk>', views.Participant.update, name='participant_update'),
+    path('participant/id', Participant.id, name='participant_id'),
+    path('participant/<int:pk>', Participant.update, name='participant_update'),
+
+    path('support-groups', support_group_list, name='support_group_list'),
+    path('support-items', support_item_list, name='support_items_list'),
+
+    path('participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items', PlanItem.create, name='plan_item_create'),
+
+    path('registration-groups', registration_group_list, name='registration_group_list'),
 ]
 
 urlpatterns = [
@@ -35,8 +60,10 @@ urlpatterns = [
     # API
     path('api/v1/', include(api_patterns)),
 
+    # Health Check
+    path('healthCheck', DefaultView.as_view(), name="healthCheck"),
+
     # App
-    path('', views.DefaultView.as_view(), name='landing'),
-    path('hello', views.HelloView.as_view(), name='hello'),
+    path('', DefaultView.as_view(), name='landing'),
     # url(r'^api-auth/', include('rest_framework.urls'))
 ]
