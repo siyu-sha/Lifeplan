@@ -13,6 +13,7 @@ from .models import (Participant,
                      PlanGoal,
                      PlanCategory,
                      PlanItem,
+                     SupportItemGroup,
                      )
 
 
@@ -27,6 +28,7 @@ admin.site.register(Participant, ParticipantAdmin)
 # Default registrations
 admin.site.register(SupportGroup)
 admin.site.register(SupportItem)
+admin.site.register(SupportItemGroup)
 admin.site.register(SupportCategory)
 admin.site.register(RegistrationGroup)
 admin.site.register(Plan)

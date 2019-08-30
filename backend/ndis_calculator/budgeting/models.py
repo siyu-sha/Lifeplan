@@ -56,6 +56,7 @@ class SupportItem(models.Model):
         (YEAR, 'year'),
     ]
 
+    support_item_group = models.ForeignKey('SupportItemGroup', on_delete=models.PROTECT, null=True)
     support_category = models.ForeignKey(SupportCategory, on_delete=models.PROTECT)
     registration_group = models.ForeignKey('RegistrationGroup', on_delete=models.PROTECT)
 
@@ -68,6 +69,15 @@ class SupportItem(models.Model):
     price_national = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_very_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class SupportItemGroup(models.Model):
+    # Simple english name for a set of related support items
+    name = models.CharField(max_length=255)
+    base_item = models.OneToOneField(SupportItem, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.name
