@@ -289,6 +289,13 @@ class SupportItemTests(APITestCase):
                 self.assertEqual(float(item['price']), test.price_national)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+
+class SupportItemGroupTest(APITestCase):
+    #Needs creation post-fixtures, #TODO
+    def pointless_method_stub(self):
+        return None
+
+
 # Needs updating after adding information in database
 class CreatePlanItem(APITestCase):
     fixtures = ['registration_group.json', 'support_group.json', 'support_category.json', 'support_item.json']
