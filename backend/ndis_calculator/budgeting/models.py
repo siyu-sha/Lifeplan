@@ -79,6 +79,18 @@ class SupportItemGroup(models.Model):
     name = models.CharField(max_length=255)
     base_item = models.OneToOneField(SupportItem, on_delete=models.PROTECT)
 
+    def unit(self):
+        return self.base_item.unit
+
+    def price(self):
+        return self.base_item.price_national
+
+    def registration_group_id(self):
+        return self.base_item.registration_group_id
+
+    def support_category_id(self):
+        return self.base_item.support_category_id
+
     def __str__(self):
         return self.name
 

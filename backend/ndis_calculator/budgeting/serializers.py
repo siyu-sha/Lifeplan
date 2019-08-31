@@ -7,7 +7,9 @@ from budgeting.models import *
 class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode',)
+        fields = (
+            'id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year',
+            'postcode',)
         read_only_fields = ('id',)
         extra_kwargs = {
             'username': {'write_only': True},
@@ -93,6 +95,33 @@ class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItem
         fields = '__all__'
+
+
+class SupportItemGroupSerializer(serializers.ModelSerializer):
+    EACH = 'EA'
+    HOUR = 'H'
+    DAY = 'D'
+    WEEK = 'WK'
+    MONTH = 'MON'
+    YEAR = 'YR'
+
+    UNIT_CHOICES = [
+        (EACH, 'each'),
+        (HOUR, 'hour'),
+        (DAY, 'day'),
+        (WEEK, 'week'),
+        (MONTH, 'month'),
+        (YEAR, 'year'),
+    ]
+    unit = serializers.ChoiceField(choices=UNIT_CHOICES, source='unit')
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True,
+                                     source='price')
+    registration_group_id = serializers.IntegerField(source='registration_group_id')
+    support_group_id = serializers.IntegerField(source='support_group_id')
+
+    class Meta:
+        model = SupportItemGroup
+        fields = ['id', 'name']
 
 
 class PlanItemSerializer(serializers.ModelSerializer):

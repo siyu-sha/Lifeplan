@@ -92,12 +92,13 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List support items filtered by query parameters
     """
-    ACT_NSW_QLD_VIC = [(200, 299), (1000, 2999), (4000, 4999), (9000, 9999), (3000, 3999), (8000, 8999)]
+    ACT_NSW_QLD_VIC = [(200, 299), (1000, 2999), (4000, 4999), (9000, 9999), (3000, 3999),
+                       (8000, 8999)]
 
     serializer_class = SupportItemSerializer
 
     # override default list function
-    def list(self, request):
+    def list(self, request, **kwargs):
         queryset = SupportItem.objects.all()
         # birth_year = request.query_params.get('birth-year')
         postcode = request.query_params.get('postcode')
@@ -133,6 +134,26 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SupportItemGroupSerializer
+
+    def list(self, request, **kwargs):
+        queryset = SupportItemGroup.objects.all()
+
+        registration_group_id = request.query_params.get('registration-group-id', None)
+        support_category_id = request.query_params.get('support-category-id')
+
+        if registration_group_id is not None:
+            queryset = queryset.filter(registration_group_id=registration_group_id)
+
+        if support_category_id is not None:
+            queryset = queryset.filter(support_category_id=support_category_id)
+
+        serializer = self.serializer_class(queryset, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class PlanItem(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -150,7 +171,8 @@ class PlanItem(APIView):
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id, plan_goal=planGoalID,
+            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id,
+                                 plan_goal=planGoalID,
                                  quantity=number, price_actual=price)
             serializer = PlanItemSerializer(data=plan_item)
             if serializer.is_valid():
