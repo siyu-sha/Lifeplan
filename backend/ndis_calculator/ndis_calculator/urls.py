@@ -21,6 +21,7 @@ from budgeting.views import Authentication
 from budgeting.views import Participant
 from budgeting.views import SupportGroupViewSet
 from budgeting.views import SupportItemViewSet
+from budgeting.views import SupportItemGroupViewSet
 from budgeting.views import PlanItem
 from budgeting.views import RegistrationGroupViewSet
 
@@ -31,7 +32,9 @@ support_group_list = SupportGroupViewSet.as_view({
 support_item_list = SupportItemViewSet.as_view({
     'get': 'list'
 })
-
+support_item_group_list = SupportItemGroupViewSet.as_view({
+    'get': 'list'
+})
 registration_group_list = RegistrationGroupViewSet.as_view({
     'get': 'list'
 })
@@ -47,8 +50,11 @@ api_patterns = [
 
     path('support-groups', support_group_list, name='support_group_list'),
     path('support-items', support_item_list, name='support_items_list'),
+    path('support-item-groups', support_item_group_list, name='support_item_group_list'),
 
-    path('participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items', PlanItem.create, name='plan_item_create'),
+    path(
+        'participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items',
+        PlanItem.create, name='plan_item_create'),
 
     path('registration-groups', registration_group_list, name='registration_group_list'),
 ]

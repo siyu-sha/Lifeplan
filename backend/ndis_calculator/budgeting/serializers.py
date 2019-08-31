@@ -113,15 +113,23 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
         (MONTH, 'month'),
         (YEAR, 'year'),
     ]
-    unit = serializers.ChoiceField(choices=UNIT_CHOICES, source='unit')
-    price = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True,
-                                     source='price')
-    registration_group_id = serializers.IntegerField(source='registration_group_id')
-    support_group_id = serializers.IntegerField(source='support_group_id')
+    unit = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+
+    # in methods in case of any changes need to be made (e.g. rounding prices/ formatting)
+    def get_unit(self, obj):
+        return obj.unit()
+
+    def get_price(self, obj):
+        return obj.price()
+
+    def get_description(self, obj):
+        return obj.description()
 
     class Meta:
         model = SupportItemGroup
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'unit', 'price', 'description']
 
 
 class PlanItemSerializer(serializers.ModelSerializer):

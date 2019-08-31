@@ -116,9 +116,33 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SupportItem"
-
-  /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
+                  $ref: "#/components/schemas/SupportItemGroup"
+  /support-item-groups:
+    get:
+      tags: -support item group
+      summary: Retrieves list of support item groups (more simple english, less clutter than S-I)
+      description: Retrieves list of support item groups based on filter, The backend will retrieve the default national price for simplicity
+      parameters:
+        - name: registration-group-id
+          in: query
+          schema:
+            type: integer
+          required: true
+        - name: support-group-id
+          in: query
+          schema:
+            type: integer
+          required: true
+      responses:
+      "200":
+        description: success
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: #/components/schemas/SupportItem
+  ? /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
   : post:
       tags:
         - plan item
@@ -206,7 +230,24 @@ components:
         price:
           type: number
           example: 243.83
-
+    SupportItemGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 717
+        name:
+          type: string
+          example: Capacity Building Supports For Early Childhood Interventions - Psychology
+        description:
+          type: string
+          example: Capacity building supports, including key worker, to assist a child with developmental delay and/or disability and their family/carers in home, community and early childhood education settings, to work towards increased functional independence and social participation. To be delivered by a Psychologist.
+        unit:
+          type: string
+          example: H
+        price:
+          type: number
+          example: 243.83
     RegistrationGroup:
       type: object
       properties:
