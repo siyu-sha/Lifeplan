@@ -190,6 +190,28 @@ class PlanItem(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_200_OK)
 
+
+class PlanView:
+    @api_view(['POST', ])
+    @csrf_exempt
+    def create(request):
+        if request.method == 'POST':
+            from .models import Participant
+            participantID = request.data.get('participant_id')
+            try:
+                participant = Participant.objects.get(pk=participantID)
+            except ObjectDoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                try:
+                    startDate=request.data.get('start_date')
+                    endDate=request.data.get('end_date')
+                    Plan.objects.create(participant=participant, start_date=startDate, end_date=endDate)
+                except ValidationError:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response(status=status.HTTP_200_OK)
+
     # def getList(request):
     #     if request.method == 'GET':
     #         # birth_year = request.query_params.get('birth-year')
