@@ -7,7 +7,9 @@ from budgeting.models import *
 class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year', 'postcode',)
+        fields = (
+            'id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year',
+            'postcode',)
         read_only_fields = ('id',)
         extra_kwargs = {
             'username': {'write_only': True},
@@ -93,6 +95,41 @@ class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItem
         fields = '__all__'
+
+
+class SupportItemGroupSerializer(serializers.ModelSerializer):
+    EACH = 'EA'
+    HOUR = 'H'
+    DAY = 'D'
+    WEEK = 'WK'
+    MONTH = 'MON'
+    YEAR = 'YR'
+
+    UNIT_CHOICES = [
+        (EACH, 'each'),
+        (HOUR, 'hour'),
+        (DAY, 'day'),
+        (WEEK, 'week'),
+        (MONTH, 'month'),
+        (YEAR, 'year'),
+    ]
+    unit = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+
+    # in methods in case of any changes need to be made (e.g. rounding prices/ formatting)
+    def get_unit(self, obj):
+        return obj.unit()
+
+    def get_price(self, obj):
+        return obj.price()
+
+    def get_description(self, obj):
+        return obj.description()
+
+    class Meta:
+        model = SupportItemGroup
+        fields = ['id', 'name', 'unit', 'price', 'description']
 
 
 class PlanItemSerializer(serializers.ModelSerializer):

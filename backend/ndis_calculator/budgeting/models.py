@@ -21,11 +21,17 @@ class Participant(AbstractUser):
     class Meta:
         ordering = ('id',)
 
+    def __str__(self):
+        return self.email + " " + self.first_name + " " + self.last_name
+
 
 # a static table stores all groups, e.g. Core.
 # Participants cannot manipulate data in this table, but they can retrieve data
 class SupportGroup(models.Model):
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name + " (" + self.id.__str__() + ")"
 
 
 class SupportCategory(models.Model):
@@ -36,7 +42,7 @@ class SupportCategory(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.name + " ID: (" + self.id.__str__() + ")"
 
 
 class SupportItem(models.Model):
@@ -56,6 +62,7 @@ class SupportItem(models.Model):
         (YEAR, 'year'),
     ]
 
+    support_item_group = models.ForeignKey('SupportItemGroup', on_delete=models.PROTECT, null=True)
     support_category = models.ForeignKey(SupportCategory, on_delete=models.PROTECT)
     registration_group = models.ForeignKey('RegistrationGroup', on_delete=models.PROTECT)
 
@@ -63,19 +70,50 @@ class SupportItem(models.Model):
     number = models.CharField(max_length=255, unique=True)
     description = models.TextField(default="No description provided")
     unit = models.CharField(max_length=3, choices=UNIT_CHOICES)
-    price_NT_SA_TAS_WA = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    price_ACT_NSW_QLD_VIC = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    price_NT_SA_TAS_WA = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    price_ACT_NSW_QLD_VIC = models.DecimalField(max_digits=10, decimal_places=2, null=True,
+                                                blank=True)
     price_national = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     price_very_remote = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name + " ID: (" + self.id.__str__() + ")"
+
+
+class SupportItemGroup(models.Model):
+    """
+        Simple english naming for a set of highly related support items
+    """
+    name = models.CharField(max_length=255)
+    base_item = models.OneToOneField(SupportItem, on_delete=models.PROTECT)
+
+    # the below methods just present the base Item information as our own
+    def unit(self):
+        return self.base_item.unit
+
+    def price(self):
+        return self.base_item.price_national
+
+    def registration_group_id(self):
+        return self.base_item.registration_group_id
+
+    def support_category_id(self):
+        return self.base_item.support_category_id
+
+    def description(self):
+        return self.base_item.description
+
+    def __str__(self):
+        return self.name + " ID: (" + self.id.__str__() + ")"
 
 
 class RegistrationGroup(models.Model):
     number = models.IntegerField(unique=True)
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name + " ID: (" + self.id.__str__() + ")"
 
 
 class Plan(models.Model):
@@ -87,6 +125,9 @@ class Plan(models.Model):
 
     goals = models.ManyToManyField('Goal', through='PlanGoal')
     support_categories = models.ManyToManyField(SupportCategory, through='PlanCategory')
+
+    def __str__(self):
+        return " ID: (" + self.id.__str__() + ")" + "Participant: " + self.participant_id.__str__()
 
 
 class Goal(models.Model):

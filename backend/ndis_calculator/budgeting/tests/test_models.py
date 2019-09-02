@@ -1,15 +1,17 @@
 from django.test import TestCase
 
-from budgeting.models import Participant
-from budgeting.models import SupportCategory
-from budgeting.models import RegistrationGroup
-from budgeting.models import SupportItem
-from budgeting.models import SupportGroup
-from budgeting.models import Plan
-from budgeting.models import PlanCategory
-from budgeting.models import PlanItem
-from budgeting.models import PlanGoal
-from budgeting.models import Goal
+from budgeting.models import (Participant,
+                              SupportCategory,
+                              RegistrationGroup,
+                              SupportItem,
+                              SupportItemGroup,
+                              SupportGroup,
+                              Plan,
+                              PlanCategory,
+                              PlanItem,
+                              PlanGoal,
+                              Goal,
+                              )
 
 
 class ParticipantTest(TestCase):
@@ -122,6 +124,16 @@ class SupportItemTest(TestCase):
     def test_SupportItem(self):
         si = self.create_SupportItem(category=SupportCategoryTest.create_Category())
         self.assertTrue(isinstance(si, SupportItem))
+
+
+class SupportItemGroupTest(TestCase):
+    @staticmethod
+    def createSupportItemGroup(name="itemGroup1"):
+        if SupportItemGroup.objects.first():
+            return SupportItemGroup.objects.first()
+        else:
+            return SupportItemGroup.objects.create(name=name,
+                                                   base_item=SupportItemTest.create_SupportItem())
 
 
 class PlanContainsCategoriesTest(TestCase):
