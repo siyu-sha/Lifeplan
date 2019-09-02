@@ -204,8 +204,8 @@ class PlanView:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
-                    startDate=request.data.get('start_date')
-                    endDate=request.data.get('end_date')
+                    startDate = request.data.get('start_date')
+                    endDate = request.data.get('end_date')
                     Plan.objects.create(participant=participant, start_date=startDate, end_date=endDate)
                 except ValidationError:
                     return Response(status=status.HTTP_400_BAD_REQUEST)

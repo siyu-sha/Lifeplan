@@ -56,7 +56,7 @@ api_patterns = [
     path(
         'participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items',
         PlanItem.create, name='plan_item_create'),
-    path('plan/create',PlanView.create,name='plan_create'),
+    path('plan/create', PlanView.create, name='plan_create'),
 
     path('registration-groups', registration_group_list, name='registration_group_list'),
 ]
