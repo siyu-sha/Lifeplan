@@ -198,6 +198,8 @@ class PlanView:
         if request.method == 'POST':
             from .models import Participant
             participantID = request.data.get('participant_id')
+            if participantID == None:
+                participantID = request.user.id
             try:
                 participant = Participant.objects.get(pk=participantID)
             except ObjectDoesNotExist:
