@@ -24,6 +24,7 @@ from budgeting.views import SupportItemViewSet
 from budgeting.views import SupportItemGroupViewSet
 from budgeting.views import PlanItem
 from budgeting.views import RegistrationGroupViewSet
+from budgeting.views import PlanView
 
 support_group_list = SupportGroupViewSet.as_view({
     'get': 'list'
@@ -55,6 +56,7 @@ api_patterns = [
     path(
         'participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items',
         PlanItem.create, name='plan_item_create'),
+    path('plan/create', PlanView.create, name='plan_create'),
 
     path('registration-groups', registration_group_list, name='registration_group_list'),
 ]

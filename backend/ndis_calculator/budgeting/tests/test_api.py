@@ -321,3 +321,20 @@ class RegistrationGroupTests(APITestCase):
             self.assertIn('number', registration_group)
             self.assertIn('name', registration_group)
 
+
+class CreatePlan(APITestCase):
+    def setUp(self):
+        self.URL_CREATE_PLAN = reverse('plan_create')
+        self.TEST_DATA = {'participant_id': 1, 'start_date': '2019-09-20', 'end_date': '2020-09-20'}
+
+    # may need improvement in the future
+    def test_create_plan_item(self):
+        Participant.objects.create(pk=1, email='1@qq.com', first_name='Red', last_name='Blue', postcode='1',
+                                   birth_year=1996)
+        response = self.client.post(self.URL_CREATE_PLAN, self.TEST_DATA)
+        par = Participant.objects.get(pk=1)
+        test = Plan.objects.filter(participant=par, start_date='2019-09-20', end_date='2020-09-20', generated=False)
+        if test.__len__() == 1:
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        else:
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
