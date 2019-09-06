@@ -3,7 +3,7 @@ from django.db import models
 from ndis_calculator import settings
 
 from .managers import CustomUserManager
-from .validators import *
+from .validators import validate_birth_year, validate_postcode
 
 # Create your models here.
 

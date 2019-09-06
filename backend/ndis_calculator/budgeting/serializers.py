@@ -1,7 +1,16 @@
-from budgeting.models import *
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
+from .models import (
+    Participant,
+    PlanItem,
+    RegistrationGroup,
+    SupportCategory,
+    SupportGroup,
+    SupportItem,
+    SupportItemGroup,
+)
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
@@ -50,7 +59,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #
 #     def create(self, validated_data):
 #         """
-#         Create and return a new `Participant` instance, given the validated data.
+#         Create and return a new `Participant` instance,
+#         given validated data.
 #         """
 #         user = Participant.objects.create(
 #                 username=validated_data['username'],
@@ -65,7 +75,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #
 #     def update(self, instance, validated_data):
 #         """
-#         Update and return an existing `Participant` instance, given the validated data.
+#         Update and return an existing `Participant` instance,
+#         given validated data.
 #         """
 #         instance.username = validated_data.get('username', instance.username)
 #         instance.email = validated_data.get('email', instance.email)
@@ -125,7 +136,8 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
 
-    # in methods in case of any changes need to be made (e.g. rounding prices/ formatting)
+    # in methods in case of any changes need to be made
+    # (e.g. rounding prices/formatting)
     def get_unit(self, obj):
         return obj.unit()
 
