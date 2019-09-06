@@ -48,7 +48,7 @@ class Authentication(APIView):
             )
 
 
-class Participant(APIView):
+class ParticipantView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @api_view(["GET"])
@@ -195,7 +195,7 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PlanItem(APIView):
+class PlanItemView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @api_view(["POST"])
@@ -206,7 +206,7 @@ class PlanItem(APIView):
         number = request.data.get("number")
         try:
             SupportItem.objects.get(pk=support_item_id)
-            models.Participant.objects.get(pk=participantID)
+            Participant.objects.get(pk=participantID)
             PlanGoal.objects.get(pk=planGoalID)
             PlanCategory.objects.get(pk=planCategoryID)
         except ObjectDoesNotExist:
@@ -232,10 +232,8 @@ class PlanView:
     @csrf_exempt
     def create(request):
         if request.method == "POST":
-            from .models import Participant
-
             participantID = request.data.get("participant_id")
-            if participantID == None:
+            if participantID is None:
                 participantID = request.user.id
             try:
                 participant = Participant.objects.get(pk=participantID)

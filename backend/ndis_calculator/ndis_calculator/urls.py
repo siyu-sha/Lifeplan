@@ -16,8 +16,8 @@ Including another URLconf
 from budgeting.views import (
     Authentication,
     DefaultView,
-    Participant,
-    PlanItem,
+    ParticipantView,
+    PlanItemView,
     PlanView,
     RegistrationGroupViewSet,
     SupportGroupViewSet,
@@ -47,9 +47,11 @@ api_patterns = [
         name="auth_refresh",
     ),
     path("auth/register", Authentication.register, name="auth_register"),
-    path("participant/id", Participant.id, name="participant_id"),
+    path("participant/id", ParticipantView.id, name="participant_id"),
     path(
-        "participant/<int:pk>", Participant.update, name="participant_update"
+        "participant/<int:pk>",
+        ParticipantView.update,
+        name="participant_update",
     ),
     path("support-groups", support_group_list, name="support_group_list"),
     path("support-items", support_item_list, name="support_items_list"),
@@ -60,7 +62,7 @@ api_patterns = [
     ),
     path(
         "participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items",
-        PlanItem.create,
+        PlanItemView.create,
         name="plan_item_create",
     ),
     path("plan/create", PlanView.create, name="plan_create"),
