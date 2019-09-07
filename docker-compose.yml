@@ -22,8 +22,7 @@ services:
       - ./backend/ndis_calculator:/app/ndis_calculator
     working_dir: /app/ndis_calculator/
     command: >
-      sh -c "pip install -r requirements-dev.txt &&
-          ./entrypoint.sh"
+      sh -c "./entrypoint.sh"
     depends_on:
       - db
 
