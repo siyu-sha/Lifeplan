@@ -218,34 +218,31 @@ class PlanItemView(APIView):
 
     @api_view(["POST"])
     @csrf_exempt
-    def create(request, participantID, planGoalID, planCategoryID):
-        support_item_id = request.data.get("supportItemID")
+    def create(request, participantID, planCategoryID):
+        support_item_id = request.data.get("support_item_i_d")
         price = request.data.get("price")
         number = request.data.get("number")
         try:
-            SupportItem.objects.get(pk=support_item_id)
             Participant.objects.get(pk=participantID)
-            PlanGoal.objects.get(pk=planGoalID)
-            PlanCategory.objects.get(pk=planCategoryID)
+            supportItem = SupportItem.objects.get(pk=support_item_id)
+            planCategory = PlanCategory.objects.get(pk=planCategoryID)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            plan_item = PlanItem(
-                plan_category=planCategoryID,
-                support_item=support_item_id,
-                plan_goal=planGoalID,
-                quantity=number,
-                price_actual=price,
-            )
-            serializer = PlanItemSerializer(data=plan_item)
-            if serializer.is_valid():
-                serializer.save()
-            else:
+            try:
+                PlanItem.objects.create(
+                    plan_category=planCategory,
+                    support_item=supportItem,
+                    quantity=number,
+                    price_actual=price,
+                )
+            except ValidationError:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_200_OK)
 
 
-class PlanView:
+class PlanView(APIView):
     @api_view(["POST"])
     @csrf_exempt
     def create(request):
