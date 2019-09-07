@@ -1,19 +1,35 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from budgeting.models import *
+
+from .models import (
+    Participant,
+    PlanItem,
+    RegistrationGroup,
+    SupportCategory,
+    SupportGroup,
+    SupportItem,
+    SupportItemGroup,
+)
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
         fields = (
-            'id', 'username', 'email', 'password', 'first_name', 'last_name', 'birth_year',
-            'postcode',)
-        read_only_fields = ('id',)
+            "id",
+            "username",
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "birth_year",
+            "postcode",
+        )
+        read_only_fields = ("id",)
         extra_kwargs = {
-            'username': {'write_only': True},
-            'password': {'write_only': True}
+            "username": {"write_only": True},
+            "password": {"write_only": True},
         }
 
     def create(self, validated_data):
@@ -21,13 +37,13 @@ class ParticipantSerializer(serializers.ModelSerializer):
         Create and return a new `User` instance, given the validated data.
         """
         user = Participant.objects.create(
-            username=validated_data['email'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            password=make_password(validated_data['password']),
-            postcode=validated_data['postcode'],
-            birth_year=validated_data['birth_year']
+            username=validated_data["email"],
+            email=validated_data["email"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+            password=make_password(validated_data["password"]),
+            postcode=validated_data["postcode"],
+            birth_year=validated_data["birth_year"],
         )
         return user
 
@@ -43,7 +59,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #
 #     def create(self, validated_data):
 #         """
-#         Create and return a new `Participant` instance, given the validated data.
+#         Create and return a new `Participant` instance,
+#         given validated data.
 #         """
 #         user = Participant.objects.create(
 #                 username=validated_data['username'],
@@ -58,7 +75,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #
 #     def update(self, instance, validated_data):
 #         """
-#         Update and return an existing `Participant` instance, given the validated data.
+#         Update and return an existing `Participant` instance,
+#         given validated data.
 #         """
 #         instance.username = validated_data.get('username', instance.username)
 #         instance.email = validated_data.get('email', instance.email)
@@ -71,10 +89,11 @@ class ParticipantSerializer(serializers.ModelSerializer):
 #         instance.save()
 #         return instance
 
+
 class SupportCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportCategory
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class SupportGroupSerializer(serializers.ModelSerializer):
@@ -82,42 +101,43 @@ class SupportGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SupportGroup
-        fields = ['id', 'name', 'support_categories']
+        fields = ["id", "name", "support_categories"]
 
 
 class RegistrationGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationGroup
-        fields = ['id', 'number', 'name']
+        fields = ["id", "number", "name"]
 
 
 class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItem
-        fields = '__all__'
+        fields = "__all__"
 
 
 class SupportItemGroupSerializer(serializers.ModelSerializer):
-    EACH = 'EA'
-    HOUR = 'H'
-    DAY = 'D'
-    WEEK = 'WK'
-    MONTH = 'MON'
-    YEAR = 'YR'
+    EACH = "EA"
+    HOUR = "H"
+    DAY = "D"
+    WEEK = "WK"
+    MONTH = "MON"
+    YEAR = "YR"
 
     UNIT_CHOICES = [
-        (EACH, 'each'),
-        (HOUR, 'hour'),
-        (DAY, 'day'),
-        (WEEK, 'week'),
-        (MONTH, 'month'),
-        (YEAR, 'year'),
+        (EACH, "each"),
+        (HOUR, "hour"),
+        (DAY, "day"),
+        (WEEK, "week"),
+        (MONTH, "month"),
+        (YEAR, "year"),
     ]
     unit = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
 
-    # in methods in case of any changes need to be made (e.g. rounding prices/ formatting)
+    # in methods in case of any changes need to be made
+    # (e.g. rounding prices/formatting)
     def get_unit(self, obj):
         return obj.unit()
 
@@ -129,10 +149,10 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SupportItemGroup
-        fields = ['id', 'name', 'unit', 'price', 'description']
+        fields = ["id", "name", "unit", "price", "description"]
 
 
 class PlanItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanItem
-        fields = '__all__'
+        fields = "__all__"

@@ -8,4 +8,4 @@ coverage erase
 coverage run --source='.' manage.py test budgeting
 echo "Coverage REPORT / XML :"
 coverage report
-coverage xml 
+coverage xml

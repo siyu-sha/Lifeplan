@@ -21,7 +21,8 @@ services:
     volumes:
       - ./backend/ndis_calculator:/app/ndis_calculator
     working_dir: /app/ndis_calculator/
-    command: sh entrypoint.sh
+    command: >
+      sh -c "./entrypoint.sh"
     depends_on:
       - db
 

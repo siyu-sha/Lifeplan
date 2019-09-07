@@ -1,60 +1,84 @@
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import *
-from .serializers import *
 from rest_framework import status, viewsets
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import (
+    Participant,
+    Plan,
+    PlanCategory,
+    PlanGoal,
+    PlanItem,
+    RegistrationGroup,
+    SupportCategory,
+    SupportGroup,
+    SupportItem,
+    SupportItemGroup,
+)
+from .serializers import (
+    ParticipantSerializer,
+    PlanItemSerializer,
+    RegistrationGroupSerializer,
+    SupportGroupSerializer,
+    SupportItemGroupSerializer,
+    SupportItemSerializer,
+)
 
 # Create your views here.
 
+
 class DefaultView(View):
     def get(self, request, *args, **kwargs):
-        return HttpResponse('Hello, World!')
+        return HttpResponse("Hello, World!")
 
 
 class Authentication(APIView):
     permission_classes = (AllowAny,)
 
-    @api_view(['POST', ])
+    @api_view(["POST"])
     @csrf_exempt
     def register(request):
-        if request.method == 'POST':
-            request.data['username'] = request.data.get('email')
+        if request.method == "POST":
+            request.data["username"] = request.data.get("email")
             serializer = ParticipantSerializer(data=request.data)
             if serializer.is_valid():
                 user = serializer.save()
                 refresh = RefreshToken.for_user(user)
                 tokens = {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
                 }
-                return Response({'id': user.id, 'tokens': tokens}, status=status.HTTP_201_CREATED)
+                return Response(
+                    {"id": user.id, "tokens": tokens},
+                    status=status.HTTP_201_CREATED,
+                )
             print(serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
-class Participant(APIView):
+class ParticipantView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    @api_view(['GET', ])
+    @api_view(["GET"])
     @csrf_exempt
     def id(request):
-        if request.method == 'GET':
+        if request.method == "GET":
             serializer = ParticipantSerializer(request.user)
             data = serializer.data
-            data['id'] = request.user.id
+            data["id"] = request.user.id
             return Response(data)
 
-    @api_view(['PUT', ])
+    @api_view(["PUT"])
     @csrf_exempt
     def update(request, pk):
         try:
@@ -62,9 +86,11 @@ class Participant(APIView):
         except Participant.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if request.method == 'PUT':
-            request.data['username'] = request.data.get('email')
-            serializer = ParticipantSerializer(user, data=request.data, partial=True)
+        if request.method == "PUT":
+            request.data["username"] = request.data.get("email")
+            serializer = ParticipantSerializer(
+                user, data=request.data, partial=True
+            )
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -75,6 +101,7 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List all support groups and their support categories
     """
+
     queryset = SupportGroup.objects.all()
     serializer_class = SupportGroupSerializer
 
@@ -83,6 +110,7 @@ class RegistrationGroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List all Registration groups
     """
+
     queryset = RegistrationGroup.objects.all()
     serializer_class = RegistrationGroupSerializer
 
@@ -91,8 +119,15 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List support items filtered by query parameters
     """
-    ACT_NSW_QLD_VIC = [(200, 299), (1000, 2999), (4000, 4999), (9000, 9999), (3000, 3999),
-                       (8000, 8999)]
+
+    ACT_NSW_QLD_VIC = [
+        (200, 299),
+        (1000, 2999),
+        (4000, 4999),
+        (9000, 9999),
+        (3000, 3999),
+        (8000, 8999),
+    ]
 
     serializer_class = SupportItemSerializer
 
@@ -100,12 +135,16 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, **kwargs):
         queryset = SupportItem.objects.all()
         # birth_year = request.query_params.get('birth-year')
-        postcode = request.query_params.get('postcode')
-        registration_group_id = request.query_params.get('registration-group-id', None)
-        support_category_id = request.query_params.get('support-category-id')
+        postcode = request.query_params.get("postcode")
+        registration_group_id = request.query_params.get(
+            "registration-group-id", None
+        )
+        support_category_id = request.query_params.get("support-category-id")
 
         if registration_group_id is not None:
-            queryset = queryset.filter(registration_group_id=registration_group_id)
+            queryset = queryset.filter(
+                registration_group_id=registration_group_id
+            )
 
         queryset = queryset.filter(support_category_id=support_category_id)
 
@@ -113,22 +152,24 @@ class SupportItemViewSet(viewsets.ReadOnlyModelViewSet):
 
         for support_item in serializer.data:
             # check if postcode is in ACT_NSW_QLD_VIC
-            if support_item['price_ACT_NSW_QLD_VIC'] is not None:
+            if support_item["price_ACT_NSW_QLD_VIC"] is not None:
                 for postcode_range in self.ACT_NSW_QLD_VIC:
                     if postcode_range[0] <= int(postcode) <= postcode_range[1]:
-                        support_item['price'] = support_item['price_ACT_NSW_QLD_VIC']
+                        support_item["price"] = support_item[
+                            "price_ACT_NSW_QLD_VIC"
+                        ]
                         break
-            elif support_item['price_NT_SA_TAS_WA'] is not None:
-                support_item['price'] = support_item['price_NT_SA_TAS_WA']
+            elif support_item["price_NT_SA_TAS_WA"] is not None:
+                support_item["price"] = support_item["price_NT_SA_TAS_WA"]
             else:
-                support_item['price'] = support_item['price_national']
+                support_item["price"] = support_item["price_national"]
 
             # strip unneeded keys
-            support_item.pop('price_NT_SA_TAS_WA', None)
-            support_item.pop('price_ACT_NSW_QLD_VIC', None)
-            support_item.pop('price_national', None)
-            support_item.pop('price_remote', None)
-            support_item.pop('price_very_remote', None)
+            support_item.pop("price_NT_SA_TAS_WA", None)
+            support_item.pop("price_ACT_NSW_QLD_VIC", None)
+            support_item.pop("price_national", None)
+            support_item.pop("price_remote", None)
+            support_item.pop("price_very_remote", None)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -137,24 +178,33 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List support item groups by query params.
     """
+
     serializer_class = SupportItemGroupSerializer
 
     def list(self, request, **kwargs):
         queryset = SupportItemGroup.objects.all()
 
-        registration_group_id = request.query_params.get('registration-group-id')
-        support_category_id = request.query_params.get('support-category-id')
+        registration_group_id = request.query_params.get(
+            "registration-group-id"
+        )
+        support_category_id = request.query_params.get("support-category-id")
 
         # workaround list comprehension since querysets can't filter by method
-        reg_queryset_ids = [o.id for o in queryset if
-                            o.registration_group_id().__eq__(registration_group_id)]
+        reg_queryset_ids = [
+            o.id
+            for o in queryset
+            if o.registration_group_id().__eq__(registration_group_id)
+        ]
 
         if reg_queryset_ids is not None:
             queryset = queryset.filter(id__in=reg_queryset_ids)
 
         # Same workaround for support_category_id
-        sup_queryset_ids = [o.id for o in queryset if
-                            o.support_category_id().__eq__(support_category_id)]
+        sup_queryset_ids = [
+            o.id
+            for o in queryset
+            if o.support_category_id().__eq__(support_category_id)
+        ]
         if sup_queryset_ids is not None:
             queryset = queryset.filter(id__in=sup_queryset_ids)
 
@@ -163,10 +213,10 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PlanItem(APIView):
+class PlanItemView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    @api_view(['POST', ])
+    @api_view(["POST"])
     @csrf_exempt
     def create(request, participantID, planGoalID, planCategoryID):
         support_item_id = request.data.get("supportItemID")
@@ -174,15 +224,19 @@ class PlanItem(APIView):
         number = request.data.get("number")
         try:
             SupportItem.objects.get(pk=support_item_id)
-            models.Participant.objects.get(pk=participantID)
+            Participant.objects.get(pk=participantID)
             PlanGoal.objects.get(pk=planGoalID)
             PlanCategory.objects.get(pk=planCategoryID)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            plan_item = PlanItem(plan_category=planCategoryID, support_item=support_item_id,
-                                 plan_goal=planGoalID,
-                                 quantity=number, price_actual=price)
+            plan_item = PlanItem(
+                plan_category=planCategoryID,
+                support_item=support_item_id,
+                plan_goal=planGoalID,
+                quantity=number,
+                price_actual=price,
+            )
             serializer = PlanItemSerializer(data=plan_item)
             if serializer.is_valid():
                 serializer.save()
@@ -192,13 +246,12 @@ class PlanItem(APIView):
 
 
 class PlanView:
-    @api_view(['POST', ])
+    @api_view(["POST"])
     @csrf_exempt
     def create(request):
-        if request.method == 'POST':
-            from .models import Participant
-            participantID = request.data.get('participant_id')
-            if participantID == None:
+        if request.method == "POST":
+            participantID = request.data.get("participant_id")
+            if participantID is None:
                 participantID = request.user.id
             try:
                 participant = Participant.objects.get(pk=participantID)
@@ -206,9 +259,13 @@ class PlanView:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
-                    startDate = request.data.get('start_date')
-                    endDate = request.data.get('end_date')
-                    Plan.objects.create(participant=participant, start_date=startDate, end_date=endDate)
+                    startDate = request.data.get("start_date")
+                    endDate = request.data.get("end_date")
+                    Plan.objects.create(
+                        participant=participant,
+                        start_date=startDate,
+                        end_date=endDate,
+                    )
                 except ValidationError:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
                 else:

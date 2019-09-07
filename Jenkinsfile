@@ -18,7 +18,7 @@ pipeline{
                         }
                     }
                     steps {
-                        sh "ls -la" 
+                        sh "ls -la"
                         sh "cat frontend/package.json"
                         sh "npm --prefix frontend/ install --verbose"
                         sh "npm list -g"
@@ -36,7 +36,7 @@ pipeline{
                         sh "docker-compose -f docker-compose-CI.test.yml build"
                         sh "docker-compose -f docker-compose-CI.test.yml up --abort-on-container-exit"
                         sh 'docker cp "$(docker-compose -f docker-compose-CI.test.yml ps -a -q django)":app/ndis_calculator/coverage.xml ./backend/ndis_calculator/coverage.xml'
-                        cobertura coberturaReportFile: 'backend/ndis_calculator/coverage.xml' 
+                        cobertura coberturaReportFile: 'backend/ndis_calculator/coverage.xml'
                     }
                     post{
                         always{
@@ -80,7 +80,7 @@ pipeline{
             script{
                 if (env.BRANCH_NAME != 'develop') {
                     sh "docker-compose -f docker-compose-CI.yml down -v"
-                }       
+                }
             }
         }
     }
