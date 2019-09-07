@@ -21,6 +21,7 @@ class DefaultView(View):
         return HttpResponse('Hello, World!')
 
 
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class Authentication(APIView):
     permission_classes = (AllowAny,)
 
@@ -42,16 +43,18 @@ class Authentication(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class Participant(APIView):
     permission_classes = (IsAuthenticated,)
 
     @api_view(['GET', ])
     @csrf_exempt
-    def id(request):
+    def current_user(request):
         if request.method == 'GET':
             serializer = ParticipantSerializer(request.user)
             data = serializer.data
-            data['id'] = request.user.id
             return Response(data)
 
     @api_view(['PUT', ])
@@ -69,6 +72,9 @@ class Participant(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors)
+
+
+
 
 
 class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -162,7 +168,7 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanItem(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -190,7 +196,7 @@ class PlanItem(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_200_OK)
 
-
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanView:
     @api_view(['POST', ])
     @csrf_exempt

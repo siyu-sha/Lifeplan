@@ -14,6 +14,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import { Grid } from "@material-ui/core";
 import Api from "../api";
 import AlertMessage from "../common/AlertMessage";
+import { JWT } from "../common/constants";
 
 const styles = theme => ({
   main: {
@@ -91,40 +92,31 @@ class SignIn extends React.Component {
 
     const { email, password, remember } = this.state;
 
-    console.log(
-      "I was triggered" + email + password + remember + "handleSubmit"
-    );
-
-
     const logInfo = {
-      username: this.state.email,
-      password: this.state.password
+      email,
+      password
     };
 
     Api.Auth.login(logInfo)
       .then(response => {
-        console.log("the received response is : ");
-        console.log(response.data.refresh);
         this.setState({
           loggedIn: true,
           displayMessage: "Login successful",
           alertVariant: "success"
         });
-        const token = "token";
         const refresh = "refresh";
-        localStorage.setItem(token, response.data.token);
-        localStorage.setItem(refresh, response.data.response);
+        console.log(response.data);
+        localStorage.setItem(JWT, response.data.access);
+        localStorage.setItem(refresh, response.data.refresh);
         Api.setToken(response.data.token);
       })
       .catch(err => {
-        console.log("this is the err " + err);
         this.setState({
           loggedInFailure: true,
           displayMessage: "Login Failed. Incorrect username or password",
           alertVariant: "error"
         });
       });
-
 
     // send email and password
   };

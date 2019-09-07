@@ -46,8 +46,9 @@ api_patterns = [
     path('auth/refresh', jwt_views.TokenRefreshView.as_view(), name='auth_refresh'),
     path('auth/register', Authentication.register, name='auth_register'),
 
-    path('participant/id', Participant.id, name='participant_id'),
+    path('participant/current-user', Participant.current_user, name='participant_current_user'),
     path('participant/<int:pk>', Participant.update, name='participant_update'),
+    path('participants/current-user', Participant.current_user, name='participant_current_user'),
 
     path('support-groups', support_group_list, name='support_group_list'),
     path('support-items', support_item_list, name='support_items_list'),

@@ -2,13 +2,14 @@ import axios from "axios";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "production"
-    ? "http://localhost:8000/api/v1/"
-    : "http://lachieblack.com:8000/api/v1/";
+    ? "http://lachieblack.com:8000/api/v1/"
+    : "http://localhost:8000/api/v1/";
 
 const setToken = token => {
-  if (token !== null) {
+  if (token != null) {
     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-    localStorage.setItem("token", token);
+  } else {
+    delete axios.defaults.headers.common["Authorization"];
   }
 };
 
@@ -29,6 +30,12 @@ const Auth = {
     birthYear
   }) {
     return axios.post("/auth/register", arguments[0]);
+  }
+};
+
+const Participants = {
+  currentUser: () => {
+    return axios.get("participants/current-user");
   }
 };
 
@@ -53,6 +60,7 @@ const SupportGroups = {
 
 export default {
   Auth,
+  Participants,
   SupportGroups,
   SupportItems,
   setToken
