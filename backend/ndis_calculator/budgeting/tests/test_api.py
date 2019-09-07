@@ -4,8 +4,8 @@ import json
 from budgeting.models import (
     Participant,
     Plan,
-    PlanItem,
     PlanCategory,
+    PlanItem,
     RegistrationGroup,
     SupportCategory,
     SupportGroup,
@@ -361,10 +361,7 @@ class CreatePlanItem(APITestCase):
         supportCategory = SupportCategory.objects.get(pk=3)
         if PlanCategory.objects.filter(pk=1).__len__() == 0:
             PlanCategory.objects.create(
-                pk=1,
-                plan=plan,
-                support_category=supportCategory,
-                budget=4.0,
+                pk=1, plan=plan, support_category=supportCategory, budget=4.0
             )
         planCategory = PlanCategory.objects.get(pk=1)
         test = PlanItem.objects.filter(
