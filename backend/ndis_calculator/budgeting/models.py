@@ -66,7 +66,7 @@ class SupportItem(models.Model):
     ]
 
     support_item_group = models.ForeignKey(
-        "SupportItemGroup", on_delete=models.PROTECT, null=True, blank= True
+        "SupportItemGroup", on_delete=models.PROTECT, null=True, blank=True
     )
     support_category = models.ForeignKey(
         SupportCategory, on_delete=models.PROTECT

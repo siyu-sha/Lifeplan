@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand
 import csv
+
 from budgeting.models import SupportItem, SupportItemGroup
+from django.core.management.base import BaseCommand
 
 
 def update_item(item_id, base_item_id):
@@ -9,7 +10,9 @@ def update_item(item_id, base_item_id):
     base_item_obj = SupportItem.objects.get(id=int(base_item_id))
     group = SupportItemGroup.objects.filter(base_item=base_item_obj).first()
     if not group:
-        group = SupportItemGroup(base_item=base_item_obj, name=base_item_obj.name)
+        group = SupportItemGroup(
+            base_item=base_item_obj, name=base_item_obj.name
+        )
         group.save()
     # update support item's group
     support_item.support_item_group = group
