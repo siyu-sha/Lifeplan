@@ -66,7 +66,7 @@ class SupportItem(models.Model):
     ]
 
     support_item_group = models.ForeignKey(
-        "SupportItemGroup", on_delete=models.PROTECT, null=True
+        "SupportItemGroup", on_delete=models.PROTECT, null=True, blank=True
     )
     support_category = models.ForeignKey(
         SupportCategory, on_delete=models.PROTECT
@@ -86,13 +86,13 @@ class SupportItem(models.Model):
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     price_national = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
     price_remote = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
     price_very_remote = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
 
     def __str__(self):
