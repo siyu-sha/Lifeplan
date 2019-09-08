@@ -5,7 +5,6 @@ from ndis_calculator import settings
 from .managers import CustomUserManager
 from .validators import validate_birth_year, validate_postcode
 
-
 # Create your models here.
 
 
@@ -151,11 +150,11 @@ class Plan(models.Model):
 
     def __str__(self):
         return (
-                " ID: ("
-                + self.id.__str__()
-                + ")"
-                + "Participant: "
-                + self.participant_id.__str__()
+            " ID: ("
+            + self.id.__str__()
+            + ")"
+            + "Participant: "
+            + self.participant_id.__str__()
         )
 
 
@@ -170,6 +169,8 @@ class PlanCategory(models.Model):
 
 class PlanItem(models.Model):
     plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
-    support_item_group = models.ForeignKey(SupportItemGroup, on_delete=models.PROTECT)
+    support_item_group = models.ForeignKey(
+        SupportItemGroup, on_delete=models.PROTECT
+    )
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)

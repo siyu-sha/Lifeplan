@@ -31,7 +31,6 @@ from .serializers import (
     SupportItemSerializer,
 )
 
-
 # Create your views here.
 
 
@@ -224,7 +223,9 @@ class PlanItemView(APIView):
         number = request.data.get("number")
         try:
             Participant.objects.get(pk=participantID)
-            supportItemGroup = SupportItemGroup.objects.get(pk=support_item_group_id)
+            supportItemGroup = SupportItemGroup.objects.get(
+                pk=support_item_group_id
+            )
             planCategory = PlanCategory.objects.get(pk=planCategoryID)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
