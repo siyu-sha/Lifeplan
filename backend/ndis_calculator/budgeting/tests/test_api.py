@@ -4,6 +4,7 @@ import json
 from budgeting.models import (
     Participant,
     Plan,
+    PlanCategory,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -270,7 +271,6 @@ class SupportGroupTests(APITestCase):
         response = self.client.get(self.URL_SUPPORT_GROUP_LIST)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for support_group in response.data:
-            # print(support_group)
             for support_category in support_group["support_categories"]:
                 self.assertIn("id", support_category)
                 self.assertIn("name", support_category)
@@ -322,7 +322,6 @@ class SupportItemGroupTest(APITestCase):
         return None
 
 
-# Needs updating after adding information in database
 class CreatePlanItem(APITestCase):
     fixtures = [
         "registration_group.json",
@@ -334,13 +333,59 @@ class CreatePlanItem(APITestCase):
     def setUp(self):
         self.URL_CREATE_PLAN_ITEM = reverse(
             "plan_item_create",
-            kwargs={"participantID": 0, "planGoalID": 0, "planCategoryID": 0},
+            kwargs={"participantID": 1, "planCategoryID": 1},
         )
-        self.TEST_DATA = {"supportItemID": 144, "price": 120.22, "number": 1}
+        self.TEST_DATA = {
+            "supportItemGroupID": 2,
+            "price": 120.22,
+            "number": 1,
+        }
 
     def test_create_plan_item(self):
-        response = self.client.post(self.URL_CREATE_PLAN_ITEM, self.TEST_DATA)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        if Participant.objects.filter(pk=1).__len__() == 0:
+            Participant.objects.create(
+                pk=1,
+                email="1@qq.com",
+                first_name="Red",
+                last_name="Blue",
+                postcode="1",
+                birth_year=1996,
+            )
+        participant = Participant.objects.get(pk=1)
+        if Plan.objects.filter(pk=1).__len__() == 0:
+            Plan.objects.create(
+                pk=1,
+                participant=participant,
+                start_date="2019-09-20",
+                end_date="2020-09-20",
+            )
+        plan = Plan.objects.get(pk=1)
+        if SupportItemGroup.objects.filter(pk=2).__len__() == 0:
+            SupportItemGroup.objects.create(
+                pk=2, name="group", base_item=SupportItem.objects.get(pk=144)
+            )
+        supportItemGroup = SupportItemGroup.objects.get(pk=2)
+        supportCategory = SupportCategory.objects.get(pk=3)
+        if PlanCategory.objects.filter(pk=1).__len__() == 0:
+            PlanCategory.objects.create(
+                pk=1, plan=plan, support_category=supportCategory, budget=4.0
+            )
+        planCategory = PlanCategory.objects.get(pk=1)
+        test = PlanItem.objects.filter(
+            plan_category=planCategory,
+            support_item_group=supportItemGroup,
+            quantity=1,
+            price_actual=120.22,
+        )
+        len = test.__len__()
+        self.client.post(self.URL_CREATE_PLAN_ITEM, self.TEST_DATA)
+        test = PlanItem.objects.filter(
+            plan_category=planCategory,
+            support_item_group=supportItemGroup,
+            quantity=1,
+            price_actual=120.22,
+        )
+        self.assertEqual(len + 1, test.__len__())
 
 
 class RegistrationGroupTests(APITestCase):
@@ -367,14 +412,15 @@ class CreatePlan(APITestCase):
 
     # may need improvement in the future
     def test_create_plan_item(self):
-        Participant.objects.create(
-            pk=1,
-            email="1@qq.com",
-            first_name="Red",
-            last_name="Blue",
-            postcode="1",
-            birth_year=1996,
-        )
+        if Participant.objects.filter(pk=1).__len__() == 0:
+            Participant.objects.create(
+                pk=1,
+                email="1@qq.com",
+                first_name="Red",
+                last_name="Blue",
+                postcode="1",
+                birth_year=1996,
+            )
         response = self.client.post(self.URL_CREATE_PLAN, self.TEST_DATA)
         par = Participant.objects.get(pk=1)
         test = Plan.objects.filter(

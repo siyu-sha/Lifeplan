@@ -144,7 +144,6 @@ class Plan(models.Model):
     end_date = models.DateField()
     generated = models.BooleanField(default=False)
 
-    goals = models.ManyToManyField("Goal", through="PlanGoal")
     support_categories = models.ManyToManyField(
         SupportCategory, through="PlanCategory"
     )
@@ -159,17 +158,6 @@ class Plan(models.Model):
         )
 
 
-class Goal(models.Model):
-    description = models.TextField()
-
-
-class PlanGoal(models.Model):
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
-
-    priority = models.IntegerField(default=0)
-
-
 class PlanCategory(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     support_category = models.ForeignKey(
@@ -181,10 +169,8 @@ class PlanCategory(models.Model):
 
 class PlanItem(models.Model):
     plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
-    support_item = models.ForeignKey(SupportItem, on_delete=models.PROTECT)
-    plan_goal = models.ForeignKey(
-        PlanGoal, on_delete=models.SET_NULL, null=True
+    support_item_group = models.ForeignKey(
+        SupportItemGroup, on_delete=models.PROTECT
     )
-
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)

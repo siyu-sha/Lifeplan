@@ -61,7 +61,7 @@ api_patterns = [
         name="support_item_group_list",
     ),
     path(
-        "participants/<int:participantID>/plan-goals/<int:planGoalID>/plan-categories/<int:planCategoryID>/plan-items",
+        "participants/<int:participantID>/plan-categories/<int:planCategoryID>/plan-items",
         PlanItemView.create,
         name="plan_item_create",
     ),
