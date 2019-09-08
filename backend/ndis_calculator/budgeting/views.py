@@ -232,7 +232,7 @@ class PlanItemView(APIView):
             try:
                 PlanItem.objects.create(
                     plan_category=planCategory,
-                    support_item=supportItemGroup,
+                    support_item_group=supportItemGroup,
                     quantity=number,
                     price_actual=price,
                 )
