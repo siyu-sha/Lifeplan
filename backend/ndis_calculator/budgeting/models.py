@@ -181,7 +181,7 @@ class PlanCategory(models.Model):
 
 class PlanItem(models.Model):
     plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
-    support_item_group = models.ForeignKey(SupportItemGroup, on_delete=models.PROTECT)
+    support_item = models.ForeignKey(SupportItem, on_delete=models.PROTECT)
     plan_goal = models.ForeignKey(
         PlanGoal, on_delete=models.SET_NULL, null=True
     )
