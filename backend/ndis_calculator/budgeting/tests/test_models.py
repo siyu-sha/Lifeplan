@@ -1,9 +1,7 @@
 from budgeting.models import (
-    Goal,
     Participant,
     Plan,
     PlanCategory,
-    PlanGoal,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -42,19 +40,6 @@ class ParticipantTest(TestCase):
         cu = self.create_Participant()
         self.assertTrue(isinstance(cu, Participant))
         # self.assertEqual() - assert any custom methods we create work
-
-
-class GoalTest(TestCase):
-    @staticmethod
-    def create_Goal(description="To be a web developer"):
-        if Goal.objects.filter(description=description).first():
-            return Goal.objects.first()
-        else:
-            return Goal.objects.create(description=description)
-
-    def test_Goal(self):
-        g = self.create_Goal()
-        self.assertTrue(isinstance(g, Goal))
 
 
 class SupportGroupTest(TestCase):
@@ -160,21 +145,9 @@ class PlanContainsCategoriesTest(TestCase):
             )
 
 
-class PlanGoalTest(TestCase):
-    @staticmethod
-    def create_PlanGoal(plan, goal=GoalTest.create_Goal(), priority=1):
-        if PlanGoal.objects.filter(goal=goal).first():
-            return PlanGoal.objects.first()
-        else:
-            return PlanGoal.objects.create(
-                plan=plan, goal=goal, priority=priority
-            )
-
-
 class PlanContainsItemsTest:
     @staticmethod
     def create_PlanContainsItems(
-            plan_goal,
             plan_category,
             support_item_group=SupportItemGroupTest.create_SupportItemGroup(),
             price_actual=200.50,
@@ -189,7 +162,6 @@ class PlanContainsItemsTest:
             support_item_group=support_item_group,
             price_actual=price_actual,
             quantity=quantity,
-            plan_goal=plan_goal,
         )
 
 
@@ -205,14 +177,12 @@ class PlanTest(TestCase):
             start_date="2018-06-01",
             end_date="2019-06-01",
         )
-        goal = PlanGoalTest.create_PlanGoal(plan=obj)
-        self.goals = goal
         category = PlanContainsCategoriesTest.create_PlanContainsCategories(
             plan=obj
         )
         self.categories = category
         self.items = PlanContainsItemsTest.create_PlanContainsItems(
-            plan_category=category, plan_goal=goal
+            plan_category=category
         )
         return obj
 

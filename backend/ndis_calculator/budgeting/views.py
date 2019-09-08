@@ -15,7 +15,6 @@ from .models import (
     Participant,
     Plan,
     PlanCategory,
-    PlanGoal,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -31,6 +30,7 @@ from .serializers import (
     SupportItemGroupSerializer,
     SupportItemSerializer,
 )
+
 
 # Create your views here.
 

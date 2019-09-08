@@ -5,6 +5,7 @@ from ndis_calculator import settings
 from .managers import CustomUserManager
 from .validators import validate_birth_year, validate_postcode
 
+
 # Create your models here.
 
 
@@ -144,30 +145,18 @@ class Plan(models.Model):
     end_date = models.DateField()
     generated = models.BooleanField(default=False)
 
-    goals = models.ManyToManyField("Goal", through="PlanGoal")
     support_categories = models.ManyToManyField(
         SupportCategory, through="PlanCategory"
     )
 
     def __str__(self):
         return (
-            " ID: ("
-            + self.id.__str__()
-            + ")"
-            + "Participant: "
-            + self.participant_id.__str__()
+                " ID: ("
+                + self.id.__str__()
+                + ")"
+                + "Participant: "
+                + self.participant_id.__str__()
         )
-
-
-class Goal(models.Model):
-    description = models.TextField()
-
-
-class PlanGoal(models.Model):
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
-
-    priority = models.IntegerField(default=0)
 
 
 class PlanCategory(models.Model):
@@ -182,8 +171,5 @@ class PlanCategory(models.Model):
 class PlanItem(models.Model):
     plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
     support_item_group = models.ForeignKey(SupportItemGroup, on_delete=models.PROTECT)
-    '''plan_goal = models.ForeignKey(
-        PlanGoal, on_delete=models.SET_NULL, null=True
-    )'''
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)

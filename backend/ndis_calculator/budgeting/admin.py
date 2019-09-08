@@ -4,11 +4,9 @@ from django.contrib.auth.admin import UserAdmin
 
 from .forms import ParticipantChangeForm, ParticipantCreationForm
 from .models import (
-    Goal,
     Participant,
     Plan,
     PlanCategory,
-    PlanGoal,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -39,7 +37,5 @@ admin.site.register(SupportItemGroup)
 admin.site.register(SupportCategory)
 admin.site.register(RegistrationGroup)
 admin.site.register(Plan)
-admin.site.register(Goal)
-admin.site.register(PlanGoal)
 admin.site.register(PlanCategory)
 admin.site.register(PlanItem)
