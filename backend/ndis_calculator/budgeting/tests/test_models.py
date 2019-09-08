@@ -17,13 +17,13 @@ from django.test import TestCase
 class ParticipantTest(TestCase):
     @staticmethod
     def create_Participant(
-        username="test",
-        first_name="John",
-        last_name="Smith",
-        password="password123",
-        email="John.Smith@test.com",
-        postcode="3000",
-        birth_year="1945",
+            username="test",
+            first_name="John",
+            last_name="Smith",
+            password="password123",
+            email="John.Smith@test.com",
+            postcode="3000",
+            birth_year="1945",
     ):
         if Participant.objects.filter(username="test").first():
             return Participant.objects.first()
@@ -102,13 +102,13 @@ class RegistrationGroupTest(TestCase):
 class SupportItemTest(TestCase):
     @staticmethod
     def create_SupportItem(
-        number=137,
-        name="item1",
-        description="this is some description",
-        unit="H",
-        price_national=850.25,
-        category=SupportCategoryTest.create_Category(),
-        registration_group=RegistrationGroupTest.create_RegistrationGroup(),
+            number=137,
+            name="item1",
+            description="this is some description",
+            unit="H",
+            price_national=850.25,
+            category=SupportCategoryTest.create_Category(),
+            registration_group=RegistrationGroupTest.create_RegistrationGroup(),
     ):
         if SupportItem.objects.filter(number=number).first():
             return SupportItem.objects.first()
@@ -132,7 +132,7 @@ class SupportItemTest(TestCase):
 
 class SupportItemGroupTest(TestCase):
     @staticmethod
-    def createSupportItemGroup(name="itemGroup1"):
+    def create_SupportItemGroup(name="itemGroup1"):
         if SupportItemGroup.objects.first():
             return SupportItemGroup.objects.first()
         else:
@@ -140,11 +140,17 @@ class SupportItemGroupTest(TestCase):
                 name=name, base_item=SupportItemTest.create_SupportItem()
             )
 
+    def test_SupportItemGroup(self):
+        sig = self.create_SupportItemGroup(
+            name="Renamed"
+        )
+        self.assertTrue(isinstance(sig, SupportItemGroup))
+
 
 class PlanContainsCategoriesTest(TestCase):
     @staticmethod
     def create_PlanContainsCategories(
-        plan, category=SupportCategoryTest.create_Category(), amount=1000.50
+            plan, category=SupportCategoryTest.create_Category(), amount=1000.50
     ):
         if PlanCategory.objects.filter(plan=plan).first():
             return PlanCategory.objects.first()
@@ -168,19 +174,19 @@ class PlanGoalTest(TestCase):
 class PlanContainsItemsTest:
     @staticmethod
     def create_PlanContainsItems(
-        plan_goal,
-        plan_category,
-        support_item=SupportItemTest.create_SupportItem(),
-        price_actual=200.50,
-        quantity=2,
-        hours_weekday=10.50,
-        hours_weekend=10.50,
-        hours_holiday=0.00,
-        hours_holiday_after_hours=2.50,
+            plan_goal,
+            plan_category,
+            support_item_group=SupportItemGroupTest.create_SupportItemGroup(),
+            price_actual=200.50,
+            quantity=2,
+            hours_weekday=10.50,
+            hours_weekend=10.50,
+            hours_holiday=0.00,
+            hours_holiday_after_hours=2.50,
     ):
         return PlanItem.objects.create(
             plan_category=plan_category,
-            support_item=support_item,
+            support_item_group=support_item_group,
             price_actual=price_actual,
             quantity=quantity,
             plan_goal=plan_goal,
