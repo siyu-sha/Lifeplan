@@ -107,7 +107,7 @@ class SignUp extends React.Component {
         );
         //console.log("response status is " + response.status);
         //console.log("updated!!!!!!!!!!!!!!!");
-        Api.setToken(token);
+        Api.setAccess(token);
         this.props.history.push("/");
       })
       .catch(err => {
@@ -249,7 +249,7 @@ class SignUp extends React.Component {
               variant="contained"
               color="secondary"
               className={classes.submitBtn}
-              onClick={() => (window.location.href = "/authentication/signin")}
+              onClick={() => (window.location.href = "/signin")}
             >
               Cancel
             </Button>

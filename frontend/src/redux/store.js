@@ -1,7 +1,7 @@
 import { applyMiddleware, createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
 import reducer from "./reducer";
-import promiseMiddleware from "redux-promise";
+import { promiseMiddleware } from "./middleware";
 
 const getMiddleware = () => {
   return applyMiddleware(promiseMiddleware);

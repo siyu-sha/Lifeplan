@@ -1,2 +1,6 @@
 // localStorage
-export const JWT = "jwt";
+
+export const LocalStorageKeys = {
+  ACCESS : "access",
+  REFRESH : "refresh"
+};

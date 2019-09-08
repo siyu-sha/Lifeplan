@@ -14,7 +14,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import { Grid } from "@material-ui/core";
 import Api from "../api";
 import AlertMessage from "../common/AlertMessage";
-import { JWT } from "../common/constants";
+import { LocalStorageKeys } from "../common/constants";
 
 const styles = theme => ({
   main: {
@@ -72,7 +72,6 @@ class SignIn extends React.Component {
     loggedInFailure: false,
     alertVariant: "",
     displayMessage: "",
-    alertVariant: ""
   };
 
   handleInput = event => {
@@ -104,11 +103,11 @@ class SignIn extends React.Component {
           displayMessage: "Login successful",
           alertVariant: "success"
         });
-        const refresh = "refresh";
         console.log(response.data);
-        localStorage.setItem(JWT, response.data.access);
-        localStorage.setItem(refresh, response.data.refresh);
-        Api.setToken(response.data.token);
+        localStorage.setItem(LocalStorageKeys.ACCESS, response.data.access);
+        localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
+        Api.setAccess(response.data.token);
+        window.location.replace("/");
       })
       .catch(err => {
         this.setState({

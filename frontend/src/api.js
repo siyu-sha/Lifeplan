@@ -5,9 +5,10 @@ axios.defaults.baseURL =
     ? "http://lachieblack.com:8000/api/v1/"
     : "http://localhost:8000/api/v1/";
 
-const setToken = token => {
-  if (token != null) {
-    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+
+const setAccess = access => {
+  if (access != null) {
+    axios.defaults.headers.common["Authorization"] = "Bearer " + access;
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
@@ -30,6 +31,9 @@ const Auth = {
     birthYear
   }) {
     return axios.post("/auth/register", arguments[0]);
+  },
+  refresh: (refresh) => {
+    return axios.post("/auth/refresh", {refresh});
   }
 };
 
@@ -63,5 +67,5 @@ export default {
   Participants,
   SupportGroups,
   SupportItems,
-  setToken
+  setAccess
 };
