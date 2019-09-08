@@ -3,13 +3,14 @@ import csv
 from budgeting.models import SupportItem, SupportItemGroup
 
 
-def update_item(item, base_item):
+def update_item(item_id, base_item_id):
     # locate objects
-    support_item = SupportItem.objects.filter(id == item).first()
-    base_item = SupportItem.objects.filter(id == base_item).first()
-    group = SupportItemGroup.objects.filter(base_item=base_item).first()
+    support_item = SupportItem.objects.get(id=int(item_id))
+    base_item_obj = SupportItem.objects.get(id=int(base_item_id))
+    group = SupportItemGroup.objects.filter(base_item=base_item_obj).first()
     if not group:
-        group = SupportItemGroup(base_item=base_item, name=base_item.name)
+        group = SupportItemGroup(base_item=base_item_obj, name=base_item_obj.name)
+        group.save()
     # update support item's group
     support_item.support_item_group = group
     support_item.save()
