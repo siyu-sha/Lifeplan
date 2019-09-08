@@ -336,7 +336,7 @@ class CreatePlanItem(APITestCase):
             "plan_item_create",
             kwargs={"participantID": 1, "planCategoryID": 1},
         )
-        self.TEST_DATA = {"supportItemID": 144, "price": 120.22, "number": 1}
+        self.TEST_DATA = {"supportItemGroupID": 1, "price": 120.22, "number": 1}
 
     def test_create_plan_item(self):
         if Participant.objects.filter(pk=1).__len__() == 0:
@@ -357,7 +357,7 @@ class CreatePlanItem(APITestCase):
                 end_date="2020-09-20",
             )
         plan = Plan.objects.get(pk=1)
-        supportItem = SupportItem.objects.get(pk=144)
+        supportItemGroup = SupportItemGroup.objects.get(pk=1)
         supportCategory = SupportCategory.objects.get(pk=3)
         if PlanCategory.objects.filter(pk=1).__len__() == 0:
             PlanCategory.objects.create(
@@ -366,7 +366,7 @@ class CreatePlanItem(APITestCase):
         planCategory = PlanCategory.objects.get(pk=1)
         test = PlanItem.objects.filter(
             plan_category=planCategory,
-            support_item=supportItem,
+            support_item_group=supportItemGroup,
             quantity=1,
             price_actual=120.22,
         )
@@ -374,7 +374,7 @@ class CreatePlanItem(APITestCase):
         self.client.post(self.URL_CREATE_PLAN_ITEM, self.TEST_DATA)
         test = PlanItem.objects.filter(
             plan_category=planCategory,
-            support_item=supportItem,
+            support_item_group=supportItemGroup,
             quantity=1,
             price_actual=120.22,
         )

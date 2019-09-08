@@ -219,12 +219,12 @@ class PlanItemView(APIView):
     @api_view(["POST"])
     @csrf_exempt
     def create(request, participantID, planCategoryID):
-        support_item_id = request.data.get("support_item_i_d")
+        support_item_group_id = request.data.get("support_item_group_i_d")
         price = request.data.get("price")
         number = request.data.get("number")
         try:
             Participant.objects.get(pk=participantID)
-            supportItem = SupportItem.objects.get(pk=support_item_id)
+            supportItemGroup = SupportItemGroup.objects.get(pk=support_item_group_id)
             planCategory = PlanCategory.objects.get(pk=planCategoryID)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -232,7 +232,7 @@ class PlanItemView(APIView):
             try:
                 PlanItem.objects.create(
                     plan_category=planCategory,
-                    support_item=supportItem,
+                    support_item=supportItemGroup,
                     quantity=number,
                     price_actual=price,
                 )
