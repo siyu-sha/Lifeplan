@@ -119,7 +119,8 @@ paths:
                   $ref: "#/components/schemas/SupportItemGroup"
   /support-item-groups:
     get:
-      tags: -support item group
+      tags: 
+        - support item group
       summary: Retrieves list of support item groups (more simple english, less clutter than S-I)
       description: Retrieves list of support item groups based on filter, The backend will retrieve the default national price for simplicity
       parameters:
@@ -134,14 +135,14 @@ paths:
             type: integer
           required: true
       responses:
-      "200":
-        description: success
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: #/components/schemas/SupportItem
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportItem"
   ? /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
   : post:
       tags:
