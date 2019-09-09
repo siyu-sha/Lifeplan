@@ -17,10 +17,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-URL_AUTH_REGISTER = reverse('auth_register')
-URL_AUTH_LOGIN = reverse('auth_login')
-URL_AUTH_REFRESH = reverse('auth_refresh')
-URL_PARTICIPANT_CURRENT_USER = reverse('participant_current_user')
+URL_AUTH_REGISTER = reverse("auth_register")
+URL_AUTH_LOGIN = reverse("auth_login")
+URL_AUTH_REFRESH = reverse("auth_refresh")
+URL_PARTICIPANT_CURRENT_USER = reverse("participant_current_user")
 
 STUB_PARTICIPANT_DATA = {
     "email": "example@example.com",
@@ -245,16 +245,16 @@ class ParticipantApiTests(APITestCase):
         """
         Ensure we can get current participant's details.
         """
-        response = self.client.post(URL_AUTH_REGISTER, STUB_PARTICIPANT_DATA, format='json')
+        response = self.client.post(
+            URL_AUTH_REGISTER, STUB_PARTICIPANT_DATA, format="json"
+        )
 
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['tokens']['access'])
-        participant_data = {
-            'id': response.data['id'],
-            **STUB_PARTICIPANT_DATA
-
-        }
-        participant_data.pop('password')
-        response = self.client.get(URL_PARTICIPANT_CURRENT_USER, format='json')
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + response.data["tokens"]["access"]
+        )
+        participant_data = {"id": response.data["id"], **STUB_PARTICIPANT_DATA}
+        participant_data.pop("password")
+        response = self.client.get(URL_PARTICIPANT_CURRENT_USER, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
