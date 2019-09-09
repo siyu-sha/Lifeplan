@@ -15,6 +15,18 @@ import { Grid } from "@material-ui/core";
 import Api from "../api";
 import AlertMessage from "../common/AlertMessage";
 import { LocalStorageKeys } from "../common/constants";
+import {loadUser} from "../redux/reducers/auth";
+import connect from "react-redux/es/connect/connect";
+
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => ({
+  loadUser: (user) => {
+    dispatch(loadUser(user));
+  }
+});
 
 const styles = theme => ({
   main: {
@@ -103,11 +115,11 @@ class SignIn extends React.Component {
           displayMessage: "Login successful",
           alertVariant: "success"
         });
-        console.log(response.data);
-        localStorage.setItem(LocalStorageKeys.ACCESS, response.data.access);
         localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
-        Api.setAccess(response.data.token);
-        window.location.replace("/");
+        Api.setAccess(response.data.access);
+        this.props.history.replace("/");
+        Api.Participants.currentUser()
+          .then((response) => {console.log(response);this.props.loadUser(response.data)})
       })
       .catch(err => {
         this.setState({
@@ -212,4 +224,4 @@ class SignIn extends React.Component {
   }
 }
 
-export default withStyles(styles)(SignIn);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignIn));

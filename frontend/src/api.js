@@ -1,4 +1,5 @@
 import axios from "axios";
+import {LocalStorageKeys} from "./common/constants";
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === "production"
@@ -6,11 +7,37 @@ axios.defaults.baseURL =
     : "http://localhost:8000/api/v1/";
 
 
+// intercept 401 errors, and attempt to get new access token, otherwise redirect to signin
+function set401Interceptor(on401){
+  axios.interceptors.response.use(response => {console.log(response); return response}, error => {
+    if(error.response && error.response.status === 401 && error.config && error.response.data.code === "token_not_valid" && error.response.data.messages) {
+      return Auth.refresh(localStorage.getItem(LocalStorageKeys.REFRESH))
+        .then(refreshResponse => {
+          const access = refreshResponse.data.access;
+          const config = {...error.config, headers: {...error.headers, Authorization: "Bearer " + access}};
+          setAccess(access);
+          return axios.request(config);
+        })
+        .catch(() => {
+          on401();
+          return Promise.reject(error);
+        });
+    }
+    else {
+      return Promise.reject(error);
+    }
+  });
+}
+
+
 const setAccess = access => {
   if (access != null) {
     axios.defaults.headers.common["Authorization"] = "Bearer " + access;
+    localStorage.setItem(LocalStorageKeys.ACCESS, access);
   } else {
     delete axios.defaults.headers.common["Authorization"];
+    localStorage.removeItem(LocalStorageKeys.ACCESS);
+
   }
 };
 
@@ -67,5 +94,6 @@ export default {
   Participants,
   SupportGroups,
   SupportItems,
-  setAccess
+  setAccess,
+  set401Interceptor
 };

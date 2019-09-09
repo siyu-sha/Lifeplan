@@ -14,6 +14,19 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Api from "../api";
 import { browserHistory } from "react-router";
 import AlertMessage from "../common/AlertMessage";
+import {LocalStorageKeys} from "../common/constants";
+import {loadUser} from "../redux/reducers/auth";
+import connect from "react-redux/es/connect/connect";
+
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => ({
+  loadUser: (user) => {
+    dispatch(loadUser(user));
+  }
+});
 
 const styles = theme => ({
   main: {
@@ -80,56 +93,40 @@ class SignUp extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, accept, firstName, lastName } = this.state;
+    const { email, password, firstName, lastName, postcode, birthYear } = this.state;
 
     //console.log("I was triggered" + email + password + accept + "test");
 
-    var errors = [];
+    let errors = [];
 
     const Reginfo = {
-      email: this.state.email,
-      password: this.state.password,
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      postcode: this.state.postcode,
-      birthYear: this.state.birthYear
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      postcode: postcode,
+      birthYear: birthYear
     };
 
     Api.Auth.register(Reginfo)
       .then(response => {
-        //console.log(responese.data);
         const token = response.data.tokens;
-        console.log(
-          "the received token is: " +
-            token.access +
-            ", and refresh component is " +
-            token.refresh
-        );
-        //console.log("response status is " + response.status);
-        //console.log("updated!!!!!!!!!!!!!!!");
-        Api.setAccess(token);
-        this.props.history.push("/");
+        Api.setAccess(token.access);
+        localStorage.setItem(LocalStorageKeys.REFRESH, token.refresh);
+        this.props.history.replace("/");
+        Api.Participants.currentUser()
+          .then((response) => {console.log(response);this.props.loadUser(response.data)})
       })
       .catch(err => {
-        //console.log("this is the err " + err);
         this.setState({ submittedSuccess: false });
-        //console.log("error response status is " + err.response.status);
-        //console.log("error response data is " + err.response.data);
-        //console.log("error response header is " + err.response.headers);
-
-        let keys = Object.keys(err.response.data);
+        const keys = Object.keys(err.response.data);
 
         for (let key of keys) {
-          //console.log(key);
-          //console.log(err.response.data[key].toString());
           errors.push(err.response.data[key].toString());
         }
-        //console.log(errors);
         this.setState({
           alertMessage: errors[0]
         });
-        //console.log("submittedSuccess is " + this.state.submittedSuccess);
-        //console.log("error message " + err.response.data.mes);
       });
 
     // send email and password
@@ -260,4 +257,5 @@ class SignUp extends React.Component {
   }
 }
 
-export default withStyles(styles)(SignUp);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignUp));
+

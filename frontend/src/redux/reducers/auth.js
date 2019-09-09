@@ -10,10 +10,16 @@ export default (state = defaultState, action) => {
     case LOAD_USER:
       return {
         ...state,
-        currentUser: action.payload.data
+        currentUser: action.payload.user
       };
     default:
       return state
 
+  }
+}
+
+export function loadUser(user) {
+  return {
+    type: LOAD_USER, payload: {user: user}
   }
 }

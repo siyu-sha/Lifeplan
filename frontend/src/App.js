@@ -13,26 +13,38 @@ import { LocalStorageKeys } from "./common/constants";
 import api from "./api";
 import { LOAD_USER } from "./redux/actionTypes";
 import { connect } from "react-redux";
+import {loadUser} from "./redux/reducers/auth";
 
 const mapStateToProps = state => {
   return {};
 };
 
 const mapDispatchToProps = dispatch => ({
-  loadUser: (history) => {
-    dispatch({ type: LOAD_USER, payload: api.Participants.currentUser(), history:history});
+  loadUser: (user) => {
+    dispatch(loadUser(user));
   }
 });
 
 function App(props) {
-  // get jwt from local storage on every app refresh
+
   useEffect(() => {
+    // redirect if 401
+    api.set401Interceptor(handle401);
+    // set access token
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
       api.setAccess(access);
-      props.loadUser(props.history);
+      api.Participants.currentUser()
+        .then((response) => {props.loadUser(response.data)});
     }
+
   }, []);
+
+  function handle401() {
+    localStorage.clear();
+    props.history.push("/signin");
+    props.loadUser(null);
+  }
 
   return (
     <div>
