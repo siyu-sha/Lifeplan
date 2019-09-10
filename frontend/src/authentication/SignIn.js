@@ -32,32 +32,32 @@ const styles = theme => ({
   main: {
     width: "auto",
     display: "block",
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing (3),
+    [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
       marginRight: "auto"
     }
   },
   paper: {
-    marginTop: theme.spacing.unit * 10,
+    marginTop: theme.spacing(10),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
-      .spacing.unit * 3}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme
+      .spacing(3)}px`
   },
   avatar: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing(1)
   },
   registerStl: {
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "row-reverse"
   },
@@ -65,12 +65,12 @@ const styles = theme => ({
     marginTop: 0
   },
   registerLabel: {
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing(1)
   },
   submitBtn: {
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing(3)
   }
 });
 
@@ -101,7 +101,7 @@ class SignIn extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, remember } = this.state;
+    const { email, password } = this.state;
 
     const logInfo = {
       email,
@@ -119,7 +119,7 @@ class SignIn extends React.Component {
         Api.setAccess(response.data.access);
         this.props.history.replace("/");
         Api.Participants.currentUser()
-          .then((response) => {console.log(response);this.props.loadUser(response.data)})
+          .then((response) => {this.props.loadUser(response.data)})
       })
       .catch(err => {
         this.setState({
@@ -173,7 +173,7 @@ class SignIn extends React.Component {
               />
             </FormControl>
             <FormControl margin={margin_size} required fullWidth>
-              <InputLabel htmlFor={pwd} required fullWidth>
+              <InputLabel htmlFor={pwd} required>
                 Password
               </InputLabel>
               <Input
@@ -215,7 +215,7 @@ class SignIn extends React.Component {
           >
             SignUp
           </Button>
-          <Typography component={"subtitle1"} className={classes.registerLabel}>
+          <Typography className={classes.registerLabel}>
             Don't have an account?
           </Typography>
         </Grid>

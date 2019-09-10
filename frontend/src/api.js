@@ -9,7 +9,7 @@ axios.defaults.baseURL =
 
 // intercept 401 errors, and attempt to get new access token, otherwise redirect to signin
 function set401Interceptor(on401){
-  axios.interceptors.response.use(response => {console.log(response); return response}, error => {
+  axios.interceptors.response.use(null,error => {
     if(error.response && error.response.status === 401 && error.config && error.response.data.code === "token_not_valid" && error.response.data.messages) {
       return Auth.refresh(localStorage.getItem(LocalStorageKeys.REFRESH))
         .then(refreshResponse => {

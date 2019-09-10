@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Switch, Route } from "react-router-dom";
 import Theme from "./theme/Theme";
 import Home from "./home/Home";
 import BudgetEdit from "./budget/edit/BudgetEdit.js";
@@ -11,7 +11,6 @@ import SignIn from "./authentication/SignIn";
 import SignUp from "./authentication/SignUp";
 import { LocalStorageKeys } from "./common/constants";
 import api from "./api";
-import { LOAD_USER } from "./redux/actionTypes";
 import { connect } from "react-redux";
 import {loadUser} from "./redux/reducers/auth";
 
@@ -38,7 +37,7 @@ function App(props) {
         .then((response) => {props.loadUser(response.data)});
     }
 
-  }, []);
+  });
 
   function handle401() {
     localStorage.clear();
