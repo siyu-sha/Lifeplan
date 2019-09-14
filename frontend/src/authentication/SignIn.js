@@ -14,37 +14,50 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import { Grid } from "@material-ui/core";
 import Api from "../api";
 import AlertMessage from "../common/AlertMessage";
+import { LocalStorageKeys } from "../common/constants";
+import {loadUser} from "../redux/reducers/auth";
+import connect from "react-redux/es/connect/connect";
+
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => ({
+  loadUser: (user) => {
+    dispatch(loadUser(user));
+  }
+});
 
 const styles = theme => ({
   main: {
     width: "auto",
     display: "block",
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing (3),
+    [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
       marginRight: "auto"
     }
   },
   paper: {
-    marginTop: theme.spacing.unit * 10,
+    marginTop: theme.spacing(10),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
-      .spacing.unit * 3}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme
+      .spacing(3)}px`
   },
   avatar: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing(1)
   },
   registerStl: {
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     display: "flex",
     flexDirection: "row-reverse"
   },
@@ -52,12 +65,12 @@ const styles = theme => ({
     marginTop: 0
   },
   registerLabel: {
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing(1)
   },
   submitBtn: {
     marginLeft: "auto",
     marginRight: "auto",
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing(3)
   }
 });
 
@@ -71,7 +84,6 @@ class SignIn extends React.Component {
     loggedInFailure: false,
     alertVariant: "",
     displayMessage: "",
-    alertVariant: ""
   };
 
   handleInput = event => {
@@ -89,42 +101,33 @@ class SignIn extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, remember } = this.state;
-
-    console.log(
-      "I was triggered" + email + password + remember + "handleSubmit"
-    );
-
+    const { email, password } = this.state;
 
     const logInfo = {
-      username: this.state.email,
-      password: this.state.password
+      email,
+      password
     };
 
     Api.Auth.login(logInfo)
       .then(response => {
-        console.log("the received response is : ");
-        console.log(response.data.refresh);
         this.setState({
           loggedIn: true,
           displayMessage: "Login successful",
           alertVariant: "success"
         });
-        const token = "token";
-        const refresh = "refresh";
-        localStorage.setItem(token, response.data.token);
-        localStorage.setItem(refresh, response.data.response);
-        Api.setToken(response.data.token);
+        localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
+        Api.setAccess(response.data.access);
+        this.props.history.replace("/");
+        Api.Participants.currentUser()
+          .then((response) => {this.props.loadUser(response.data)})
       })
       .catch(err => {
-        console.log("this is the err " + err);
         this.setState({
           loggedInFailure: true,
           displayMessage: "Login Failed. Incorrect username or password",
           alertVariant: "error"
         });
       });
-
 
     // send email and password
   };
@@ -170,7 +173,7 @@ class SignIn extends React.Component {
               />
             </FormControl>
             <FormControl margin={margin_size} required fullWidth>
-              <InputLabel htmlFor={pwd} required fullWidth>
+              <InputLabel htmlFor={pwd} required>
                 Password
               </InputLabel>
               <Input
@@ -212,7 +215,7 @@ class SignIn extends React.Component {
           >
             SignUp
           </Button>
-          <Typography component={"subtitle1"} className={classes.registerLabel}>
+          <Typography className={classes.registerLabel}>
             Don't have an account?
           </Typography>
         </Grid>
@@ -221,4 +224,4 @@ class SignIn extends React.Component {
   }
 }
 
-export default withStyles(styles)(SignIn);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignIn));

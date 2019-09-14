@@ -1,7 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import Button from "@material-ui/core/Button";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import InfoIcon from "@material-ui/icons/Info";
@@ -89,8 +88,6 @@ export default function AlertMessage(props) {
   const { messages, variant } = props;
 
   function handleClose(event, reason) {
-    console.log("triggerred closed");
-    console.log("status is " + open);
     if (reason === "clickaway") {
       return;
     }

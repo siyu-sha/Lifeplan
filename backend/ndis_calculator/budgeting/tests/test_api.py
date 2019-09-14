@@ -20,7 +20,7 @@ from rest_framework.test import APITestCase
 URL_AUTH_REGISTER = reverse("auth_register")
 URL_AUTH_LOGIN = reverse("auth_login")
 URL_AUTH_REFRESH = reverse("auth_refresh")
-URL_PARTICIPANT_ID = reverse("participant_id")
+URL_PARTICIPANT_CURRENT_USER = reverse("participant_current_user")
 
 STUB_PARTICIPANT_DATA = {
     "email": "example@example.com",
@@ -241,7 +241,7 @@ class ParticipantApiTests(APITestCase):
         # response = self.client.post(url, data, format='json')
         # self.__class__.access = response.json()['access']
 
-    def test_participant_id(self):
+    def test_participant_current_user(self):
         """
         Ensure we can get current participant's details.
         """
@@ -254,7 +254,8 @@ class ParticipantApiTests(APITestCase):
         )
         participant_data = {"id": response.data["id"], **STUB_PARTICIPANT_DATA}
         participant_data.pop("password")
-        response = self.client.get(URL_PARTICIPANT_ID, format="json")
+        response = self.client.get(URL_PARTICIPANT_CURRENT_USER, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # render to camelCase JSON for easier comparison

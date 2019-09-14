@@ -12,42 +12,54 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Api from "../api";
-import { browserHistory } from "react-router";
 import AlertMessage from "../common/AlertMessage";
+import {LocalStorageKeys} from "../common/constants";
+import {loadUser} from "../redux/reducers/auth";
+import connect from "react-redux/es/connect/connect";
+
+const mapStateToProps = state => {
+  return {};
+};
+
+const mapDispatchToProps = dispatch => ({
+  loadUser: (user) => {
+    dispatch(loadUser(user));
+  }
+});
 
 const styles = theme => ({
   main: {
     width: "auto",
     display: "block",
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing (3),
+    [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
       marginRight: "auto"
     }
   },
   paper: {
-    marginTop: theme.spacing.unit * 10,
+    marginTop: theme.spacing(10),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
-      .spacing.unit * 3}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme
+      .spacing(3)}px`
   },
   avatar: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing.unit
+    marginTop: theme.spacing(1)
   },
   submitBtn: {
     marginLeft: "7%",
     marginRight: "7%",
     width: "36%",
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing(3)
   }
 });
 
@@ -80,56 +92,40 @@ class SignUp extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, accept, firstName, lastName } = this.state;
+    const { email, password, firstName, lastName, postcode, birthYear } = this.state;
 
     //console.log("I was triggered" + email + password + accept + "test");
 
-    var errors = [];
+    let errors = [];
 
     const Reginfo = {
-      email: this.state.email,
-      password: this.state.password,
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      postcode: this.state.postcode,
-      birthYear: this.state.birthYear
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      postcode: postcode,
+      birthYear: birthYear
     };
 
     Api.Auth.register(Reginfo)
       .then(response => {
-        //console.log(responese.data);
         const token = response.data.tokens;
-        console.log(
-          "the received token is: " +
-            token.access +
-            ", and refresh component is " +
-            token.refresh
-        );
-        //console.log("response status is " + response.status);
-        //console.log("updated!!!!!!!!!!!!!!!");
-        Api.setToken(token);
-        this.props.history.push("/");
+        Api.setAccess(token.access);
+        localStorage.setItem(LocalStorageKeys.REFRESH, token.refresh);
+        this.props.history.replace("/");
+        Api.Participants.currentUser()
+          .then((response) => {console.log(response);this.props.loadUser(response.data)})
       })
       .catch(err => {
-        //console.log("this is the err " + err);
         this.setState({ submittedSuccess: false });
-        //console.log("error response status is " + err.response.status);
-        //console.log("error response data is " + err.response.data);
-        //console.log("error response header is " + err.response.headers);
-
-        let keys = Object.keys(err.response.data);
+        const keys = Object.keys(err.response.data);
 
         for (let key of keys) {
-          //console.log(key);
-          //console.log(err.response.data[key].toString());
           errors.push(err.response.data[key].toString());
         }
-        //console.log(errors);
         this.setState({
           alertMessage: errors[0]
         });
-        //console.log("submittedSuccess is " + this.state.submittedSuccess);
-        //console.log("error message " + err.response.data.mes);
       });
 
     // send email and password
@@ -137,7 +133,6 @@ class SignUp extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { submitted } = this.state;
     const email = "email";
     const pwd = "password";
     const marginSize = "normal";
@@ -249,7 +244,7 @@ class SignUp extends React.Component {
               variant="contained"
               color="secondary"
               className={classes.submitBtn}
-              onClick={() => (window.location.href = "/authentication/signin")}
+              onClick={() => (window.location.href = "/signin")}
             >
               Cancel
             </Button>
@@ -260,4 +255,5 @@ class SignUp extends React.Component {
   }
 }
 
-export default withStyles(styles)(SignUp);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignUp));
+
