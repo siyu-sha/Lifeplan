@@ -24,6 +24,7 @@ from .models import (
 )
 from .serializers import (
     ParticipantSerializer,
+    PlanCategorySerializer,
     PlanItemSerializer,
     RegistrationGroupSerializer,
     SupportGroupSerializer,
@@ -210,6 +211,17 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PlanCategoryViewSet(viewsets.ModelViewSet):
+    """
+    This viewset provides `list`, `create`, `retrieve`, `update`
+    and `destroy` actions to manipulate the Plan Category model.
+    """
+
+    queryset = PlanCategory.objects.all()
+    serializer_class = PlanCategorySerializer
+    permission_classes = (IsAuthenticated,)
 
 
 class PlanItemView(APIView):

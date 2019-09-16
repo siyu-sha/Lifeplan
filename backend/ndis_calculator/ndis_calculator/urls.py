@@ -17,6 +17,7 @@ from budgeting.views import (
     Authentication,
     DefaultView,
     ParticipantView,
+    PlanCategoryViewSet,
     PlanItemView,
     PlanView,
     RegistrationGroupViewSet,
@@ -66,6 +67,11 @@ api_patterns = [
         name="plan_item_create",
     ),
     path("plan/create", PlanView.create, name="plan_create"),
+    path(
+        "plan/category/create",
+        PlanCategoryViewSet.create,
+        name="plan_category_create",
+    ),
     path(
         "registration-groups",
         registration_group_list,
