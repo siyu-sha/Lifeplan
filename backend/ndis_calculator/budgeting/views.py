@@ -39,6 +39,7 @@ class DefaultView(View):
         return HttpResponse("Hello, World!")
 
 
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class Authentication(APIView):
     permission_classes = (AllowAny,)
 
@@ -65,16 +66,16 @@ class Authentication(APIView):
             )
 
 
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class ParticipantView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @api_view(["GET"])
     @csrf_exempt
-    def id(request):
+    def current_user(request):
         if request.method == "GET":
             serializer = ParticipantSerializer(request.user)
             data = serializer.data
-            data["id"] = request.user.id
             return Response(data)
 
     @api_view(["PUT"])
@@ -212,6 +213,9 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
+
+
 class PlanItemView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -243,6 +247,7 @@ class PlanItemView(APIView):
                 return Response(status=status.HTTP_200_OK)
 
 
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanView(APIView):
     @api_view(["POST"])
     @csrf_exempt
