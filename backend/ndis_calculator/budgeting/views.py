@@ -1,3 +1,4 @@
+from budgeting.permissions import IsPlanOwner
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse
 from django.views import View
@@ -213,38 +214,66 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
+class PlanItemViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for CRUD of plan items
 
+    Only authenticated participants who are owners of the plan which the plan item belongs to can access
+    """
 
-class PlanItemView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
+    serializer_class = PlanItemSerializer
 
-    @api_view(["POST"])
-    @csrf_exempt
-    def create(request, participantID, planCategoryID):
-        support_item_group_id = request.data.get("support_item_group_i_d")
-        price = request.data.get("price")
-        number = request.data.get("number")
+    def create(self, request, plan_category_id):
+        # check if plan category and corresponding plan exists
         try:
-            Participant.objects.get(pk=participantID)
-            supportItemGroup = SupportItemGroup.objects.get(
-                pk=support_item_group_id
-            )
-            planCategory = PlanCategory.objects.get(pk=planCategoryID)
+            plan_category = PlanCategory.objects.get(pk=plan_category_id)
+            plan = Plan.objects.get(pk=plan_category.plan_id)
         except ObjectDoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                PlanItem.objects.create(
-                    plan_category=planCategory,
-                    support_item_group=supportItemGroup,
-                    quantity=number,
-                    price_actual=price,
-                )
-            except ValidationError:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response(status=status.HTTP_200_OK)
+            return Response(status.HTTP_404_NOT_FOUND)
+
+        # check if plan belongs to user
+        if plan.user_id != request.user:
+            return Response(status.HTTP_403_FORBIDDEN)
+
+        # create plan
+        serializer = self.serializer_class(request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# TODO: remove after a while
+# class PlanItemView(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     @api_view(["POST"])
+#     @csrf_exempt
+#     def create(request, participantID, planCategoryID):
+#         support_item_group_id = request.data.get("support_item_group_i_d")
+#         price = request.data.get("price")
+#         number = request.data.get("number")
+#         try:
+#             Participant.objects.get(pk=participantID)
+#             supportItemGroup = SupportItemGroup.objects.get(
+#                 pk=support_item_group_id
+#             )
+#             planCategory = PlanCategory.objects.get(pk=planCategoryID)
+#         except ObjectDoesNotExist:
+#             return Response(status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             try:
+#                 PlanItem.objects.create(
+#                     plan_category=planCategory,
+#                     support_item_group=supportItemGroup,
+#                     quantity=number,
+#                     price_actual=price,
+#                 )
+#             except ValidationError:
+#                 return Response(status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 return Response(status=status.HTTP_200_OK)
 
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
