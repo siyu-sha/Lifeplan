@@ -4,6 +4,7 @@ from rest_framework.validators import UniqueValidator
 
 from .models import (
     Participant,
+    Plan,
     PlanCategory,
     PlanItem,
     RegistrationGroup,
@@ -151,6 +152,14 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportItemGroup
         fields = ["id", "name", "unit", "price", "description"]
+
+
+class PlanSerializer(serializers.ModelSerializer):
+    participant = serializers.ReadOnlyField(source="participant.id")
+
+    class Meta:
+        model = Plan
+        fields = "__all__"
 
 
 class PlanItemSerializer(serializers.ModelSerializer):

@@ -26,6 +26,7 @@ from .serializers import (
     ParticipantSerializer,
     PlanCategorySerializer,
     PlanItemSerializer,
+    PlanSerializer,
     RegistrationGroupSerializer,
     SupportGroupSerializer,
     SupportItemGroupSerializer,
@@ -255,60 +256,74 @@ class PlanItemView(APIView):
                 return Response(status=status.HTTP_200_OK)
 
 
-class PlanView(APIView):
-    @api_view(["POST"])
-    @csrf_exempt
-    def create(request):
-        if request.method == "POST":
-            participantID = request.data.get("participant_id")
-            if participantID is None:
-                participantID = request.user.id
-            try:
-                participant = Participant.objects.get(pk=participantID)
-            except ObjectDoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            else:
-                try:
-                    startDate = request.data.get("start_date")
-                    endDate = request.data.get("end_date")
-                    Plan.objects.create(
-                        participant=participant,
-                        start_date=startDate,
-                        end_date=endDate,
-                    )
-                except ValidationError:
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    return Response(status=status.HTTP_200_OK)
+class PlanViewSet(viewsets.ModelViewSet):
+    """
+    This viewset provides `list`, `create`, `retrieve`, `update`
+    and `destroy` actions to manipulate the Plan model.
+    """
 
-    # def getList(request):
-    #     if request.method == 'GET':
-    #         # birth_year = request.query_params.get('birth-year')
-    #         postcode = request.query_params.get('postcode')
-    #         registration_group_id = request.query_params.get('registration-group-id', None)
-    #         support_category_id = request.query_params.get('support-category-id')
-    #         if registration_group_id == '-1':
-    #             items = SupportItem.objects.filter(support_category=support_category_id)
-    #         else:
-    #             items = SupportItem.objects.filter(support_category=support_category_id,
-    #                                                registration_group=registration_group_id)
-    #         tokens = []
-    #         for item in items:
-    #             token = {}
-    #             token['id'] = item.id
-    #             token['number'] = item.number
-    #             token['name'] = item.name
-    #             token['description'] = item.description
-    #             token['unit'] = item.unit
-    #             if postcode[0] == 0 or postcode[0] == 5 or postcode[0] == 6 or postcode[0] == 7:
-    #                 if item.price_NT_SA_TAS_WA is not None:
-    #                     token['price'] = item.price_NT_SA_TAS_WA
-    #                 else:
-    #                     token['price'] = item.price_national
-    #             else:
-    #                 if item.price_ACT_NSW_QLD_VIC is not None:
-    #                     token['price'] = item.price_ACT_NSW_QLD_VIC
-    #                 else:
-    #                     token['price'] = item.price_national
-    #             tokens.append(token)
-    #         return Response(tokens, status=status.HTTP_200_OK)
+    queryset = Plan.objects.all()
+    serializer_class = PlanSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(participant=self.request.user)
+
+
+# class PlanView(APIView):
+#     @api_view(["POST"])
+#     @csrf_exempt
+#     def create(request):
+#         if request.method == "POST":
+#             participantID = request.data.get("participant_id")
+#             if participantID is None:
+#                 participantID = request.user.id
+#             try:
+#                 participant = Participant.objects.get(pk=participantID)
+#             except ObjectDoesNotExist:
+#                 return Response(status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 try:
+#                     startDate = request.data.get("start_date")
+#                     endDate = request.data.get("end_date")
+#                     Plan.objects.create(
+#                         participant=participant,
+#                         start_date=startDate,
+#                         end_date=endDate,
+#                     )
+#                 except ValidationError:
+#                     return Response(status=status.HTTP_400_BAD_REQUEST)
+#                 else:
+#                     return Response(status=status.HTTP_200_OK)
+
+# def getList(request):
+#     if request.method == 'GET':
+#         # birth_year = request.query_params.get('birth-year')
+#         postcode = request.query_params.get('postcode')
+#         registration_group_id = request.query_params.get('registration-group-id', None)
+#         support_category_id = request.query_params.get('support-category-id')
+#         if registration_group_id == '-1':
+#             items = SupportItem.objects.filter(support_category=support_category_id)
+#         else:
+#             items = SupportItem.objects.filter(support_category=support_category_id,
+#                                                registration_group=registration_group_id)
+#         tokens = []
+#         for item in items:
+#             token = {}
+#             token['id'] = item.id
+#             token['number'] = item.number
+#             token['name'] = item.name
+#             token['description'] = item.description
+#             token['unit'] = item.unit
+#             if postcode[0] == 0 or postcode[0] == 5 or postcode[0] == 6 or postcode[0] == 7:
+#                 if item.price_NT_SA_TAS_WA is not None:
+#                     token['price'] = item.price_NT_SA_TAS_WA
+#                 else:
+#                     token['price'] = item.price_national
+#             else:
+#                 if item.price_ACT_NSW_QLD_VIC is not None:
+#                     token['price'] = item.price_ACT_NSW_QLD_VIC
+#                 else:
+#                     token['price'] = item.price_national
+#             tokens.append(token)
+#         return Response(tokens, status=status.HTTP_200_OK)

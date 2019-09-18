@@ -19,7 +19,7 @@ from budgeting.views import (
     ParticipantView,
     PlanCategoryViewSet,
     PlanItemView,
-    PlanView,
+    PlanViewSet,
     RegistrationGroupViewSet,
     SupportGroupViewSet,
     SupportItemGroupViewSet,
@@ -28,6 +28,16 @@ from budgeting.views import (
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
+
+plan_list = PlanViewSet.as_view({"get": "list", "post": "create"})
+plan_detail = PlanViewSet.as_view(
+    {
+        "get": "retrieve",
+        "put": "update",
+        "patch": "partial_update",
+        "delete": "destroy",
+    }
+)
 
 support_group_list = SupportGroupViewSet.as_view({"get": "list"})
 
@@ -66,7 +76,9 @@ api_patterns = [
         PlanItemView.create,
         name="plan_item_create",
     ),
-    path("plan/create", PlanView.create, name="plan_create"),
+    # path("plan/create", PlanView.create, name="plan_create"),
+    path("plan", plan_list, name="plan_list"),
+    path("plan/<int:pk>", plan_detail, name="plan_detail"),
     path(
         "plan/category/create",
         PlanCategoryViewSet.create,
