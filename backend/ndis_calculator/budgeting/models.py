@@ -148,6 +148,15 @@ class Plan(models.Model):
         SupportCategory, through="PlanCategory"
     )
 
+    def __str__(self):
+        return (
+            " ID: ("
+            + self.id.__str__()
+            + ")"
+            + "Participant: "
+            + self.participant_id.__str__()
+        )
+
 
 class PlanCategory(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
