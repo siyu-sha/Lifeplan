@@ -76,7 +76,6 @@ api_patterns = [
         PlanItemView.create,
         name="plan_item_create",
     ),
-    # path("plan/create", PlanView.create, name="plan_create"),
     path("plan", plan_list, name="plan_list"),
     path("plan/<int:pk>", plan_detail, name="plan_detail"),
     path(
