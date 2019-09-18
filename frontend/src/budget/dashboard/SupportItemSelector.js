@@ -18,8 +18,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
+import SupportItemEditor from "./SupportItemEditor";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   dialogTitle: {
     backgroundColor: DARK_BLUE,
     color: "white"
@@ -53,8 +54,23 @@ const useStyles = makeStyles({
   blackButton: {
     backgroundColor: "black",
     color: "white"
+  },
+  form: {
+    width: "100%",
+    marginTop: theme.spacing(1)
+  },
+  main: {
+    width: "auto",
+    display: "block",
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
+      width: 400,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }
   }
-});
+}));
 
 export default function SupportItemSelector(props) {
   const {
@@ -81,8 +97,34 @@ export default function SupportItemSelector(props) {
   const [searchResults, setSearchResults] = useState([]);
   // text typed into search bar
   const [searchText, setSearchText] = useState("");
+  // item that is being edited
+  const [editedItem, setEditedItem] = useState(0);
+  //form input for editing/adding a supportitem
+  const [editValues, setEditValues] = useState({
+    name: "",
+    priceActual: "",
+    quantity: "",
+    frequency: ""
+  });
 
   const classes = useStyles();
+  let quantityRegex = new RegExp(/^$|^[1-9]\d*$/);
+  let moneyRegex = new RegExp(/^$|^[1-9]\d*\.?\d{0,2}$/);
+
+  function handleChange(event) {
+    const name = event.target.name;
+    const value = event.target.value;
+    if (name === "priceActual" && !moneyRegex.test(value)) {
+      /*do nothing*/
+    } else if (name === "quantity" && !quantityRegex.test(value)) {
+      /*do nothing*/
+    } else {
+      setEditValues(oldValues => ({
+        ...oldValues,
+        [name]: value
+      }));
+    }
+  }
 
   // api call to load support items
   useEffect(() => {
@@ -123,11 +165,53 @@ export default function SupportItemSelector(props) {
     props.onClose();
   }
 
+  //initialise the value for dropdown box usageFrequency on editing page
+  function enumFrequency(itemUnit) {
+    let frequencyEnum = 0;
+    switch (itemUnit) {
+      case "H":
+        frequencyEnum = 365;
+        break;
+      case "EA":
+        frequencyEnum = 365;
+        break;
+      case "D":
+        frequencyEnum = 52;
+        break;
+      case "WK":
+        frequencyEnum = 12;
+        break;
+      case "MON":
+        frequencyEnum = 1;
+        break;
+      case "YR":
+        frequencyEnum = 1;
+        break;
+      default:
+        break;
+    }
+    return frequencyEnum;
+  }
+
+  function initialiseValues(name, frequency, quantity, price) {
+    if (price === null) {
+      price = "";
+    }
+    setEditValues({
+      ...editValues,
+      name: name,
+      frequency: frequency,
+      quantity: quantity,
+      priceActual: price
+    });
+  }
+
   function handleSelectSupportItem(supportItem) {
     const planItem = {
       supportItemId: supportItem.id,
       quantity: 1,
-      priceActual: supportItem.price
+      priceActual: supportItem.price,
+      name: supportItem.name
     };
     const { planItems } = planCategory;
     setPlanItems([planItem, ...planItems]);
@@ -135,6 +219,34 @@ export default function SupportItemSelector(props) {
     goToSupportsList();
 
     //saveToLocalStorage(planItems);
+  }
+
+  function handleEditSupportItem(supportItem, planItem) {
+    setEditedItem(supportItem);
+    let frequency;
+    if (planItem.frequency !== undefined && planItem.frequency !== null) {
+      frequency = planItem.frequency;
+    } else {
+      frequency = enumFrequency(supportItem.unit);
+    }
+
+    //console.log(frequency)
+    let name = planItem.name;
+    if (name === undefined) {
+      name = supportItem.name;
+    }
+    let price = planItem.priceActual;
+    let quantity = planItem.quantity;
+    initialiseValues(name, frequency, quantity, price);
+    //initialiseName(supportItem.name)
+    //console.log(planItem);
+    //console.log(editedItem);
+    goToEditSupport();
+  }
+
+  function handleEditionOnClick() {
+    handleAllChanges(editValues);
+    goToSupportsList();
   }
 
   function handleSearch(e) {
@@ -181,6 +293,28 @@ export default function SupportItemSelector(props) {
     );
   }
 
+  function handleAllChanges(values) {
+    let id = editedItem.id;
+    let planItem;
+    planItem = _.find(planCategory.planItems, planItem => {
+      return planItem.supportItemId === id;
+    });
+    console.log(planItem);
+    console.log("want to save");
+    console.log(values);
+    setPlanItems(
+      planCategory.planItems.map(item => {
+        if (planItem === item) {
+          return {
+            ...item,
+            ...values
+          };
+        }
+        return item;
+      })
+    );
+  }
+
   function renderPlanItem(planItem, index) {
     let supportItem;
 
@@ -208,6 +342,9 @@ export default function SupportItemSelector(props) {
               onClick={() => {
                 if (page === 1) {
                   handleSelectSupportItem(supportItem);
+                }
+                if (page === 0) {
+                  handleEditSupportItem(supportItem, planItem);
                 }
               }}
             >
@@ -313,7 +450,37 @@ export default function SupportItemSelector(props) {
         </Button>
       </DialogActions>
     );
-    //}
+  }
+
+  function renderEditingContent() {
+    return (
+      <SupportItemEditor
+        editValues={editValues}
+        editedItem={editedItem}
+        onChange={handleChange}
+      />
+    );
+  }
+
+  function renderEditionActions() {
+    return (
+      <DialogActions>
+        <Button
+          className={matchesMd ? classes.blackButton : classes.textButton}
+          variant={matchesMd ? "contained" : "text"}
+          onClick={goToSupportsList}
+        >
+          Back
+        </Button>
+        <Button
+          className={matchesMd ? classes.blackButton : classes.textButton}
+          variant={matchesMd ? "contained" : "text"}
+          onClick={handleEditionOnClick}
+        >
+          Save
+        </Button>
+      </DialogActions>
+    );
   }
 
   let content;
@@ -325,6 +492,9 @@ export default function SupportItemSelector(props) {
     content = renderSelectionContent();
     actions = renderSelectionActions();
   } else if (page === 2) {
+    content = renderEditingContent();
+    actions = renderEditionActions();
+    //{console.log(editValues)}
   }
 
   return (
@@ -339,7 +509,7 @@ export default function SupportItemSelector(props) {
         <DialogTitle className={classes.dialogTitle}>
           <Grid container justify="space-between">
             <div>{supportCategory.name} supports </div>
-            {matchesMd && (
+            {page !== 2 && matchesMd && (
               <Button
                 variant="contained"
                 onClick={goToSupportSelection}

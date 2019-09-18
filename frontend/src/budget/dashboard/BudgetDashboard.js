@@ -33,6 +33,7 @@ export default class BudgetDashBoard extends React.Component {
   };
 
   componentDidMount() {
+    console.log("mounting dash");
     // call backend to load all plan groups and corresponding categories
     api.SupportGroups.all()
       .then(response => {
