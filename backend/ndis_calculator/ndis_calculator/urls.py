@@ -58,7 +58,11 @@ api_patterns = [
         name="auth_refresh",
     ),
     path("auth/register", Authentication.register, name="auth_register"),
-    path("participant/id", ParticipantView.id, name="participant_id"),
+    path(
+        "participants/current-user",
+        ParticipantView.current_user,
+        name="participant_current_user",
+    ),
     path(
         "participant/<int:pk>",
         ParticipantView.update,
