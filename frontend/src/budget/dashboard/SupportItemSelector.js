@@ -248,6 +248,10 @@ export default function SupportItemSelector(props) {
     handleAllChanges(editValues);
     goToSupportsList();
   }
+  function handleDeletionOnClick() {
+    handleDeletion();
+    goToSupportsList();
+  }
 
   function handleSearch(e) {
     setSearchText(e.target.value);
@@ -291,6 +295,14 @@ export default function SupportItemSelector(props) {
         return item;
       })
     );
+  }
+  function handleDeletion() {
+    let id = editedItem.id;
+    let planItem;
+    planItem = _.find(planCategory.planItems, planItem => {
+      return planItem.supportItemId === id;
+    });
+    handleDelete(planItem);
   }
 
   function handleAllChanges(values) {
@@ -471,6 +483,13 @@ export default function SupportItemSelector(props) {
           onClick={goToSupportsList}
         >
           Back
+        </Button>
+        <Button
+          className={matchesMd ? classes.blackButton : classes.textButton}
+          variant={matchesMd ? "contained" : "text"}
+          onClick={handleDeletionOnClick}
+        >
+          Delete
         </Button>
         <Button
           className={matchesMd ? classes.blackButton : classes.textButton}
