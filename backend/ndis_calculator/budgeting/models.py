@@ -170,7 +170,7 @@ class PlanCategory(models.Model):
 class PlanItem(models.Model):
     plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
     support_item_group = models.ForeignKey(
-        SupportItemGroup, null=True, on_delete=models.PROTECT
+        SupportItemGroup, on_delete=models.PROTECT
     )
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)
