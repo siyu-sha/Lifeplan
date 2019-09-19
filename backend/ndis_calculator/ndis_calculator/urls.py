@@ -31,12 +31,7 @@ from rest_framework_simplejwt import views as jwt_views
 
 plan_list = PlanViewSet.as_view({"get": "list", "post": "create"})
 plan_detail = PlanViewSet.as_view(
-    {
-        "get": "retrieve",
-        "put": "update",
-        "patch": "partial_update",
-        "delete": "destroy",
-    }
+    {"get": "retrieve", "put": "update", "patch": "partial_update"}
 )
 
 support_group_list = SupportGroupViewSet.as_view({"get": "list"})

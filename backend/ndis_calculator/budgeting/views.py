@@ -225,6 +225,9 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = PlanCategorySerializer
     permission_classes = (IsAuthenticated,)
 
+    def destroy(self, request, pk=None):
+        pass
+
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanItemView(APIView):
@@ -270,3 +273,6 @@ class PlanViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(participant=self.request.user)
+
+    def destroy(self, request, pk=None):
+        pass
