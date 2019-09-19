@@ -138,7 +138,7 @@ export default function SupportItemEditor(props) {
 
   return (
     <DialogContent>
-      <main className={classes.main}>
+      <main>
         <form className={classes.form}>
           <Grid container spacing={5}>
             <Grid item xs={12}>

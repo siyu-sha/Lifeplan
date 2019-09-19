@@ -230,7 +230,6 @@ export default function SupportItemSelector(props) {
       frequency = enumFrequency(supportItem.unit);
     }
 
-    //console.log(frequency)
     let name = planItem.name;
     if (name === undefined) {
       name = supportItem.name;
@@ -238,9 +237,6 @@ export default function SupportItemSelector(props) {
     let price = planItem.priceActual;
     let quantity = planItem.quantity;
     initialiseValues(name, frequency, quantity, price);
-    //initialiseName(supportItem.name)
-    //console.log(planItem);
-    //console.log(editedItem);
     goToEditSupport();
   }
 
@@ -311,9 +307,6 @@ export default function SupportItemSelector(props) {
     planItem = _.find(planCategory.planItems, planItem => {
       return planItem.supportItemId === id;
     });
-    console.log(planItem);
-    console.log("want to save");
-    console.log(values);
     setPlanItems(
       planCategory.planItems.map(item => {
         if (planItem === item) {
@@ -370,7 +363,7 @@ export default function SupportItemSelector(props) {
               </ListItemIcon>
               <ListItemText
                 className={classes.buttonText}
-                primary={supportItem.name}
+                primary={page === 0 ? planItem.name : supportItem.name}
               />
             </Fab>
           </Grid>
@@ -513,7 +506,6 @@ export default function SupportItemSelector(props) {
   } else if (page === 2) {
     content = renderEditingContent();
     actions = renderEditionActions();
-    //{console.log(editValues)}
   }
 
   return (
