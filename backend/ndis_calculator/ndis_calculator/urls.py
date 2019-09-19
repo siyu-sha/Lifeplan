@@ -75,13 +75,8 @@ api_patterns = [
         PlanItemView.create,
         name="plan_item_create",
     ),
-    path("plan", plan_list, name="plan_list"),
-    path("plan/<int:pk>", plan_detail, name="plan_detail"),
-    path(
-        "plan/category/create",
-        PlanCategoryViewSet.create,
-        name="plan_category_create",
-    ),
+    path("plans", plan_list, name="plan_list"),
+    path("plans/<int:pk>", plan_detail, name="plan_detail"),
     path(
         "registration-groups",
         registration_group_list,
