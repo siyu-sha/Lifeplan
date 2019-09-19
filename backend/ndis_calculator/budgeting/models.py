@@ -144,9 +144,9 @@ class Plan(models.Model):
     end_date = models.DateField()
     generated = models.BooleanField(default=False)
 
-    support_categories = models.ManyToManyField(
-        SupportCategory, through="PlanCategory"
-    )
+    # support_categories = models.ManyToManyField(
+    #     SupportCategory, through="PlanCategory"
+    # )
 
     def __str__(self):
         return (
@@ -159,7 +159,9 @@ class Plan(models.Model):
 
 
 class PlanCategory(models.Model):
-    plan = models.ForeignKey(Plan, on_delete=models.PROTECT)
+    plan = models.ForeignKey(
+        Plan, related_name="plan_categories", on_delete=models.PROTECT
+    )
     support_category = models.ForeignKey(
         SupportCategory, on_delete=models.PROTECT
     )
