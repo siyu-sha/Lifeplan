@@ -76,7 +76,7 @@ api_patterns = [
         name="registration_group_list",
     ),
     path(
-        "delete-plan-item/<int:planID>",
+        "delete-plan-item/<int:planCategoryId>",
         PlanItemView.delete,
         name="plan_item_delete",
     ),
