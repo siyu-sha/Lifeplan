@@ -268,5 +268,32 @@ class PlanViewSet(viewsets.ModelViewSet):
     serializer_class = PlanSerializer
     permission_classes = (IsAuthenticated,)
 
-    def perform_create(self, serializer):
-        serializer.save(participant=self.request.user)
+    def create(self, request):
+        plan_serializer = self.serializer_class(data=request.data)
+        if plan_serializer.is_valid():
+            plan = plan_serializer.save(participant=self.request.user)
+            plan_categories = []
+            for support_category in SupportCategory.objects.all():
+                plan_category_serializer = PlanCategorySerializer(
+                    data={
+                        "plan": plan_serializer.data["id"],
+                        "support_category": support_category.id,
+                        "budget": 0,
+                    }
+                )
+                if plan_category_serializer.is_valid():
+                    plan_categories.append(plan_category_serializer)
+                else:
+                    plan.delete()
+                    return Response(
+                        plan_category_serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            for plan_category in plan_categories:
+                plan_category.save()
+            return Response(
+                plan_serializer.data, status=status.HTTP_201_CREATED
+            )
+        return Response(
+            plan_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )

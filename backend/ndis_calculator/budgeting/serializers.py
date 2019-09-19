@@ -112,14 +112,6 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "unit", "price", "description"]
 
 
-class PlanSerializer(serializers.ModelSerializer):
-    participant = serializers.ReadOnlyField(source="participant.id")
-
-    class Meta:
-        model = Plan
-        fields = "__all__"
-
-
 class PlanItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanItem
@@ -129,4 +121,15 @@ class PlanItemSerializer(serializers.ModelSerializer):
 class PlanCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanCategory
+        fields = "__all__"
+
+
+class PlanSerializer(serializers.ModelSerializer):
+    participant = serializers.ReadOnlyField(source="participant.id")
+    plan_categories = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True
+    )
+
+    class Meta:
+        model = Plan
         fields = "__all__"

@@ -144,13 +144,15 @@ class Plan(models.Model):
     end_date = models.DateField()
     generated = models.BooleanField(default=False)
 
-    support_categories = models.ManyToManyField(
-        SupportCategory, through="PlanCategory"
-    )
+    # support_categories = models.ManyToManyField(
+    #     SupportCategory, through="PlanCategory"
+    # )
 
 
 class PlanCategory(models.Model):
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    plan = models.ForeignKey(
+        Plan, related_name="plan_categories", on_delete=models.PROTECT
+    )
     support_category = models.ForeignKey(
         SupportCategory, on_delete=models.PROTECT
     )
@@ -161,7 +163,7 @@ class PlanCategory(models.Model):
 class PlanItem(models.Model):
     plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
     support_item_group = models.ForeignKey(
-        SupportItemGroup, null=True, on_delete=models.PROTECT
+        SupportItemGroup, on_delete=models.PROTECT
     )
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)

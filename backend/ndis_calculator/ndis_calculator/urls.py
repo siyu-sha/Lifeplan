@@ -31,12 +31,7 @@ from rest_framework_simplejwt import views as jwt_views
 
 plan_list = PlanViewSet.as_view({"get": "list", "post": "create"})
 plan_detail = PlanViewSet.as_view(
-    {
-        "get": "retrieve",
-        "put": "update",
-        "patch": "partial_update",
-        "delete": "destroy",
-    }
+    {"get": "retrieve", "put": "update", "patch": "partial_update"}
 )
 
 support_group_list = SupportGroupViewSet.as_view({"get": "list"})
@@ -80,13 +75,8 @@ api_patterns = [
         PlanItemView.create,
         name="plan_item_create",
     ),
-    path("plan", plan_list, name="plan_list"),
-    path("plan/<int:pk>", plan_detail, name="plan_detail"),
-    path(
-        "plan/category/create",
-        PlanCategoryViewSet.create,
-        name="plan_category_create",
-    ),
+    path("plans", plan_list, name="plan_list"),
+    path("plans/<int:pk>", plan_detail, name="plan_detail"),
     path(
         "registration-groups",
         registration_group_list,
