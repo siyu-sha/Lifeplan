@@ -246,8 +246,27 @@ class PlanItemView(APIView):
             else:
                 return Response(status=status.HTTP_200_OK)
 
+    @api_view(["POST"])
+    @csrf_exempt
+    def delete(request,planID):
+        if request.method == "POST":
+            items=[]
+            idList = request.data.getlist('plan_item_id_list')
+            for eachId in idList:
+                item = PlanItem.objects.filter(pk=eachId)
+                if item.__len__()==0:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    items.append(item[0])
+            for each in items:
+                each.delete()
+            list.clear(items)
+            return Response(status=status.HTTP_200_OK)
 
-# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
+
+
+
+            # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanView(APIView):
     @api_view(["POST"])
     @csrf_exempt
