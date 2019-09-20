@@ -108,17 +108,17 @@ export default function SupportItemEditor(props) {
   function displayTotalCost(totalPrice, frequencyUnit, quantityUnit) {
     return totalPrice > 0 ? (
       <Typography>
-        Total: ${editValues.priceActual} X {editValues.quantity} {quantityUnit}
-        (s) X {editValues.frequency} {frequencyUnit}(s) = ${totalPrice}
+        Total: ${editValues.price_actual} X {editValues.quantity} {quantityUnit}
+        (s) X {editValues.frequency_per_year} {frequencyUnit}(s) = ${totalPrice}
       </Typography>
     ) : (
       <Typography>Total: $0</Typography>
     );
   }
 
-  const usageFrequency = "frequency";
+  const usageFrequency = "frequency_per_year";
   const supportItemName = "name";
-  const itemPrice = "priceActual";
+  const itemPrice = "price_actual";
   const itemQuantity = "quantity";
   //const quantity = "quantity";
   //console.log(editedItem);
@@ -126,10 +126,10 @@ export default function SupportItemEditor(props) {
   const unitEnum = enumResult.units;
   const unitTime = enumResult.unitTime;
   const unit = enumResult.unit;
-  const frequencyUsage = timeEnumeration(editValues.frequency);
+  const frequencyUsage = timeEnumeration(editValues.frequency_per_year);
   const totalPrice = (
-    editValues.priceActual *
-    editValues.frequency *
+    editValues.price_actual *
+    editValues.frequency_per_year *
     editValues.quantity
   ).toFixed(2);
   //console.log(editedItem);
@@ -168,7 +168,7 @@ export default function SupportItemEditor(props) {
                   Usage Frequency
                 </InputLabel>
                 <Select
-                  value={editValues.frequency}
+                  value={editValues.frequency_per_year}
                   onChange={e => handleChange(e)}
                   inputProps={{
                     name: usageFrequency,
@@ -210,7 +210,7 @@ export default function SupportItemEditor(props) {
                   name={itemPrice}
                   autoComplete={itemPrice}
                   autoFocus
-                  value={editValues.priceActual}
+                  value={editValues.price_actual}
                   onChange={e => handleChange(e)}
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>

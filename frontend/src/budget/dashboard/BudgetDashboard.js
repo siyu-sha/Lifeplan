@@ -17,7 +17,8 @@ const PLAN_CATEGORIES = "planCategories";
 function calculateAllocated(planItems) {
   let allocated = 0;
   _.forEach(planItems, planItem => {
-    allocated += planItem.quantity * planItem.priceActual * planItem.frequency;
+    allocated +=
+      planItem.quantity * planItem.price_actual * planItem.frequency_per_year;
   });
   return allocated;
 }

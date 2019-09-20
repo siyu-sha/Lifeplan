@@ -102,9 +102,9 @@ export default function SupportItemSelector(props) {
   //form input for editing/adding a supportitem
   const [editValues, setEditValues] = useState({
     name: "",
-    priceActual: "",
+    price_actual: "",
     quantity: "",
-    frequency: ""
+    frequency_per_year: ""
   });
 
   const classes = useStyles();
@@ -114,7 +114,7 @@ export default function SupportItemSelector(props) {
   function handleChange(event) {
     const name = event.target.name;
     const value = event.target.value;
-    if (name === "priceActual" && !moneyRegex.test(value)) {
+    if (name === "price_actual" && !moneyRegex.test(value)) {
       /*do nothing*/
     } else if (name === "quantity" && !quantityRegex.test(value)) {
       /*do nothing*/
@@ -200,9 +200,9 @@ export default function SupportItemSelector(props) {
     setEditValues({
       ...editValues,
       name: name,
-      frequency: frequency,
+      frequency_per_year: frequency,
       quantity: quantity,
-      priceActual: price
+      price_actual: price
     });
   }
 
@@ -210,7 +210,7 @@ export default function SupportItemSelector(props) {
     const planItem = {
       supportItemId: supportItem.id,
       quantity: 1,
-      priceActual: supportItem.price,
+      price_actual: supportItem.price,
       name: supportItem.name
     };
     const { planItems } = planCategory;
@@ -224,8 +224,11 @@ export default function SupportItemSelector(props) {
   function handleEditSupportItem(supportItem, planItem) {
     setEditedItem(supportItem);
     let frequency;
-    if (planItem.frequency !== undefined && planItem.frequency !== null) {
-      frequency = planItem.frequency;
+    if (
+      planItem.frequency_per_year !== undefined &&
+      planItem.frequency_per_year !== null
+    ) {
+      frequency = planItem.frequency_per_year;
     } else {
       frequency = enumFrequency(supportItem.unit);
     }
@@ -234,7 +237,7 @@ export default function SupportItemSelector(props) {
     if (name === undefined) {
       name = supportItem.name;
     }
-    let price = planItem.priceActual;
+    let price = planItem.price_actual;
     let quantity = planItem.quantity;
     initialiseValues(name, frequency, quantity, price);
     goToEditSupport();
@@ -271,7 +274,7 @@ export default function SupportItemSelector(props) {
         if (planItem === item) {
           return {
             ...item,
-            priceActual: event.target.value
+            price_actual: event.target.value
           };
         }
         return item;
