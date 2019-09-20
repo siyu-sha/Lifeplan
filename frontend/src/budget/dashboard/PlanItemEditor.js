@@ -1,3 +1,12 @@
+//UI for plan item edition
+//The UI provides 4 fields for users to modify the support item:
+// 1. a costomised support item name, meaning users are able to name the item whatever they want
+// 2. usage frequency, how often they use the item
+// 3. the number of items users consume each time
+// 4. the customised price, price for users may differ for varied reasons
+// each field will be filled with a default value if users never costomised them before
+// an annual cost will be calculated based on the fields
+// once saved, the data will be rewritten with the form fields.
 import React, { useState } from "react";
 import { DialogContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
@@ -57,6 +66,7 @@ export default function PlanItemEditor(props) {
     props.redirect();
   }
 
+  //update form values
   function handleChange(event) {
     const name = event.target.name;
     const value = event.target.value;
@@ -72,6 +82,10 @@ export default function PlanItemEditor(props) {
     }
   }
 
+  //if frequency hasn't been initinised in plan item
+  //what it appears in the form should be the the lowest frequency available for the item
+  //e.g. an item with unit H(hour) will appear with the frequency daily which is hard coded
+  //to integer 365 (365 days in a year)
   function enumFrequency(itemUnit) {
     let frequencyEnum = 0;
     switch (itemUnit) {
@@ -134,6 +148,7 @@ export default function PlanItemEditor(props) {
     }
     return { name, frequency, quantity, price };
   }
+
   //enumerate the unit of each support item
   function unitEnumeration(unitString) {
     let units = 0;

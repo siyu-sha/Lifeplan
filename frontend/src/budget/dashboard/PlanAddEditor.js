@@ -1,3 +1,12 @@
+//UI for plan item addition
+//The UI provides 4 fields for users to modify the support item:
+// 1. a costomised support item name, meaning users are able to name the item whatever they want
+// 2. usage frequency, how often they use the item
+// 3. the number of items users consume each time
+// 4. the customised price, price for users may differ for varied reasons
+// each field will be filled with a default value if users never costomised them before
+// an annual cost will be calculated based on the fields
+// once saved, a new item will be added into plan items list
 import React, { useState } from "react";
 import { DialogContent } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
