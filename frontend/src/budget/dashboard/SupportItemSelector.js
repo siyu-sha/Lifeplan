@@ -18,7 +18,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
-import SupportItemEditor from "./SupportItemEditor";
+import PlanItemEditor from "./PlanItemEditor";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -99,32 +99,9 @@ export default function SupportItemSelector(props) {
   const [searchText, setSearchText] = useState("");
   // item that is being edited
   const [editedItem, setEditedItem] = useState(0);
-  //form input for editing/adding a supportitem
-  const [editValues, setEditValues] = useState({
-    name: "",
-    price_actual: "",
-    quantity: "",
-    frequency_per_year: ""
-  });
+  const [editedPlanItem, setEditedPlanItem] = useState(0);
 
   const classes = useStyles();
-  let quantityRegex = new RegExp(/^$|^[1-9]\d*$/);
-  let moneyRegex = new RegExp(/^$|^[1-9]\d*\.?\d{0,2}$/);
-
-  function handleChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-    if (name === "price_actual" && !moneyRegex.test(value)) {
-      /*do nothing*/
-    } else if (name === "quantity" && !quantityRegex.test(value)) {
-      /*do nothing*/
-    } else {
-      setEditValues(oldValues => ({
-        ...oldValues,
-        [name]: value
-      }));
-    }
-  }
 
   // api call to load support items
   useEffect(() => {
@@ -165,47 +142,6 @@ export default function SupportItemSelector(props) {
     props.onClose();
   }
 
-  //initialise the value for dropdown box usageFrequency on editing page
-  function enumFrequency(itemUnit) {
-    let frequencyEnum = 0;
-    switch (itemUnit) {
-      case "H":
-        frequencyEnum = 365;
-        break;
-      case "EA":
-        frequencyEnum = 365;
-        break;
-      case "D":
-        frequencyEnum = 52;
-        break;
-      case "WK":
-        frequencyEnum = 12;
-        break;
-      case "MON":
-        frequencyEnum = 1;
-        break;
-      case "YR":
-        frequencyEnum = 1;
-        break;
-      default:
-        break;
-    }
-    return frequencyEnum;
-  }
-
-  function initialiseValues(name, frequency, quantity, price) {
-    if (price === null) {
-      price = "";
-    }
-    setEditValues({
-      ...editValues,
-      name: name,
-      frequency_per_year: frequency,
-      quantity: quantity,
-      price_actual: price
-    });
-  }
-
   function handleSelectSupportItem(supportItem) {
     const planItem = {
       supportItemId: supportItem.id,
@@ -223,33 +159,8 @@ export default function SupportItemSelector(props) {
 
   function handleEditSupportItem(supportItem, planItem) {
     setEditedItem(supportItem);
-    let frequency;
-    if (
-      planItem.frequency_per_year !== undefined &&
-      planItem.frequency_per_year !== null
-    ) {
-      frequency = planItem.frequency_per_year;
-    } else {
-      frequency = enumFrequency(supportItem.unit);
-    }
-
-    let name = planItem.name;
-    if (name === undefined) {
-      name = supportItem.name;
-    }
-    let price = planItem.price_actual;
-    let quantity = planItem.quantity;
-    initialiseValues(name, frequency, quantity, price);
+    setEditedPlanItem(planItem);
     goToEditSupport();
-  }
-
-  function handleEditionOnClick() {
-    handleAllChanges(editValues);
-    goToSupportsList();
-  }
-  function handleDeletionOnClick() {
-    handleDeletion();
-    goToSupportsList();
   }
 
   function handleSearch(e) {
@@ -266,6 +177,20 @@ export default function SupportItemSelector(props) {
     setPlanItems(_.difference(planCategory.planItems, [planItem]));
 
     //saveToLocalStorage(planCategory.planItems);
+  }
+
+  function handleItemUpdate(planItem, values) {
+    setPlanItems(
+      planCategory.planItems.map((item, index) => {
+        if (planItem === item) {
+          return {
+            ...item,
+            ...values
+          };
+        }
+        return item;
+      })
+    );
   }
 
   function handleChangeUnitPrice(event, planItem) {
@@ -289,33 +214,6 @@ export default function SupportItemSelector(props) {
           return {
             ...item,
             quantity: event.target.value
-          };
-        }
-        return item;
-      })
-    );
-  }
-  function handleDeletion() {
-    let id = editedItem.id;
-    let planItem;
-    planItem = _.find(planCategory.planItems, planItem => {
-      return planItem.supportItemId === id;
-    });
-    handleDelete(planItem);
-  }
-
-  function handleAllChanges(values) {
-    let id = editedItem.id;
-    let planItem;
-    planItem = _.find(planCategory.planItems, planItem => {
-      return planItem.supportItemId === id;
-    });
-    setPlanItems(
-      planCategory.planItems.map(item => {
-        if (planItem === item) {
-          return {
-            ...item,
-            ...values
           };
         }
         return item;
@@ -460,41 +358,15 @@ export default function SupportItemSelector(props) {
     );
   }
 
-  function renderEditingContent() {
+  function renderEditor() {
     return (
-      <SupportItemEditor
-        editValues={editValues}
+      <PlanItemEditor
         editedItem={editedItem}
-        onChange={handleChange}
+        editedPlanItem={editedPlanItem}
+        redirect={goToSupportsList}
+        delete={handleDelete}
+        save={handleItemUpdate}
       />
-    );
-  }
-
-  function renderEditionActions() {
-    return (
-      <DialogActions>
-        <Button
-          className={matchesMd ? classes.blackButton : classes.textButton}
-          variant={matchesMd ? "contained" : "text"}
-          onClick={goToSupportsList}
-        >
-          Back
-        </Button>
-        <Button
-          className={matchesMd ? classes.blackButton : classes.textButton}
-          variant={matchesMd ? "contained" : "text"}
-          onClick={handleDeletionOnClick}
-        >
-          Delete
-        </Button>
-        <Button
-          className={matchesMd ? classes.blackButton : classes.textButton}
-          variant={matchesMd ? "contained" : "text"}
-          onClick={handleEditionOnClick}
-        >
-          Save
-        </Button>
-      </DialogActions>
     );
   }
 
@@ -507,8 +379,9 @@ export default function SupportItemSelector(props) {
     content = renderSelectionContent();
     actions = renderSelectionActions();
   } else if (page === 2) {
-    content = renderEditingContent();
-    actions = renderEditionActions();
+    //content = renderEditingContent();
+    content = renderEditor();
+    actions = "";
   }
 
   return (
