@@ -19,6 +19,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
 import PlanItemEditor from "./PlanItemEditor";
+import PlanAddEditor from "./PlanAddEditor";
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -138,21 +139,33 @@ export default function SupportItemSelector(props) {
     setPage(2);
   }
 
+  function goToAddSupport() {
+    setPage(3);
+  }
+
   function handleClose() {
     props.onClose();
   }
 
-  function handleSelectSupportItem(supportItem) {
-    const planItem = {
-      supportItemId: supportItem.id,
-      quantity: 1,
-      price_actual: supportItem.price,
-      name: supportItem.name
-    };
+  function handleAddSupportItem(planItem) {
     const { planItems } = planCategory;
     setPlanItems([planItem, ...planItems]);
+  }
 
-    goToSupportsList();
+  function handleSelectSupportItem(supportItem) {
+    // const planItem = {
+    //   supportItemId: supportItem.id,
+    //   quantity: 1,
+    //   price_actual: supportItem.price,
+    //   name: supportItem.name
+    // };
+    // const { planItems } = planCategory;
+    // setPlanItems([planItem, ...planItems]);
+
+    // goToSupportsList();
+
+    setEditedItem(supportItem);
+    goToAddSupport();
 
     //saveToLocalStorage(planItems);
   }
@@ -370,6 +383,17 @@ export default function SupportItemSelector(props) {
     );
   }
 
+  function renderAdditionPage() {
+    return (
+      <PlanAddEditor
+        supportItem={editedItem}
+        redirectSelectionPage={goToSupportSelection}
+        redirectSupports={goToSupportsList}
+        save={handleAddSupportItem}
+      />
+    );
+  }
+
   let content;
   let actions;
   if (page === 0) {
@@ -381,6 +405,9 @@ export default function SupportItemSelector(props) {
   } else if (page === 2) {
     //content = renderEditingContent();
     content = renderEditor();
+    actions = "";
+  } else if (page === 3) {
+    content = renderAdditionPage();
     actions = "";
   }
 
