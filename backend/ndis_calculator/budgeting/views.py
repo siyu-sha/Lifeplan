@@ -248,13 +248,15 @@ class PlanItemView(APIView):
 
     @api_view(["POST"])
     @csrf_exempt
-    def delete(request,planID):
+    def delete(request,planCategoryId):
         if request.method == "POST":
             items=[]
             idList = request.data.getlist('plan_item_id_list')
             for eachId in idList:
                 item = PlanItem.objects.filter(pk=eachId)
                 if item.__len__()==0:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                elif item[0].plan_category.pk is not planCategoryId:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
                 else:
                     items.append(item[0])
