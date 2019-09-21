@@ -10,9 +10,15 @@ import BudgetCategoryCard from "../../DoughnutChart/Body/BudgetCategoryCard";
 import api from "../../api";
 import SupportItemSelector from "./SupportItemSelector";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
+import connect from "react-redux/es/connect/connect";
 
-const isLoggedIn = false;
 const PLAN_CATEGORIES = "planCategories";
+
+function mapStateToProps(state) {
+  return {
+    currentUser: state.auth.currentUser
+  };
+}
 
 function calculateAllocated(planItems) {
   let allocated = 0;
@@ -22,7 +28,7 @@ function calculateAllocated(planItems) {
   return allocated;
 }
 
-export default class BudgetDashBoard extends React.Component {
+class BudgetDashBoard extends React.Component {
   state = {
     supportGroups: [],
     planCategories: {},
@@ -42,7 +48,7 @@ export default class BudgetDashBoard extends React.Component {
         console.log(error);
       });
 
-    const personalData = isLoggedIn
+    const personalData = this.props.currentUser
       ? {}
       : {
           birthYear: localStorage.getItem("birthYear"),
@@ -54,7 +60,10 @@ export default class BudgetDashBoard extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapShot) {
-    if (!isLoggedIn && this.state.planCategories !== prevState.planCategories) {
+    if (
+      !this.props.currentUser &&
+      this.state.planCategories !== prevState.planCategories
+    ) {
       console.log(this.state.planCategories);
       localStorage.setItem(
         PLAN_CATEGORIES,
@@ -65,7 +74,7 @@ export default class BudgetDashBoard extends React.Component {
 
   // load plan categories, birthYear and postcode either from backend if logged in else from local storage
   loadState = () => {
-    if (isLoggedIn) {
+    if (this.props.currentUser) {
       // todo: call backend
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -123,7 +132,7 @@ export default class BudgetDashBoard extends React.Component {
         }
       }
     });
-    if (isLoggedIn) {
+    if (this.props.currentUser) {
       // todo: call backend to save changes
     }
   };
@@ -253,3 +262,5 @@ export default class BudgetDashBoard extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps)(BudgetDashBoard);

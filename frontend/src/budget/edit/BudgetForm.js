@@ -37,9 +37,14 @@ const styles = {
   }
 };
 
+function mapStateToProps(state) {
+  return {
+    currentUser: state.auth.currentUser
+  };
+}
+
 const PLAN_CATEGORIES = "planCategories";
 
-const loggedIn = false;
 let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let postcodeRegex = new RegExp(/^\d{0,4}$/);
 
@@ -98,7 +103,7 @@ class FormPersonalDetails extends React.Component {
     let planCategories = {};
     let birthYear;
     let postcode;
-    if (loggedIn) {
+    if (currentUser) {
       // todo: call backend
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -212,7 +217,7 @@ class FormPersonalDetails extends React.Component {
   handleNext = () => {
     const errors = this.validate();
     if (Object.keys(errors).length === 0) {
-      if (loggedIn) {
+      if (currentUser) {
         // todo: submit plan
       } else {
         localStorage.setItem("postcode", this.state.postcode);

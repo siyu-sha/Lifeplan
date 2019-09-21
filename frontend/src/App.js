@@ -12,20 +12,19 @@ import SignUp from "./authentication/SignUp";
 import { LocalStorageKeys } from "./common/constants";
 import api from "./api";
 import { connect } from "react-redux";
-import {loadUser} from "./redux/reducers/auth";
+import { loadUser } from "./redux/reducers/auth";
 
 const mapStateToProps = state => {
   return {};
 };
 
 const mapDispatchToProps = dispatch => ({
-  loadUser: (user) => {
+  loadUser: user => {
     dispatch(loadUser(user));
   }
 });
 
 function App(props) {
-
   useEffect(() => {
     // redirect if 401
     api.set401Interceptor(handle401);
@@ -33,10 +32,10 @@ function App(props) {
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
       api.setAccess(access);
-      api.Participants.currentUser()
-        .then((response) => {props.loadUser(response.data)});
+      api.Participants.currentUser().then(response => {
+        props.loadUser(response.data);
+      });
     }
-
   });
 
   function handle401() {
@@ -62,7 +61,7 @@ function App(props) {
             component={DoughnutChartPage}
           />
           <Route path="/signin" component={SignIn} />
-          <Route path="/signup" component={SignUp} />
+          <Route path="/authentication/signup" component={SignUp} />
         </Switch>
       </main>
     </div>
