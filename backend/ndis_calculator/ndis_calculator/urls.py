@@ -39,6 +39,7 @@ support_group_list = SupportGroupViewSet.as_view({"get": "list"})
 support_item_list = SupportItemViewSet.as_view({"get": "list"})
 support_item_group_list = SupportItemGroupViewSet.as_view({"get": "list"})
 registration_group_list = RegistrationGroupViewSet.as_view({"get": "list"})
+plan_item_details = PlanItemView.as_view({"put": "update"})
 
 api_patterns = [
     # JWT
@@ -82,6 +83,7 @@ api_patterns = [
         registration_group_list,
         name="registration_group_list",
     ),
+    path("plan-items", plan_item_details, name="plan_item_details")
 ]
 
 urlpatterns = [
