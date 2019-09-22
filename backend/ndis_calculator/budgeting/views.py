@@ -224,7 +224,13 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanItemViewSet(viewsets.ModelViewSet):
+    """
+       ViewSet for CRUD of plan items
 
+       Only authenticated participants who are owners of the plan which the plan item belongs to can access
+       """
+
+    permission_classes = (IsAuthenticated,)
     serializer_class = PlanItemSerializer
 
     def list(self, request, **kwargs):
@@ -246,8 +252,29 @@ class PlanItemViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def create(self, request, plan_category_id):
+        print(plan_category_id)
+        # check if plan category and corresponding plan exists
+        try:
+            plan_category = PlanCategory.objects.get(pk=plan_category_id)
+            plan = Plan.objects.get(pk=plan_category.plan_id)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+        # check if plan belongs to user and the referenced plan category corresponds to the body
+        if plan.participant_id != request.user.id:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
+        # create plan
+        serializer = self.serializer_class(
+            data={**request.data, "plan_category_id": 1}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #TODO resolve
     @api_view(["POST"])
     @csrf_exempt
     def delete(request, planCategoryId):
@@ -268,6 +295,7 @@ class PlanItemViewSet(viewsets.ModelViewSet):
                 each.delete()
             list.clear(items)
             return Response(status=status.HTTP_200_OK)
+
 
 class PlanViewSet(viewsets.ModelViewSet):
     """
