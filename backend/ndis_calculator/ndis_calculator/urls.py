@@ -17,7 +17,6 @@ from budgeting.views import (
     Authentication,
     DefaultView,
     ParticipantView,
-    PlanCategoryViewSet,
     PlanItemViewSet,
     PlanViewSet,
     RegistrationGroupViewSet,

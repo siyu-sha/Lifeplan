@@ -6,9 +6,7 @@ from budgeting.models import (
     Plan,
     PlanCategory,
     PlanItem,
-    RegistrationGroup,
     SupportCategory,
-    SupportGroup,
     SupportItem,
     SupportItemGroup,
 )
