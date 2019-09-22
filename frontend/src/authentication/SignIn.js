@@ -117,9 +117,8 @@ class SignIn extends React.Component {
         localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
         Api.setAccess(response.data.access);
         this.props.history.replace("/");
-        Api.Participants.currentUser().then(response => {
-          this.props.loadUser(response.data);
-        });
+        Api.Participants.currentUser()
+          .then((response) => {this.props.loadUser(response.data)})
       })
       .catch(err => {
         this.setState({
