@@ -34,20 +34,21 @@ plan_detail = PlanViewSet.as_view(
     {"get": "retrieve", "put": "update", "patch": "partial_update"}
 )
 
-support_group_list = SupportGroupViewSet.as_view({"get": "list"})
-
-support_item_list = SupportItemViewSet.as_view({"get": "list"})
-support_item_group_list = SupportItemGroupViewSet.as_view({"get": "list"})
-registration_group_list = RegistrationGroupViewSet.as_view({"get": "list"})
-
 plan_item_list = PlanItemViewSet.as_view(
     {"get": "list", "post": "create", "delete": "destroy"}
 )
 # Temporary
 plan_item_update = PlanItemViewSet.as_view({"put": "update"})
 
+support_group_list = SupportGroupViewSet.as_view({"get": "list"})
+
+support_item_list = SupportItemViewSet.as_view({"get": "list"})
+support_item_group_list = SupportItemGroupViewSet.as_view({"get": "list"})
+
+registration_group_list = RegistrationGroupViewSet.as_view({"get": "list"})
+
 api_patterns = [
-    # JWT
+    # Authentication
     path(
         "auth/login",
         jwt_views.TokenObtainPairView.as_view(),
@@ -64,25 +65,15 @@ api_patterns = [
         ParticipantView.current_user,
         name="participant_current_user",
     ),
+    # Participant
     path(
         "participant/<int:pk>",
         ParticipantView.update,
         name="participant_update",
     ),
-    path("support-groups", support_group_list, name="support_group_list"),
-    path("support-items", support_item_list, name="support_items_list"),
-    path(
-        "support-item-groups",
-        support_item_group_list,
-        name="support_item_group_list",
-    ),
+    # Plan
     path("plans", plan_list, name="plan_list"),
     path("plans/<int:pk>", plan_detail, name="plan_detail"),
-    path(
-        "registration-groups",
-        registration_group_list,
-        name="registration_group_list",
-    ),
     path(
         "plan-categories/<int:plan_category_id>/plan-items",
         plan_item_list,
@@ -92,6 +83,20 @@ api_patterns = [
         "plan-categories/<int:plan_category_id>/plan-items/<int:plan_item_id>",
         plan_item_update,
         name="plan_item_update",
+    ),
+    # Support
+    path("support-groups", support_group_list, name="support_group_list"),
+    # support_category missing?
+    path(
+        "support-item-groups",
+        support_item_group_list,
+        name="support_item_group_list",
+    ),
+    path("support-items", support_item_list, name="support_items_list"),
+    path(
+        "registration-groups",
+        registration_group_list,
+        name="registration_group_list",
     ),
 ]
 
