@@ -20,7 +20,6 @@ export default class ValidatedTextField extends Component {
 
   render() {
     const { error, errortext } = this.props;
-    console.log(error);
     const showError =
       errortext != null && (error === true || this.state.clickedAway === true);
     return (

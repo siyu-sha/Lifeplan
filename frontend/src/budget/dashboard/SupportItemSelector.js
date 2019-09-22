@@ -18,8 +18,10 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
+import PlanItemEditor from "./PlanItemEditor";
+import PlanAddEditor from "./PlanAddEditor";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   dialogTitle: {
     backgroundColor: DARK_BLUE,
     color: "white"
@@ -53,8 +55,23 @@ const useStyles = makeStyles({
   blackButton: {
     backgroundColor: "black",
     color: "white"
+  },
+  form: {
+    width: "100%",
+    marginTop: theme.spacing(1)
+  },
+  main: {
+    width: "auto",
+    display: "block",
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
+      width: 400,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }
   }
-});
+}));
 
 export default function SupportItemSelector(props) {
   const {
@@ -81,12 +98,15 @@ export default function SupportItemSelector(props) {
   const [searchResults, setSearchResults] = useState([]);
   // text typed into search bar
   const [searchText, setSearchText] = useState("");
+  // item that is being edited
+  const [editedItem, setEditedItem] = useState(0);
+  const [editedPlanItem, setEditedPlanItem] = useState(0);
 
   const classes = useStyles();
 
   // api call to load support items
   useEffect(() => {
-    api.SupportItems.get({
+    api.SupportItemGroups.get({
       birthYear: birthYear,
       postcode: postcode,
       supportCategoryID: supportCategory.id,
@@ -119,22 +139,41 @@ export default function SupportItemSelector(props) {
     setPage(2);
   }
 
+  function goToAddSupport() {
+    setPage(3);
+  }
+
   function handleClose() {
     props.onClose();
   }
 
-  function handleSelectSupportItem(supportItem) {
-    const planItem = {
-      supportItemId: supportItem.id,
-      quantity: 1,
-      priceActual: supportItem.price
-    };
+  function handleAddSupportItem(planItem) {
     const { planItems } = planCategory;
     setPlanItems([planItem, ...planItems]);
+  }
 
-    goToSupportsList();
+  function handleSelectSupportItem(supportItem) {
+    // const planItem = {
+    //   supportItemId: supportItem.id,
+    //   quantity: 1,
+    //   price_actual: supportItem.price,
+    //   name: supportItem.name
+    // };
+    // const { planItems } = planCategory;
+    // setPlanItems([planItem, ...planItems]);
+
+    // goToSupportsList();
+
+    setEditedItem(supportItem);
+    goToAddSupport();
 
     //saveToLocalStorage(planItems);
+  }
+
+  function handleEditSupportItem(supportItem, planItem) {
+    setEditedItem(supportItem);
+    setEditedPlanItem(planItem);
+    goToEditSupport();
   }
 
   function handleSearch(e) {
@@ -153,13 +192,27 @@ export default function SupportItemSelector(props) {
     //saveToLocalStorage(planCategory.planItems);
   }
 
+  function handleItemUpdate(planItem, values) {
+    setPlanItems(
+      planCategory.planItems.map((item, index) => {
+        if (planItem === item) {
+          return {
+            ...item,
+            ...values
+          };
+        }
+        return item;
+      })
+    );
+  }
+
   function handleChangeUnitPrice(event, planItem) {
     setPlanItems(
       planCategory.planItems.map((item, index) => {
         if (planItem === item) {
           return {
             ...item,
-            priceActual: event.target.value
+            price_actual: event.target.value
           };
         }
         return item;
@@ -209,6 +262,9 @@ export default function SupportItemSelector(props) {
                 if (page === 1) {
                   handleSelectSupportItem(supportItem);
                 }
+                if (page === 0) {
+                  handleEditSupportItem(supportItem, planItem);
+                }
               }}
             >
               <ListItemIcon>
@@ -221,7 +277,7 @@ export default function SupportItemSelector(props) {
               </ListItemIcon>
               <ListItemText
                 className={classes.buttonText}
-                primary={supportItem.name}
+                primary={page === 0 ? planItem.name : supportItem.name}
               />
             </Fab>
           </Grid>
@@ -313,7 +369,29 @@ export default function SupportItemSelector(props) {
         </Button>
       </DialogActions>
     );
-    //}
+  }
+
+  function renderEditor() {
+    return (
+      <PlanItemEditor
+        editedItem={editedItem}
+        editedPlanItem={editedPlanItem}
+        redirect={goToSupportsList}
+        delete={handleDelete}
+        save={handleItemUpdate}
+      />
+    );
+  }
+
+  function renderAdditionPage() {
+    return (
+      <PlanAddEditor
+        supportItem={editedItem}
+        redirectSelectionPage={goToSupportSelection}
+        redirectSupports={goToSupportsList}
+        save={handleAddSupportItem}
+      />
+    );
   }
 
   let content;
@@ -325,6 +403,12 @@ export default function SupportItemSelector(props) {
     content = renderSelectionContent();
     actions = renderSelectionActions();
   } else if (page === 2) {
+    //content = renderEditingContent();
+    content = renderEditor();
+    actions = "";
+  } else if (page === 3) {
+    content = renderAdditionPage();
+    actions = "";
   }
 
   return (
@@ -339,7 +423,7 @@ export default function SupportItemSelector(props) {
         <DialogTitle className={classes.dialogTitle}>
           <Grid container justify="space-between">
             <div>{supportCategory.name} supports </div>
-            {matchesMd && (
+            {page !== 2 && matchesMd && (
               <Button
                 variant="contained"
                 onClick={goToSupportSelection}
