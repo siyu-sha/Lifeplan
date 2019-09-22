@@ -106,7 +106,7 @@ export default function SupportItemSelector(props) {
 
   // api call to load support items
   useEffect(() => {
-    api.SupportItems.get({
+    api.SupportItemGroups.get({
       birthYear: birthYear,
       postcode: postcode,
       supportCategoryID: supportCategory.id,
