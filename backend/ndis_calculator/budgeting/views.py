@@ -33,7 +33,6 @@ from .serializers import (
     SupportItemSerializer,
 )
 
-
 # Create your views here.
 
 
@@ -186,6 +185,7 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, **kwargs):
         queryset = SupportItemGroup.objects.all()
+
         registration_group_id = request.query_params.get(
             "registration-group-id"
         )
@@ -222,35 +222,31 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
         pass
 
 
-class PlanItemView(APIView):
-    permission_classes = (IsAuthenticated,)
+# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
+class PlanItemViewSet(viewsets.ModelViewSet):
 
-    @api_view(["POST"])
-    @csrf_exempt
-    def create(request, participantID, planCategoryID):
-        support_item_group_id = request.data.get("support_item_group_i_d")
-        price = request.data.get("price")
-        number = request.data.get("number")
-        try:
-            Participant.objects.get(pk=participantID)
-            supportItemGroup = SupportItemGroup.objects.get(
-                pk=support_item_group_id
-            )
-            planCategory = PlanCategory.objects.get(pk=planCategoryID)
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                PlanItem.objects.create(
-                    plan_category=planCategory,
-                    support_item_group=supportItemGroup,
-                    quantity=number,
-                    price_actual=price,
-                )
-            except ValidationError:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response(status=status.HTTP_200_OK)
+    serializer_class = PlanItemSerializer
+
+    def list(self, request, **kwargs):
+        queryset1 = PlanItem.objects.all()
+        queryset2 = PlanCategory.objects.all()
+        plan_id = request.query_params.get(
+            "plan-id"
+        )
+        pc_querysets_ids = [
+            o.id
+            for o in queryset2
+            if o.plan().__eq__(plan_id)
+        ]
+
+        if pc_querysets_ids is not None:
+            queryset1 = queryset1.filter(id__in=pc_querysets_ids)
+        if queryset1 is not None:
+            serializer = self.serializer_class(queryset1, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
     @api_view(["POST"])
     @csrf_exempt
