@@ -33,6 +33,7 @@ from .serializers import (
     SupportItemSerializer,
 )
 
+
 # Create your views here.
 
 
@@ -253,7 +254,6 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, plan_category_id):
-        print(plan_category_id)
         # check if plan category and corresponding plan exists
         try:
             plan_category = PlanCategory.objects.get(pk=plan_category_id)
@@ -274,27 +274,27 @@ class PlanItemViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    #TODO resolve
-    @api_view(["POST"])
-    @csrf_exempt
-    def delete(request, planCategoryId):
-        if request.method == "POST":
-            items = []
-            idList = request.data.getlist('plan_item_id_list')
-            for eachId in idList:
-                item = PlanItem.objects.filter(pk=eachId)
-                if item.__len__() == 0:  # it means the id of the plan item does not exist
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                elif item[0].plan_category.pk is not planCategoryId:
-                    # it means the id of the plan item does not belong to the target plan category
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    items.append(item[0])
-            # only when all id are correct, the deleting operation will be executed.
-            for each in items:
-                each.delete()
-            list.clear(items)
-            return Response(status=status.HTTP_200_OK)
+    def destroy(self, request, planCategoryId=None):
+        if planCategoryId is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        items = []
+        idList = request.data.getlist('plan_item_id_list')
+        for id in idList:
+            item = PlanItem.objects.filter(pk=id).first()
+            if item is not None:  # it means the id of the plan item does not exist
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            elif item[0].plan_category.id != planCategoryId:
+                # it means the id of the plan item does not belong to the target plan category
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                items.append(item[0])
+        # only when all id are correct, the deleting operation will be executed.
+        for item in items:
+            if item.plan.participant_id == request.user.id:
+                item.delete()
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response(status=status.HTTP_200_OK)
 
 
 class PlanViewSet(viewsets.ModelViewSet):
@@ -308,6 +308,7 @@ class PlanViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def create(self, request):
+
         plan_serializer = self.serializer_class(data=request.data)
         if plan_serializer.is_valid():
             plan = plan_serializer.save(participant=self.request.user)
