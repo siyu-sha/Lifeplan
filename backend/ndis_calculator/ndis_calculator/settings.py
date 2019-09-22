@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 import dotenv
 
@@ -85,8 +86,10 @@ AUTH_USER_MODEL = "budgeting.Participant"
 
 APPEND_SLASH = False
 
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
 DATABASE_HOST = (
     os.environ["DATABASE_HOST"] if "DATABASE_HOST" in os.environ else "db"
 )
@@ -140,6 +143,13 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
+
+
+# Simple JWT
+# https://github.com/davesque/django-rest-framework-simplejwt
+
+SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(minutes=15)}
+
 
 # REST Framework
 
