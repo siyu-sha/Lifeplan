@@ -244,7 +244,8 @@ class PlanItemViewSet(viewsets.ModelViewSet):
     serializer_class = PlanItemSerializer
 
     def create(self, request, plan_category_id):
-        print(plan_category_id)
+        print(type(plan_category_id))
+        print(type(request.data.get("plan_category")))
         # check if plan category and corresponding plan exists
         try:
             plan_category = PlanCategory.objects.get(pk=plan_category_id)
@@ -258,7 +259,7 @@ class PlanItemViewSet(viewsets.ModelViewSet):
 
         # create plan
         serializer = self.serializer_class(
-            data={**request.data, "plan_category_id": 1}
+            data={**request.data, "plan_category": plan_category_id}
         )
         if serializer.is_valid():
             serializer.save()
