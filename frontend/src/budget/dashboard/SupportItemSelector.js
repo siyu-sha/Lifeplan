@@ -1,19 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Fab from "@material-ui/core/Fab";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
 import api from "../../api";
 import { DialogContent } from "@material-ui/core";
-import ReactSelect from "react-select";
 import { useTheme } from "@material-ui/core/styles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Grid from "@material-ui/core/Grid";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -22,12 +16,62 @@ import _ from "lodash";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
+import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
+import TextField from "@material-ui/core/TextField";
+import PlanItemEditor from "./PlanItemEditor";
+import PlanAddEditor from "./PlanAddEditor";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
+  dialogTitle: {
+    backgroundColor: DARK_BLUE,
+    color: "white"
+  },
   dialogContent: {
     minHeight: 400
+  },
+  buttonText: {
+    textTransform: "none"
+  },
+  supportButtonLight: {
+    backgroundColor: LIGHT_BLUE,
+    color: "white",
+    width: "100%",
+    maxHeight: "72px",
+    minHeight: "72px"
+  },
+  supportButtonDark: {
+    backgroundColor: DARK_BLUE,
+    color: "white",
+    width: "100%",
+    maxHeight: "72px",
+    minHeight: "72px"
+  },
+  icon: {
+    height: "150"
+  },
+  list: {
+    padding: 8
+  },
+  blackButton: {
+    backgroundColor: "black",
+    color: "white"
+  },
+  form: {
+    width: "100%",
+    marginTop: theme.spacing(1)
+  },
+  main: {
+    width: "auto",
+    display: "block",
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
+      width: 400,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }
   }
-});
+}));
 
 export default function SupportItemSelector(props) {
   const {
@@ -37,28 +81,43 @@ export default function SupportItemSelector(props) {
     supportCategory,
     setPlanItems
   } = props;
-  // React Hooks
-  const [supportItems, setSupportItems] = useState([]);
-  const [highlightAddedPlanItem, setHighlightAddedPlanItem] = useState(false);
-  const [registrationGroupId] = useState(null);
+
   const theme = useTheme();
+
+  // React Hooks
+  // list of all support items for this group
+  const [supportItems, setSupportItems] = useState([]);
+  // id of registration group
+  const [registrationGroupId] = useState(null);
+  // 0: large screen; 1: small screen (mobile)
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
+  // number representing current page
+  // 0: supports list; 1: supports selection; 2: edit/add support
+  const [page, setPage] = useState(0);
+  // set of support returned from search
+  const [searchResults, setSearchResults] = useState([]);
+  // text typed into search bar
+  const [searchText, setSearchText] = useState("");
+  // item that is being edited
+  const [editedItem, setEditedItem] = useState(0);
+  const [editedPlanItem, setEditedPlanItem] = useState(0);
+
   const classes = useStyles();
 
   // api call to load support items
   useEffect(() => {
-    api.SupportItems.get({
+    api.SupportItemGroups.get({
       birthYear: birthYear,
       postcode: postcode,
       supportCategoryID: supportCategory.id,
       registrationGroupId
     }).then(response => {
-      setSupportItems(
-        response.data.map(supportItem => {
-          supportItem.label = supportItem.name;
-          return supportItem;
-        })
-      );
+      const items = response.data.map(supportItem => {
+        supportItem.label = supportItem.name;
+        return supportItem;
+      });
+      setSupportItems(items);
+      setSearchResults(items);
     });
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
@@ -68,21 +127,63 @@ export default function SupportItemSelector(props) {
   // save plan items (not logged in) into local storage
   useEffect(() => {});
 
+  function goToSupportsList() {
+    setPage(0);
+  }
+
+  function goToSupportSelection() {
+    setPage(1);
+  }
+
+  function goToEditSupport() {
+    setPage(2);
+  }
+
+  function goToAddSupport() {
+    setPage(3);
+  }
+
   function handleClose() {
     props.onClose();
   }
 
-  function handleSelectSupportItem(supportItem) {
-    const planItem = {
-      supportItemId: supportItem.id,
-      quantity: 1,
-      priceActual: supportItem.price
-    };
+  function handleAddSupportItem(planItem) {
     const { planItems } = planCategory;
     setPlanItems([planItem, ...planItems]);
-    setHighlightAddedPlanItem(true);
+  }
+
+  function handleSelectSupportItem(supportItem) {
+    // const planItem = {
+    //   supportItemId: supportItem.id,
+    //   quantity: 1,
+    //   price_actual: supportItem.price,
+    //   name: supportItem.name
+    // };
+    // const { planItems } = planCategory;
+    // setPlanItems([planItem, ...planItems]);
+
+    // goToSupportsList();
+
+    setEditedItem(supportItem);
+    goToAddSupport();
 
     //saveToLocalStorage(planItems);
+  }
+
+  function handleEditSupportItem(supportItem, planItem) {
+    setEditedItem(supportItem);
+    setEditedPlanItem(planItem);
+    goToEditSupport();
+  }
+
+  function handleSearch(e) {
+    setSearchText(e.target.value);
+
+    setSearchResults(
+      supportItems.filter(s =>
+        s.name.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
   }
 
   function handleDelete(planItem) {
@@ -91,13 +192,27 @@ export default function SupportItemSelector(props) {
     //saveToLocalStorage(planCategory.planItems);
   }
 
+  function handleItemUpdate(planItem, values) {
+    setPlanItems(
+      planCategory.planItems.map((item, index) => {
+        if (planItem === item) {
+          return {
+            ...item,
+            ...values
+          };
+        }
+        return item;
+      })
+    );
+  }
+
   function handleChangeUnitPrice(event, planItem) {
     setPlanItems(
       planCategory.planItems.map((item, index) => {
         if (planItem === item) {
           return {
             ...item,
-            priceActual: event.target.value
+            price_actual: event.target.value
           };
         }
         return item;
@@ -119,157 +234,185 @@ export default function SupportItemSelector(props) {
     );
   }
 
-  function renderPlanItemHeader(planItem, supportItem) {
-    return (
-      <Grid container alignItems="center">
-        <Grid item>
-          <ListItemIcon>
-            <Tooltip
-              disableTouchListener
-              title={supportItem.description || "No description"}
-            >
-              <InfoIcon />
-            </Tooltip>
-          </ListItemIcon>
-        </Grid>
-        <Grid item xs>
-          <ListItemText primary={supportItem.name} />
-        </Grid>
-      </Grid>
-    );
-  }
-
-  function renderPriceLabel(planItem, supportItem) {
-    let prefix = "Unit Price ";
-    let suffix = "(No Limit)";
-    if (supportItem.price != null) {
-      suffix = `(Max $${supportItem.price})`;
-      if (matchesMd) {
-        return prefix + suffix;
-      } else if (
-        parseFloat(planItem.priceActual) > parseFloat(supportItem.price)
-      ) {
-        return suffix;
-      }
-    }
-    return prefix + suffix;
-  }
-
-  function renderPlanItemBody(planItem, supportItem) {
-    return (
-      <Grid
-        container
-        spacing={matchesMd ? 2 : 1}
-        justify={"flex-end"}
-        alignItems="flex-end"
-      >
-        <Grid item xs={6} md>
-          <FormControl
-            fullWidth
-            error={
-              supportItem.price != null &&
-              parseFloat(planItem.priceActual) > parseFloat(supportItem.price)
-            }
-          >
-            <InputLabel htmlFor="unit-price">
-              {renderPriceLabel(planItem, supportItem)}
-            </InputLabel>
-            <Input
-              id="unit-price"
-              value={planItem.priceActual || ""}
-              startAdornment={
-                <InputAdornment position="start">$</InputAdornment>
-              }
-              endAdornment={
-                <InputAdornment position="end">
-                  /{supportItem.unit.toLowerCase()}
-                </InputAdornment>
-              }
-              placeholder="Type here"
-              onChange={event => handleChangeUnitPrice(event, planItem)}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={2}>
-          <FormControl fullWidth>
-            <InputLabel shrink htmlFor="units">
-              {matchesMd ? "Units (yearly)" : "Units"}
-            </InputLabel>
-            <Input
-              id="units"
-              value={planItem.quantity}
-              placeholder="Type here"
-              onChange={event => handleChangeUnits(event, planItem)}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={4} md>
-          <FormControl fullWidth>
-            <InputLabel htmlFor="total">Total</InputLabel>
-            <Input
-              id="total"
-              value={(planItem.priceActual * planItem.quantity).toFixed(2)}
-              readOnly
-              startAdornment={
-                <InputAdornment position="start">$</InputAdornment>
-              }
-            />
-          </FormControl>
-        </Grid>
-        <Grid item>
-          <Button
-            onClick={() => handleDelete(planItem)}
-            variant="outlined"
-            color="primary"
-          >
-            Delete
-          </Button>
-        </Grid>
-      </Grid>
-    );
-  }
-
   function renderPlanItem(planItem, index) {
-    console.log(supportItems);
-    const supportItem = _.find(supportItems, supportItem => {
-      return supportItem.id === planItem.supportItemId;
-    });
+    let supportItem;
+
+    if (page === 0) {
+      supportItem = _.find(supportItems, supportItem => {
+        return supportItem.id === planItem.supportItemId;
+      });
+    } else if (page === 1) {
+      supportItem = _.find(supportItems, supportItem => {
+        return supportItem.id === planItem.id;
+      });
+    }
 
     return (
       supportItem != null && (
-        <ListItem
-          onClick={() => setHighlightAddedPlanItem(false)}
-          selected={highlightAddedPlanItem && index === 0}
-        >
-          <Grid container>
-            <Grid item xs={12}>
-              {renderPlanItemHeader(planItem, supportItem)}
-            </Grid>
-            <Grid item xs={12}>
-              {renderPlanItemBody(planItem, supportItem)}
-            </Grid>
+        <Grid item>
+          <Grid container alignItems="center">
+            <Fab
+              className={
+                page === 1
+                  ? classes.supportButtonLight
+                  : classes.supportButtonDark
+              }
+              variant="extended"
+              onClick={() => {
+                if (page === 1) {
+                  handleSelectSupportItem(supportItem);
+                }
+                if (page === 0) {
+                  handleEditSupportItem(supportItem, planItem);
+                }
+              }}
+            >
+              <ListItemIcon>
+                <Tooltip
+                  disableTouchListener
+                  title={supportItem.description || "No description"}
+                >
+                  <InfoIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText
+                className={classes.buttonText}
+                primary={page === 0 ? planItem.name : supportItem.name}
+              />
+            </Fab>
           </Grid>
-        </ListItem>
+        </Grid>
       )
     );
   }
 
-  function renderPlanItemList() {
-    return planCategory.planItems.length === 0 ? (
-      <div>Add some first</div>
-    ) : (
-      <List>
-        {planCategory.planItems.map((planItem, index) => (
-          <div key={index}>{renderPlanItem(planItem, index)}</div>
-        ))}
-      </List>
-    );
+  function renderSupportItemList(list) {
+    var halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
 
+    return list.length === 0 ? (
+      <div> Press Add New to add a support </div>
+    ) : (
+      <Grid container direction={"row"}>
+        <Grid item xs={matchesMd ? 6 : 12}>
+          <List>
+            {list.slice(0, halfOfItems).map((planItem, index) => (
+              <div key={index} className={classes.list}>
+                {renderPlanItem(planItem, index)}
+              </div>
+            ))}
+          </List>
+        </Grid>
+        <Grid item xs={matchesMd ? 6 : 12}>
+          {matchesMd && (
+            <List>
+              {list.slice(halfOfItems, list.length).map((planItem, index) => (
+                <div key={index} className={classes.list}>
+                  {renderPlanItem(planItem, index)}
+                </div>
+              ))}
+            </List>
+          )}
+        </Grid>
+      </Grid>
+    );
+  }
+
+  function renderPlanContent() {
+    return (
+      <DialogContent className={classes.dialogContent}>
+        {renderSupportItemList(planCategory.planItems)}
+      </DialogContent>
+    );
+  }
+
+  function renderPlanActions() {
+    return (
+      <DialogActions>
+        <Button onClick={handleClose}>Save & Close</Button>
+        {!matchesMd && <Button onClick={goToSupportSelection}>Add New</Button>}
+      </DialogActions>
+    );
+  }
+
+  function renderSelectionContent() {
+    return (
+      <DialogContent>
+        <TextField
+          id={"support-item-select"}
+          label={"Search for support items"}
+          value={searchText}
+          fullWidth
+          variant="filled"
+          onChange={handleSearch}
+        />
+        {renderSupportItemList(searchResults)}
+      </DialogContent>
+    );
+  }
+
+  function renderSelectionActions() {
+    return (
+      <DialogActions>
+        <Button
+          className={matchesMd ? classes.blackButton : classes.textButton}
+          variant={matchesMd ? "contained" : "text"}
+          onClick={goToSupportsList}
+        >
+          Back
+        </Button>
+        <Button
+          className={matchesMd ? classes.blackButton : classes.textButton}
+          variant={matchesMd ? "contained" : "text"}
+          onClick={goToSupportsList}
+        >
+          Save
+        </Button>
+      </DialogActions>
+    );
+  }
+
+  function renderEditor() {
+    return (
+      <PlanItemEditor
+        editedItem={editedItem}
+        editedPlanItem={editedPlanItem}
+        redirect={goToSupportsList}
+        delete={handleDelete}
+        save={handleItemUpdate}
+      />
+    );
+  }
+
+  function renderAdditionPage() {
+    return (
+      <PlanAddEditor
+        supportItem={editedItem}
+        redirectSelectionPage={goToSupportSelection}
+        redirectSupports={goToSupportsList}
+        save={handleAddSupportItem}
+      />
+    );
+  }
+
+  let content;
+  let actions;
+  if (page === 0) {
+    content = renderPlanContent();
+    actions = renderPlanActions();
+  } else if (page === 1) {
+    content = renderSelectionContent();
+    actions = renderSelectionActions();
+  } else if (page === 2) {
+    //content = renderEditingContent();
+    content = renderEditor();
+    actions = "";
+  } else if (page === 3) {
+    content = renderAdditionPage();
+    actions = "";
   }
 
   return (
     <div>
-
       <Dialog
         fullScreen={!matchesMd}
         fullWidth
@@ -277,23 +420,22 @@ export default function SupportItemSelector(props) {
         open={props.open}
         onClose={handleClose}
       >
-        <DialogTitle>{supportCategory.name} supports</DialogTitle>
-        <DialogContent className={classes.dialogContent}>
-          <ReactSelect
-            inputId={"support-item-select"}
-            placeholder={"Search for support items"}
-            options={supportItems}
-            value={null}
-            onChange={handleSelectSupportItem}
-          />
-          {/* prevent loading until API call has finished */}
-          {console.log(supportItems)}
-          {renderPlanItemList()}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Save & Close</Button>
-        </DialogActions>
-
+        <DialogTitle className={classes.dialogTitle}>
+          <Grid container justify="space-between">
+            <div>{supportCategory.name} supports </div>
+            {page !== 2 && matchesMd && (
+              <Button
+                variant="contained"
+                onClick={goToSupportSelection}
+                className={classes.blackButton}
+              >
+                Add New Item
+              </Button>
+            )}
+          </Grid>
+        </DialogTitle>
+        {content}
+        {actions}
       </Dialog>
     </div>
   );
