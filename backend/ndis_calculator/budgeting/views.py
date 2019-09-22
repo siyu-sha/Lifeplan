@@ -214,7 +214,6 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 class PlanCategoryViewSet(viewsets.ModelViewSet):
     """
     This viewset provides `list`, `create`, `retrieve`, `update`
@@ -228,8 +227,6 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk=None):
         pass
 
-
-# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanItemView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -259,6 +256,7 @@ class PlanItemView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response(status=status.HTTP_200_OK)
+
 
 
 class PlanViewSet(viewsets.ModelViewSet):
