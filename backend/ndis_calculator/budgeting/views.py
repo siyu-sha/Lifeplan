@@ -33,6 +33,7 @@ from .serializers import (
     SupportItemSerializer,
 )
 
+
 # Create your views here.
 
 
@@ -184,56 +185,23 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SupportItemGroupSerializer
 
     def list(self, request, **kwargs):
-        import logging
-
-        log = logging.getLogger()
-        log.error("List - sig")
         queryset = SupportItemGroup.objects.all()
-        log.error("QsetSize: " + str(len(queryset)))
-
         registration_group_id = request.query_params.get(
             "registration-group-id"
         )
-        log.error("Rgid: " + str(registration_group_id))
         support_category_id = request.query_params.get("support-category-id")
-        log.error("scid: " + str(support_category_id))
+
         # support item queryset - list of support items
         SIqueryset = SupportItem.objects.all().filter(
             support_category_id=support_category_id
         )
         if registration_group_id is not None:
-            SIqueryset.filter(registration_group_id=registration_group_id)
+            SIqueryset = SIqueryset.filter(registration_group_id=registration_group_id)
 
-        log.error(SIqueryset)
         # values list - list of all ids in SIqueryset [id1,id2] etc.
         queryset = queryset.filter(
             base_item_id__in=SIqueryset.values_list("id", flat=True)
         )
-
-        """ #TODO remove if the above fixes
-        # workaround list comprehension since querysets can't filter by method
-        # list the support item group ids of those with the right reg group id
-        reg_queryset_ids = [
-            o.id*1
-            for o in queryset
-            if o.base.item.registration_group_id == registration_group_id
-        ]
-        log.error(reg_queryset_ids)
-
-        if reg_queryset_ids is not None:
-            queryset = queryset.filter(id__in=reg_queryset_ids)
-        log.error("Reg Filtering QsetSize: "+str(len(queryset)))
-        # Same workaround for support_category_id - list the sig id for those of the right scid
-        sup_queryset_ids = [
-            o.id*1
-            for o in queryset
-            if (o.support_category_id() == support_category_id)
-        ]
-        if sup_queryset_ids is not None:
-            queryset = queryset.filter(id__in=sup_queryset_ids)
-        log.error(sup_queryset_ids)
-        log.error("s Filtering QsetSize: "+str(len(queryset)))
-        """
 
         serializer = self.serializer_class(queryset, many=True)
 
