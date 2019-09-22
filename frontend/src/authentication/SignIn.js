@@ -15,7 +15,7 @@ import { Grid } from "@material-ui/core";
 import Api from "../api";
 import AlertMessage from "../common/AlertMessage";
 import { LocalStorageKeys } from "../common/constants";
-import {loadUser} from "../redux/reducers/auth";
+import { loadUser } from "../redux/reducers/auth";
 import connect from "react-redux/es/connect/connect";
 
 const mapStateToProps = state => {
@@ -23,7 +23,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  loadUser: (user) => {
+  loadUser: user => {
     dispatch(loadUser(user));
   }
 });
@@ -33,7 +33,7 @@ const styles = theme => ({
     width: "auto",
     display: "block",
     marginLeft: theme.spacing(3),
-    marginRight: theme.spacing (3),
+    marginRight: theme.spacing(3),
     [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
@@ -45,8 +45,7 @@ const styles = theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme
-      .spacing(3)}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`
   },
   avatar: {
     margin: theme.spacing(1),
@@ -83,7 +82,7 @@ class SignIn extends React.Component {
     loggedIn: false,
     loggedInFailure: false,
     alertVariant: "",
-    displayMessage: "",
+    displayMessage: ""
   };
 
   handleInput = event => {
@@ -118,8 +117,9 @@ class SignIn extends React.Component {
         localStorage.setItem(LocalStorageKeys.REFRESH, response.data.refresh);
         Api.setAccess(response.data.access);
         this.props.history.replace("/");
-        Api.Participants.currentUser()
-          .then((response) => {this.props.loadUser(response.data)})
+        Api.Participants.currentUser().then(response => {
+          this.props.loadUser(response.data);
+        });
       })
       .catch(err => {
         this.setState({
@@ -211,7 +211,7 @@ class SignIn extends React.Component {
             type="button"
             color="secondary"
             className={classes.registerBtn}
-            onClick={() => (window.location.href = "/authentication/signup")}
+            onClick={() => (window.location.href = "/signup")}
           >
             SignUp
           </Button>
@@ -224,4 +224,7 @@ class SignIn extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignIn));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(SignIn));
