@@ -18,7 +18,7 @@ from budgeting.views import (
     DefaultView,
     ParticipantView,
     PlanCategoryViewSet,
-    PlanItemView,
+    PlanItemViewSet,
     PlanViewSet,
     RegistrationGroupViewSet,
     SupportGroupViewSet,
@@ -39,6 +39,7 @@ support_group_list = SupportGroupViewSet.as_view({"get": "list"})
 support_item_list = SupportItemViewSet.as_view({"get": "list"})
 support_item_group_list = SupportItemGroupViewSet.as_view({"get": "list"})
 registration_group_list = RegistrationGroupViewSet.as_view({"get": "list"})
+plan_item_list = PlanItemViewSet.as_view({"get": "list"})
 
 api_patterns = [
     # JWT
@@ -70,11 +71,11 @@ api_patterns = [
         support_item_group_list,
         name="support_item_group_list",
     ),
-    path(
-        "participants/<int:participantID>/plan-categories/<int:planCategoryID>/plan-items",
-        PlanItemView.create,
-        name="plan_item_create",
-    ),
+    # path(
+    #     "participants/<int:participantID>/plan-categories/<int:planCategoryID>/plan-items",
+    #     PlanItemView.create,
+    #     name="plan_item_create",
+    # ),
     path("plans", plan_list, name="plan_list"),
     path("plans/<int:pk>", plan_detail, name="plan_detail"),
     path(
@@ -82,6 +83,9 @@ api_patterns = [
         registration_group_list,
         name="registration_group_list",
     ),
+    path("plan-items",
+         plan_item_list,
+         name="plan_item_list"),
 ]
 
 urlpatterns = [

@@ -401,6 +401,11 @@ class RegistrationGroupTests(APITestCase):
             self.assertIn("number", registration_group)
             self.assertIn("name", registration_group)
 
+class RetrivePlanItemsTests(APITestCase):
+    # Needs creation post-fixtures, #TODO
+    def pointless_method_stub(self):
+        return None
+
 
 class CreatePlan(APITestCase):
     def setUp(self):
