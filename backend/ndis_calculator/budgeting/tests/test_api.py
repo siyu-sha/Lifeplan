@@ -403,13 +403,14 @@ class RegistrationGroupTests(APITestCase):
             self.assertIn("number", registration_group)
             self.assertIn("name", registration_group)
 
+
 class RetrivePlanItemsTests(APITestCase):
     # Needs creation post-fixtures, #TODO
     def pointless_method_stub(self):
         return None
 
 
-''' This test needs updating due to the change of plan creating API
+""" This test needs updating due to the change of plan creating API
 class CreatePlan(APITestCase):
     def setUp(self):
         self.URL_CREATE_PLAN = reverse("plan_create")
@@ -442,7 +443,7 @@ class CreatePlan(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         else:
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-'''
+"""
 
 
 class DeletePlanItem(APITestCase):
@@ -456,12 +457,9 @@ class DeletePlanItem(APITestCase):
 
     def setUp(self):
         self.URL_DELETE_PLAN_ITEM = reverse(
-            "plan_item_delete",
-            kwargs={"planCategoryId": 1},
+            "plan_item_delete", kwargs={"planCategoryId": 1}
         )
-        self.TEST_DATA = {
-            "planItemIdList": [100, 101],
-        }
+        self.TEST_DATA = {"planItemIdList": [100, 101]}
 
     def test_create_plan_item(self):
         if Participant.objects.filter(pk=1).__len__() == 0:
@@ -494,16 +492,28 @@ class DeletePlanItem(APITestCase):
             )
         planCategory = PlanCategory.objects.get(pk=1)
         if PlanItem.objects.filter(pk=100).__len__() == 0:
-            PlanItem.objects.create(pk=100, plan_category=planCategory,
-                                    support_item_group=supportItemGroup,
-                                    quantity=1,
-                                    price_actual=120.22, )
+            PlanItem.objects.create(
+                pk=100,
+                plan_category=planCategory,
+                support_item_group=supportItemGroup,
+                quantity=1,
+                price_actual=120.22,
+            )
         if PlanItem.objects.filter(pk=101).__len__() == 0:
-            PlanItem.objects.create(pk=101, plan_category=planCategory,
-                                    support_item_group=supportItemGroup,
-                                    quantity=2,
-                                    price_actual=140.22, )
-        result1 = PlanItem.objects.filter(pk=100).__len__() + PlanItem.objects.filter(pk=101).__len__()
+            PlanItem.objects.create(
+                pk=101,
+                plan_category=planCategory,
+                support_item_group=supportItemGroup,
+                quantity=2,
+                price_actual=140.22,
+            )
+        result1 = (
+            PlanItem.objects.filter(pk=100).__len__()
+            + PlanItem.objects.filter(pk=101).__len__()
+        )
         self.client.post(self.URL_DELETE_PLAN_ITEM, self.TEST_DATA)
-        result2 = PlanItem.objects.filter(pk=100).__len__() + PlanItem.objects.filter(pk=101).__len__()
+        result2 = (
+            PlanItem.objects.filter(pk=100).__len__()
+            + PlanItem.objects.filter(pk=101).__len__()
+        )
         self.assertEqual(result1 - 2, result2)

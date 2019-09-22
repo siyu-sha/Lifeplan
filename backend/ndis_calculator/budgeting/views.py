@@ -33,7 +33,6 @@ from .serializers import (
     SupportItemSerializer,
 )
 
-
 # Create your views here.
 
 
@@ -197,7 +196,9 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
             support_category_id=support_category_id
         )
         if registration_group_id is not None:
-            SIqueryset = SIqueryset.filter(registration_group_id=registration_group_id)
+            SIqueryset = SIqueryset.filter(
+                registration_group_id=registration_group_id
+            )
 
         # values list - list of all ids in SIqueryset [id1,id2] etc.
         queryset = queryset.filter(
@@ -237,13 +238,9 @@ class PlanItemViewSet(viewsets.ModelViewSet):
     def list(self, request, **kwargs):
         queryset1 = PlanItem.objects.all()
         queryset2 = PlanCategory.objects.all()
-        plan_id = request.query_params.get(
-            "plan-id"
-        )
+        plan_id = request.query_params.get("plan-id")
         pc_querysets_ids = [
-            o.id
-            for o in queryset2
-            if o.plan().__eq__(plan_id)
+            o.id for o in queryset2 if o.plan().__eq__(plan_id)
         ]
 
         if pc_querysets_ids is not None:
@@ -278,10 +275,12 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         if planCategoryId is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         items = []
-        idList = request.data.getlist('plan_item_id_list')
+        idList = request.data.getlist("plan_item_id_list")
         for id in idList:
             item = PlanItem.objects.filter(pk=id).first()
-            if item is not None:  # it means the id of the plan item does not exist
+            if (
+                item is not None
+            ):  # it means the id of the plan item does not exist
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             elif item[0].plan_category.id != planCategoryId:
                 # it means the id of the plan item does not belong to the target plan category

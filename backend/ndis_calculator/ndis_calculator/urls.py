@@ -40,7 +40,7 @@ support_item_list = SupportItemViewSet.as_view({"get": "list"})
 support_item_group_list = SupportItemGroupViewSet.as_view({"get": "list"})
 registration_group_list = RegistrationGroupViewSet.as_view({"get": "list"})
 
-plan_item_list = PlanItemViewSet.as_view({"get": "list","post": "create"})
+plan_item_list = PlanItemViewSet.as_view({"get": "list", "post": "create"})
 
 api_patterns = [
     # JWT
@@ -84,9 +84,7 @@ api_patterns = [
         plan_item_list,
         name="plan_item_list",
     ),
-    path("plan-items",
-         plan_item_list,
-         name="plan_item_list"),
+    path("plan-items", plan_item_list, name="plan_item_list"),
     path(
         "delete-plan-item/<int:planCategoryId>",
         PlanItemViewSet.delete,
