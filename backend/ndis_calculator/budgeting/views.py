@@ -1,11 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from djangorestframework_camel_case.parser import CamelCaseJSONParser
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -212,8 +213,8 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
 class PlanCategoryViewSet(viewsets.ModelViewSet):
     """
-    This viewset provides `list`, `create`, `retrieve`, `update`
-    and `destroy` actions to manipulate the Plan Category model.
+    This viewset provides `list`, `create`, `retrieve`, and
+    `update` actions to manipulate the Plan Category model.
     """
 
     queryset = PlanCategory.objects.all()
@@ -224,13 +225,11 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
         pass
 
 
-# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class PlanItemViewSet(viewsets.ModelViewSet):
     """
-       ViewSet for CRUD of plan items
-
-       Only authenticated participants who are owners of the plan which the plan item belongs to can access
-       """
+    ViewSet for CRUD of Plan Item model.
+    Only authenticated participants who are owners of the plan which the plan item belongs to can access.
+    """
 
     permission_classes = (IsAuthenticated,)
     serializer_class = PlanItemSerializer
@@ -264,12 +263,25 @@ class PlanItemViewSet(viewsets.ModelViewSet):
 
         # create plan
         serializer = self.serializer_class(
-            data={**request.data, "plan_category_id": 1}
+            data={**request.data, "plan_category": plan_category_id}
         )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(request, plan_item_id):
+        try:
+            planItem = PlanItem.objects.get(pk=plan_item_id)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        data = JSONParser().parse(request)
+        serializer = PlanItemSerializer(planItem, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status.HTTP_200_OK)
+        return JsonResponse(serializer.errors, status=400)
 
     def destroy(self, request, planCategoryId=None):
         if planCategoryId is None:
@@ -296,6 +308,38 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK)
 
 
+# TODO: remove after a while
+# class PlanItemView(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     @api_view(["POST"])
+#     @csrf_exempt
+#     def create(request, participantID, planCategoryID):
+#         support_item_group_id = request.data.get("support_item_group_i_d")
+#         price = request.data.get("price")
+#         number = request.data.get("number")
+#         try:
+#             Participant.objects.get(pk=participantID)
+#             supportItemGroup = SupportItemGroup.objects.get(
+#                 pk=support_item_group_id
+#             )
+#             planCategory = PlanCategory.objects.get(pk=planCategoryID)
+#         except ObjectDoesNotExist:
+#             return Response(status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             try:
+#                 PlanItem.objects.create(
+#                     plan_category=planCategory,
+#                     support_item_group=supportItemGroup,
+#                     quantity=number,
+#                     price_actual=price,
+#                 )
+#             except ValidationError:
+#                 return Response(status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 return Response(status=status.HTTP_200_OK)
+
+
 class PlanViewSet(viewsets.ModelViewSet):
     """
     This viewset provides `list`, `create`, `retrieve`, `update`
@@ -307,7 +351,6 @@ class PlanViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def create(self, request):
-
         plan_serializer = self.serializer_class(data=request.data)
         if plan_serializer.is_valid():
             plan = plan_serializer.save(participant=self.request.user)

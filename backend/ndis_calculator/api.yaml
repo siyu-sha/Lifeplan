@@ -158,10 +158,7 @@ paths:
             schema:
               type: object
               properties:
-                planCategoryId:
-                  type: integer
-                  example: 1
-                supportItemGroupId:
+                supportItemGroup:
                   type: integer
                   example: 144
                 quantity:
@@ -184,10 +181,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  planCategoryId:
+                  planCategory:
                     type: integer
                     example: 1
-                  supportItemGroupId:
+                  supportItemGroup:
                     type: integer
                     example: 144
                   quantity:
