@@ -61,7 +61,7 @@ function App(props) {
             component={DoughnutChartPage}
           />
           <Route path="/signin" component={SignIn} />
-          <Route path="/authentication/signup" component={SignUp} />
+          <Route path="/signup" component={SignUp} />
         </Switch>
       </main>
     </div>
