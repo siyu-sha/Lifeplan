@@ -48,12 +48,12 @@ class BudgetDashBoard extends React.Component {
         console.log(error);
       });
 
-    const personalData = this.props.currentUser
-      ? {}
-      : {
-          birthYear: localStorage.getItem("birthYear"),
-          postcode: localStorage.getItem("postcode")
-        };
+    const personalData = this.props.currentUser ?
+      this.props.currentUser :
+      {
+        birthYear: localStorage.getItem("birthYear"),
+        postcode: localStorage.getItem("postcode")
+      };
     this.setState({
       ...personalData
     });
@@ -61,7 +61,7 @@ class BudgetDashBoard extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapShot) {
     if (
-      !this.props.currentUser &&
+      this.props.currentUser == null &&
       this.state.planCategories !== prevState.planCategories
     ) {
       console.log(this.state.planCategories);
