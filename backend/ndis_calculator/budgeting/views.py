@@ -46,7 +46,7 @@ class Authentication(APIView):
 
     @api_view(["POST"])
     @csrf_exempt
-    def register(request):
+    def register(self, request):
         if request.method == "POST":
             request.data["username"] = request.data.get("email")
             serializer = ParticipantSerializer(data=request.data)
@@ -73,7 +73,7 @@ class ParticipantView(APIView):
 
     @api_view(["GET"])
     @csrf_exempt
-    def current_user(request):
+    def current_user(self, request):
         if request.method == "GET":
             serializer = ParticipantSerializer(request.user)
             data = serializer.data
@@ -81,7 +81,7 @@ class ParticipantView(APIView):
 
     @api_view(["PUT"])
     @csrf_exempt
-    def update(request, pk):
+    def update(self, request, pk):
         try:
             user = Participant.objects.get(pk=pk)
         except Participant.DoesNotExist:
@@ -198,31 +198,31 @@ class PlanItemViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(request, plan_item_id):
+    def update(self, request, plan_item_id):
         try:
-            planItem = PlanItem.objects.get(pk=plan_item_id)
+            plan_item = PlanItem.objects.get(pk=plan_item_id)
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         data = JSONParser().parse(request)
-        serializer = PlanItemSerializer(planItem, data=data)
+        serializer = PlanItemSerializer(plan_item, data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status.HTTP_200_OK)
         return JsonResponse(serializer.errors, status=400)
 
-    def destroy(self, request, planCategoryId=None):
-        if planCategoryId is None:
+    def destroy(self, request, plan_category_id=None):
+        if plan_category_id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         items = []
-        idList = request.data.getlist("plan_item_id_list")
-        for id in idList:
-            item = PlanItem.objects.filter(pk=id).first()
+        id_list = request.data.getlist("plan_item_id_list")
+        for plan_item_id in id_list:
+            item = PlanItem.objects.filter(pk=plan_item_id).first()
             if (
                 item is not None
             ):  # it means the id of the plan item does not exist
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            elif item[0].plan_category.id != planCategoryId:
+            elif item[0].plan_category.id != plan_category_id:
                 # it means the id of the plan item does not belong to the target plan category
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -261,17 +261,17 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         support_category_id = request.query_params.get("support-category-id")
 
         # support item queryset - list of support items
-        SIqueryset = SupportItem.objects.all().filter(
+        si_queryset = SupportItem.objects.all().filter(
             support_category_id=support_category_id
         )
         if registration_group_id is not None:
-            SIqueryset = SIqueryset.filter(
+            si_queryset = si_queryset.filter(
                 registration_group_id=registration_group_id
             )
 
-        # values list - list of all ids in SIqueryset [id1,id2] etc.
+        # values list - list of all ids in si_queryset [id1,id2] etc.
         queryset = queryset.filter(
-            base_item_id__in=SIqueryset.values_list("id", flat=True)
+            base_item_id__in=si_queryset.values_list("id", flat=True)
         )
 
         serializer = self.serializer_class(queryset, many=True)
