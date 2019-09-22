@@ -1,3 +1,6 @@
+import logging
+
+from budgeting.permissions import IsPlanOwner
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.views import View
@@ -186,34 +189,29 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, **kwargs):
         queryset = SupportItemGroup.objects.all()
-
         registration_group_id = request.query_params.get(
             "registration-group-id"
         )
         support_category_id = request.query_params.get("support-category-id")
 
-        # workaround list comprehension since querysets can't filter by method
-        reg_queryset_ids = [
-            o.id
-            for o in queryset
-            if o.registration_group_id().__eq__(registration_group_id)
-        ]
+        # support item queryset - list of support items
+        SIqueryset = SupportItem.objects.all().filter(
+            support_category_id=support_category_id
+        )
+        if registration_group_id is not None:
+            SIqueryset = SIqueryset.filter(
+                registration_group_id=registration_group_id
+            )
 
-        if reg_queryset_ids is not None:
-            queryset = queryset.filter(id__in=reg_queryset_ids)
-
-        # Same workaround for support_category_id
-        sup_queryset_ids = [
-            o.id
-            for o in queryset
-            if o.support_category_id().__eq__(support_category_id)
-        ]
-        if sup_queryset_ids is not None:
-            queryset = queryset.filter(id__in=sup_queryset_ids)
+        # values list - list of all ids in SIqueryset [id1,id2] etc.
+        queryset = queryset.filter(
+            base_item_id__in=SIqueryset.values_list("id", flat=True)
+        )
 
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class PlanCategoryViewSet(viewsets.ModelViewSet):
     """
@@ -228,38 +226,40 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk=None):
         pass
 
-class PlanItemView(APIView):
+
+class PlanItemViewSet(viewsets.ModelViewSet):
+    """
+       ViewSet for CRUD of plan items
+
+       Only authenticated participants who are owners of the plan which the plan item belongs to can access
+       """
+
     permission_classes = (IsAuthenticated,)
+    serializer_class = PlanItemSerializer
 
-    @api_view(["POST"])
-    @csrf_exempt
-    def create(request, participantID, planCategoryID):
-        support_item_group_id = request.data.get("support_item_group_i_d")
-        price = request.data.get("price")
-        number = request.data.get("number")
+    def create(self, request, plan_category_id):
+        # check if plan category and corresponding plan exists
         try:
-            Participant.objects.get(pk=participantID)
-            supportItemGroup = SupportItemGroup.objects.get(
-                pk=support_item_group_id
-            )
-            planCategory = PlanCategory.objects.get(pk=planCategoryID)
+            plan_category = PlanCategory.objects.get(pk=plan_category_id)
+            plan = Plan.objects.get(pk=plan_category.plan_id)
         except ObjectDoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                PlanItem.objects.create(
-                    plan_category=planCategory,
-                    support_item_group=supportItemGroup,
-                    quantity=number,
-                    price_actual=price,
-                )
-            except ValidationError:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @api_view(["PUT"])
-    @csrf_exempt
+        # check if plan belongs to user and the referenced plan category corresponds to the body
+        if plan.participant_id != request.user.id:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        # create plan
+        serializer = self.serializer_class(
+            data={**request.data, "plan_category": plan_category_id}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # @api_view(["PUT"])
+    # @csrf_exempt
     def update(request, planItemID):
         try:
             planItem = PlanItem.objects.get(pk=planItemID)
@@ -270,8 +270,39 @@ class PlanItemView(APIView):
         serializer = PlanItemSerializer(planItem, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
+            return JsonResponse(serializer.data, status.HTTP_200_OK)
         return JsonResponse(serializer.errors, status=400)
+
+# TODO: remove after a while
+# class PlanItemView(APIView):
+#     permission_classes = (IsAuthenticated,)
+#
+#     @api_view(["POST"])
+#     @csrf_exempt
+#     def create(request, participantID, planCategoryID):
+#         support_item_group_id = request.data.get("support_item_group_i_d")
+#         price = request.data.get("price")
+#         number = request.data.get("number")
+#         try:
+#             Participant.objects.get(pk=participantID)
+#             supportItemGroup = SupportItemGroup.objects.get(
+#                 pk=support_item_group_id
+#             )
+#             planCategory = PlanCategory.objects.get(pk=planCategoryID)
+#         except ObjectDoesNotExist:
+#             return Response(status=status.HTTP_400_BAD_REQUEST)
+#         else:
+#             try:
+#                 PlanItem.objects.create(
+#                     plan_category=planCategory,
+#                     support_item_group=supportItemGroup,
+#                     quantity=number,
+#                     price_actual=price,
+#                 )
+#             except ValidationError:
+#                 return Response(status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 return Response(status=status.HTTP_200_OK)
 
 class PlanViewSet(viewsets.ModelViewSet):
     """

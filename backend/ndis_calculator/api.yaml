@@ -9,14 +9,14 @@ servers:
     description: Development server (local)
 
 paths:
-  /participants/{participantID}/plans:
+  /participants/{participant_id}/plans:
     get:
       tags:
         - plan
       summary: Retrieve list of all plans of a specific participant
       description: Retrieve list of all plans of a specific participant, both generated and non-generated
       parameters:
-        - $ref: "#/components/parameters/ParticipantID"
+        - $ref: "#/components/parameters/ParticipantId"
       responses:
         "200":
           description: success
@@ -37,7 +37,7 @@ paths:
       summary: Create a plan based on an existing plan
       description: Create a plan based on an existing plan of a specific participant, labeled non-generated in the backend
       parameters:
-        - $ref: "#/components/parameters/ParticipantID"
+        - $ref: "#/components/parameters/ParticipantId"
       responses:
         "201":
           description: success
@@ -119,9 +119,9 @@ paths:
                   $ref: "#/components/schemas/SupportItemGroup"
   /support-item-groups:
     get:
-      tags: 
+      tags:
         - support item group
-      summary: Retrieves list of support item groups (more simple english, less clutter than S-I)
+      summary: Retrieves list of support item groups (more simple english, less clutter than support_item)
       description: Retrieves list of support item groups based on filter, The backend will retrieve the default national price for simplicity
       parameters:
         - name: registration-group-id
@@ -143,16 +143,14 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SupportItem"
-  ? /participants/{participantID}/plan-goals/{planGoalID}/plan-categories/{planCategoryID}/plan-items
-  : post:
+  /plan-categories/{plan_category_id}/plan-items/:
+    post:
       tags:
         - plan item
       summary: Create a plan item for a participant's plan.
       description: Create a plan item for a plan in one of his existing goals under the correct category.
       parameters:
-        - $ref: "#/components/parameters/ParticipantID"
-        - $ref: "#/components/parameters/PlanGoalID"
-        - $ref: "#/components/parameters/PlanCategoryID"
+        - $ref: "#/components/parameters/PlanCategoryId"
       requestBody:
         required: true
         content:
@@ -160,23 +158,47 @@ paths:
             schema:
               type: object
               properties:
-                supportItemID:
+                supportItemGroup:
                   type: integer
                   example: 144
-                price:
+                quantity:
+                  type: number
+                  example: 10
+                priceActual:
                   type: number
                   example: 120.22
-                number:
+                name:
+                  type: string
+                  example: wheelchair
+                frequencyPerYear:
                   type: integer
-                  example: 1
+                  example: 52
       responses:
         "201":
-          description: success
+          description: created
           content:
             application/json:
               schema:
-                type: integer
-                description: plan item id
+                type: object
+                properties:
+                  planCategory:
+                    type: integer
+                    example: 1
+                  supportItemGroup:
+                    type: integer
+                    example: 144
+                  quantity:
+                    type: number
+                    example: 10
+                  priceActual:
+                    type: number
+                    example: 120.22
+                  name:
+                    type: string
+                    example: wheelchair
+                  frequencyPerYear:
+                    type: integer
+                    example: 52
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -284,34 +306,26 @@ components:
       description: Bad Request
 
   parameters:
-    ParticipantID:
-      name: participantID
+    ParticipantId:
+      name: participant_id
       in: path
-      description: participant ID
+      description: participant Id
       required: true
       schema:
         type: integer
 
-    PlanID:
-      name: planID
+    PlanId:
+      name: plan_id
       in: path
-      description: plan ID
+      description: plan Id
       required: true
       schema:
         type: integer
 
-    PlanCategoryID:
-      name: planCategoryID
+    PlanCategoryId:
+      name: plan_category_id
       in: path
-      description: Plan Category ID
-      required: true
-      schema:
-        type: integer
-
-    PlanGoalID:
-      name: planGoalID
-      in: path
-      description: plan goal ID
+      description: plan category Id
       required: true
       schema:
         type: integer
