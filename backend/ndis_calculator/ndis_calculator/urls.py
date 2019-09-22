@@ -72,7 +72,7 @@ api_patterns = [
         name="support_item_group_list",
     ),
     path(
-        "plan/<int:plan_id>/plan-categories/<int:plan_category_id>/plan-items",
+        "plan-categories/<int:plan_category_id>/plan-items",
         plan_item_list,
         name="plan_item_list",
     ),

@@ -1,3 +1,5 @@
+import logging
+
 from budgeting.permissions import IsPlanOwner
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse
@@ -216,17 +218,6 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PlanItemViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet for CRUD of plan items
-
-    Only authenticated participants who are owners of the plan which the plan item belongs to can access
-    """
-
-    permission_classes = [IsAuthenticated]
-    serializer_class = PlanItemSerializer
-
-
 class PlanCategoryViewSet(viewsets.ModelViewSet):
     """
     This viewset provides `list`, `create`, `retrieve`, `update`
@@ -242,23 +233,33 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
 
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
-class PlanItemView(APIView):
+class PlanItemViewSet(viewsets.ModelViewSet):
+    """
+       ViewSet for CRUD of plan items
+
+       Only authenticated participants who are owners of the plan which the plan item belongs to can access
+       """
+
     permission_classes = (IsAuthenticated,)
+    serializer_class = PlanItemSerializer
 
     def create(self, request, plan_category_id):
+        print(plan_category_id)
         # check if plan category and corresponding plan exists
         try:
             plan_category = PlanCategory.objects.get(pk=plan_category_id)
             plan = Plan.objects.get(pk=plan_category.plan_id)
         except ObjectDoesNotExist:
-            return Response(status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # check if plan belongs to user
-        if plan.user_id != request.user:
-            return Response(status.HTTP_403_FORBIDDEN)
+        # check if plan belongs to user and the referenced plan category corresponds to the body
+        if plan.participant_id != request.user.id:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         # create plan
-        serializer = self.serializer_class(request.data)
+        serializer = self.serializer_class(
+            data={**request.data, "plan_category_id": 1}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
