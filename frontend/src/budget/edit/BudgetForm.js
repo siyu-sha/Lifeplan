@@ -15,6 +15,7 @@ import { ChevronLeft, ChevronRight } from "@material-ui/icons";
 import Api from "../../api";
 import Button from "@material-ui/core/Button/index";
 import _ from "lodash";
+import connect from "react-redux/es/connect/connect";
 
 const styles = {
   paper: {
@@ -37,9 +38,14 @@ const styles = {
   }
 };
 
+function mapStateToProps(state) {
+  return {
+    currentUser: state.auth.currentUser
+  };
+}
+
 const PLAN_CATEGORIES = "planCategories";
 
-const loggedIn = false;
 let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let postcodeRegex = new RegExp(/^\d{0,4}$/);
 
@@ -98,7 +104,7 @@ class FormPersonalDetails extends React.Component {
     let planCategories = {};
     let birthYear;
     let postcode;
-    if (loggedIn) {
+    if (this.props.currentUser) {
       // todo: call backend
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -212,7 +218,7 @@ class FormPersonalDetails extends React.Component {
   handleNext = () => {
     const errors = this.validate();
     if (Object.keys(errors).length === 0) {
-      if (loggedIn) {
+      if (this.props.currentUser) {
         // todo: submit plan
       } else {
         localStorage.setItem("postcode", this.state.postcode);
@@ -404,4 +410,6 @@ class FormPersonalDetails extends React.Component {
   }
 }
 
-export default withStyles(styles)(FormPersonalDetails);
+export default connect(mapStateToProps)(
+  withStyles(styles)(FormPersonalDetails)
+);

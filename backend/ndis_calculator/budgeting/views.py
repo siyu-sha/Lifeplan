@@ -36,6 +36,7 @@ from .serializers import (
     SupportItemSerializer,
 )
 
+
 # Create your views here.
 
 
@@ -188,30 +189,22 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, **kwargs):
         queryset = SupportItemGroup.objects.all()
-
         registration_group_id = request.query_params.get(
             "registration-group-id"
         )
         support_category_id = request.query_params.get("support-category-id")
 
-        # workaround list comprehension since querysets can't filter by method
-        reg_queryset_ids = [
-            o.id
-            for o in queryset
-            if o.registration_group_id().__eq__(registration_group_id)
-        ]
+        # support item queryset - list of support items
+        SIqueryset = SupportItem.objects.all().filter(
+            support_category_id=support_category_id
+        )
+        if registration_group_id is not None:
+            SIqueryset = SIqueryset.filter(registration_group_id=registration_group_id)
 
-        if reg_queryset_ids is not None:
-            queryset = queryset.filter(id__in=reg_queryset_ids)
-
-        # Same workaround for support_category_id
-        sup_queryset_ids = [
-            o.id
-            for o in queryset
-            if o.support_category_id().__eq__(support_category_id)
-        ]
-        if sup_queryset_ids is not None:
-            queryset = queryset.filter(id__in=sup_queryset_ids)
+        # values list - list of all ids in SIqueryset [id1,id2] etc.
+        queryset = queryset.filter(
+            base_item_id__in=SIqueryset.values_list("id", flat=True)
+        )
 
         serializer = self.serializer_class(queryset, many=True)
 
@@ -232,7 +225,7 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
         pass
 
 
-# DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
+
 class PlanItemViewSet(viewsets.ModelViewSet):
     """
        ViewSet for CRUD of plan items

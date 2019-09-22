@@ -83,6 +83,20 @@ const SupportItems = {
   }
 };
 
+const SupportItemGroups = {
+  get: ({
+    // todo: involve the following in the filter
+    // birthYear,
+    // postcode,
+    supportCategoryID,
+    registrationGroupID = null
+  }) => {
+    return axios.get(
+      `/support-item-groups?support-category-id=${supportCategoryID}&registration-groupid=${registrationGroupID}`
+    );
+  }
+};
+
 const SupportGroups = {
   all: () => {
     return axios.get("/support-groups");
@@ -94,6 +108,7 @@ export default {
   Participants,
   SupportGroups,
   SupportItems,
+  SupportItemGroups,
   setAccess,
   set401Interceptor
 };
