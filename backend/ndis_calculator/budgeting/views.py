@@ -36,7 +36,6 @@ from .serializers import (
     SupportItemSerializer,
 )
 
-
 # Create your views here.
 
 
@@ -199,7 +198,9 @@ class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):
             support_category_id=support_category_id
         )
         if registration_group_id is not None:
-            SIqueryset = SIqueryset.filter(registration_group_id=registration_group_id)
+            SIqueryset = SIqueryset.filter(
+                registration_group_id=registration_group_id
+            )
 
         # values list - list of all ids in SIqueryset [id1,id2] etc.
         queryset = queryset.filter(
@@ -225,7 +226,6 @@ class PlanCategoryViewSet(viewsets.ModelViewSet):
         pass
 
 
-
 class PlanItemViewSet(viewsets.ModelViewSet):
     """
        ViewSet for CRUD of plan items
@@ -237,8 +237,6 @@ class PlanItemViewSet(viewsets.ModelViewSet):
     serializer_class = PlanItemSerializer
 
     def create(self, request, plan_category_id):
-        print(type(plan_category_id))
-        print(type(request.data.get("plan_category")))
         # check if plan category and corresponding plan exists
         try:
             plan_category = PlanCategory.objects.get(pk=plan_category_id)
