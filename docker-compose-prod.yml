@@ -29,6 +29,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile-CI
+    environment:
+      - NODE_ENV=production
     ports:
       - "${DOCKER_REACT_PORT}:3000"
     volumes:
