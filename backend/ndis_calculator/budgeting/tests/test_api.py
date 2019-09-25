@@ -31,25 +31,9 @@ STUB_PARTICIPANT_DATA = {
 
 
 class AuthenticationApiTests(APITestCase):
-    # refresh = ''
-
     def setUp(self):
         # What does the below do?
         super(AuthenticationApiTests, self).setUp()
-
-    # def setUp(self):
-    #     return
-    # super(AuthenticationApiTests, self).setUp()
-    # url = reverse('auth_register')
-    # data = {
-    #         "email": "ayaya@azurlane.com",
-    #         "firstName": "IJN",
-    #         "lastName": "Ayanami",
-    #         "password": "DD45",
-    #         "postcode": 3000,
-    #         "birthYear": 1945
-    #     }
-    # response = self.client.post(url, data, format='json')
 
     def create_stub_participant(self):
         return self.client.post(
@@ -97,19 +81,6 @@ class AuthenticationApiTests(APITestCase):
         """
         Ensure we can register a new user.
         """
-        # url = reverse('auth_register')
-        # data = {
-        #         "email": "ayaya@azurlane.com",
-        #         "firstName": "IJN",
-        #         "lastName": "Ayanami",
-        #         "password": "DD45",
-        #         "postcode": 3000,
-        #         "birthYear": 1945
-        #     }
-        # response = self.client.post(url, data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(Participant.objects.count(), 1)
-        # self.assertEqual(Participant.objects.get().email, 'ayaya@azurlane.com')
 
         response = self.create_stub_participant()
 
@@ -123,14 +94,6 @@ class AuthenticationApiTests(APITestCase):
         """
         Ensure we can login.
         """
-        # url = reverse('auth_login')
-        # data = {
-        #         "username": "ayaya@azurlane.com",
-        #         "password": "DD45",
-        #     }
-        # response = self.client.post(url, data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.__class__.refresh = response.json()['refresh']
 
         self.create_stub_participant()
 
@@ -149,12 +112,6 @@ class AuthenticationApiTests(APITestCase):
         """
         Ensure we can refresh expired access tokens.
         """
-        # url = reverse('auth_refresh')
-        # data = {
-        #         "refresh": self.__class__.refresh
-        #     }
-        # response = self.client.post(url, data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.create_stub_participant()
 
@@ -222,24 +179,6 @@ class ParticipantApiTests(APITestCase):
 
     def setUp(self):
         super(ParticipantApiTests, self).setUp()
-        # url = reverse('auth_register')
-        # STUB_PARTICIPANT_DATA = {
-        #         "email": "ayaya@azurlane.com",
-        #         "firstName": "IJN",
-        #         "lastName": "Ayanami",
-        #         "password": "DD45",
-        #         "postcode": 3000,
-        #         "birthYear": 1945
-        #     }
-        # response = self.client.post(url, data, format='json')
-        #
-        # url = reverse('auth_login')
-        # data = {
-        #         "username": "ayaya@azurlane.com",
-        #         "password": "DD45",
-        #     }
-        # response = self.client.post(url, data, format='json')
-        # self.__class__.access = response.json()['access']
 
     def test_participant_current_user(self):
         """
