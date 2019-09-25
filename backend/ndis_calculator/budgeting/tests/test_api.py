@@ -216,6 +216,8 @@ class AuthenticationApiTests(APITestCase):
 
 
 class ParticipantApiTests(APITestCase):
+    """ Missing Tests: update """
+
     access = ""
 
     def setUp(self):
@@ -262,7 +264,7 @@ class ParticipantApiTests(APITestCase):
         self.assertEqual(participant_data, json.loads(response.content))
 
 
-class SupportGroupTests(APITestCase):
+class SupportGroupApiTests(APITestCase):
     def setUp(self):
         self.URL_SUPPORT_GROUP_LIST = reverse("support_group_list")
 
@@ -275,7 +277,7 @@ class SupportGroupTests(APITestCase):
                 self.assertIn("name", support_category)
 
 
-class SupportItemTests(APITestCase):
+class SupportItemApiTests(APITestCase):
     fixtures = [
         "registration_group.json",
         "support_group.json",
@@ -316,13 +318,72 @@ class SupportItemTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class SupportItemGroupTest(APITestCase):
+class SupportItemGroupApiTests(APITestCase):
     # Needs creation post-fixtures, #TODO
     def pointless_method_stub(self):
         return None
 
 
-class CreatePlanItem(APITestCase):
+class RegistrationGroupApiTests(APITestCase):
+    def setUp(self):
+        self.URL_REGISTRATION_GROUP_LIST = reverse("registration_group_list")
+
+    def test_registration_group_list(self):
+        response = self.client.get(self.URL_REGISTRATION_GROUP_LIST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for registration_group in response.data:
+            self.assertIn("id", registration_group)
+            self.assertIn("number", registration_group)
+            self.assertIn("name", registration_group)
+
+
+""" This test needs updating due to the change of plan creating API
+Missing Tests: create, get, list, update; Plan Cateogory creation
+class PlanApiTests(APITestCase):
+    def setUp(self):
+        self.URL_CREATE_PLAN = reverse("plan_create")
+        self.TEST_DATA = {
+            "participant_id": 1,
+            "start_date": "2019-09-20",
+            "end_date": "2020-09-20",
+        }
+
+    # may need improvement in the future
+    def test_create_plan_item(self):
+        if Participant.objects.filter(pk=1).__len__() == 0:
+            Participant.objects.create(
+                pk=1,
+                email="1@qq.com",
+                first_name="Red",
+                last_name="Blue",
+                postcode="1",
+                birth_year=1996,
+            )
+        response = self.client.post(self.URL_CREATE_PLAN, self.TEST_DATA)
+        par = Participant.objects.get(pk=1)
+        test = Plan.objects.filter(
+            participant=par,
+            start_date="2019-09-20",
+            end_date="2020-09-20",
+            generated=False,
+        )
+        if test.__len__() == 1:
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        else:
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+"""
+
+
+class PlanCategoryApiTest(APITestCase):
+    """ Missing Tests: get, list, update """
+
+    def pointless_method_stub(self):
+        return None
+
+
+class PlanItemApiTests(APITestCase):
+    """ Missing Tests: Separate create and get/list, update, delete """
+
     fixtures = [
         "registration_group.json",
         "support_group.json",
@@ -389,62 +450,9 @@ class CreatePlanItem(APITestCase):
         self.assertEqual(len + 1, test.__len__())
 
 
-class RegistrationGroupTests(APITestCase):
-    def setUp(self):
-        self.URL_REGISTRATION_GROUP_LIST = reverse("registration_group_list")
-
-    def test_registration_group_list(self):
-        response = self.client.get(self.URL_REGISTRATION_GROUP_LIST)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        for registration_group in response.data:
-            self.assertIn("id", registration_group)
-            self.assertIn("number", registration_group)
-            self.assertIn("name", registration_group)
-
-
-class RetrivePlanItemsTests(APITestCase):
-    # Needs creation post-fixtures, #TODO
-    def pointless_method_stub(self):
-        return None
-
-
-""" This test needs updating due to the change of plan creating API
-class CreatePlan(APITestCase):
-    def setUp(self):
-        self.URL_CREATE_PLAN = reverse("plan_create")
-        self.TEST_DATA = {
-            "participant_id": 1,
-            "start_date": "2019-09-20",
-            "end_date": "2020-09-20",
-        }
-
-    # may need improvement in the future
-    def test_create_plan_item(self):
-        if Participant.objects.filter(pk=1).__len__() == 0:
-            Participant.objects.create(
-                pk=1,
-                email="1@qq.com",
-                first_name="Red",
-                last_name="Blue",
-                postcode="1",
-                birth_year=1996,
-            )
-        response = self.client.post(self.URL_CREATE_PLAN, self.TEST_DATA)
-        par = Participant.objects.get(pk=1)
-        test = Plan.objects.filter(
-            participant=par,
-            start_date="2019-09-20",
-            end_date="2020-09-20",
-            generated=False,
-        )
-        if test.__len__() == 1:
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-        else:
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-"""
-
-
 class DeletePlanItem(APITestCase):
+    """  Merge this with the PlanItemApiTests above """
+
     fixtures = [
         "registration_group.json",
         "support_group.json",
