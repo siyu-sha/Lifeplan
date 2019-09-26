@@ -176,8 +176,6 @@ class AuthenticationApiTests(APITestCase):
 
 
 class ParticipantApiTests(APITestCase):
-    """ Missing Tests: update """
-
     STUB_PARTICIPANT_DATA_UPDATE = {
         "email": "a@a.com",
         "firstName": "Michi",
