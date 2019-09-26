@@ -73,7 +73,7 @@ class ParticipantView(APIView):
 
     @api_view(["GET"])
     @csrf_exempt
-    def current_user(self, request):
+    def current_user(request):
         if request.method == "GET":
             serializer = ParticipantSerializer(request.user)
             data = serializer.data
@@ -81,7 +81,7 @@ class ParticipantView(APIView):
 
     @api_view(["PUT"])
     @csrf_exempt
-    def update(self, request, pk):
+    def update(request, pk):
         try:
             user = Participant.objects.get(pk=pk)
         except Participant.DoesNotExist:
