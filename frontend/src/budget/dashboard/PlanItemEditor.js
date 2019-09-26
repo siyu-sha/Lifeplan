@@ -305,7 +305,7 @@ export default function PlanItemEditor(props) {
             </Grid>
             <Grid item xs={12}>
               <Typography cvariant={"body1"} align={"left"}>
-                How many {unitTime} do you this use per {frequencyUsage}?
+                How many {unitTime} do you use this per {frequencyUsage}?
               </Typography>
               <FormControl margin={"normal"} required>
                 <InputLabel htmlFor={itemQuantity}>{unitTime}</InputLabel>
