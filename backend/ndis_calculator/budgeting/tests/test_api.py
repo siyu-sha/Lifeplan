@@ -31,6 +31,9 @@ STUB_PARTICIPANT_DATA = {
 
 
 class AuthenticationApiTests(APITestCase):
+
+    # refresh = ""
+
     def setUp(self):
         # What does the below do?
         super(AuthenticationApiTests, self).setUp()
@@ -173,9 +176,15 @@ class AuthenticationApiTests(APITestCase):
 
 
 class ParticipantApiTests(APITestCase):
-    """ Missing Tests: update """
+    STUB_PARTICIPANT_DATA_UPDATE = {
+        "email": "a@a.com",
+        "firstName": "Michi",
+        "lastName": "Hirohito",
+        "postcode": "3004",
+        "birthYear": 1926,
+    }
 
-    access = ""
+    # access = ""
 
     def setUp(self):
         super(ParticipantApiTests, self).setUp()
@@ -191,9 +200,43 @@ class ParticipantApiTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION="Bearer " + response.data["tokens"]["access"]
         )
+        # self.__class__.access = response.json()['access']
         participant_data = {"id": response.data["id"], **STUB_PARTICIPANT_DATA}
         participant_data.pop("password")
         response = self.client.get(URL_PARTICIPANT_CURRENT_USER, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # render to camelCase JSON for easier comparison
+        response.render()
+
+        self.assertEqual(participant_data, json.loads(response.content))
+
+    def test_participant_update(self):
+        """
+        Ensure we can update the current participant's details.
+        """
+        data = {
+            "username": STUB_PARTICIPANT_DATA["email"],
+            "password": STUB_PARTICIPANT_DATA["password"],
+        }
+        response = self.client.post(URL_AUTH_LOGIN, data, format="json")
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + response.data["tokens"]["access"]
+        )
+        participant_data = {
+            "id": response.data["id"],
+            **self.STUB_PARTICIPANT_DATA_UPDATE,
+        }
+
+        URL_PARTICIPANT_UPDATE = reverse(
+            "participant_update", kwargs={"pk": response.data["id"]}
+        )
+        response = self.client.post(
+            URL_PARTICIPANT_UPDATE,
+            self.STUB_PARTICIPANT_DATA_UPDATE,
+            format="json",
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
