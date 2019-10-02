@@ -301,8 +301,18 @@ class SupportItemApiTests(APITestCase):
 
 
 class SupportItemGroupApiTests(APITestCase):
-    # Needs creation post-fixtures, #TODO
-    def pointless_method_stub(self):
+    fixtures = [
+        "registration_group.json",
+        "support_group.json",
+        "support_category.json",
+        "support_item.json",
+        "support_item_group.json",
+    ]
+
+    def setUp(self):
+        self.URL_SUPPORT_ITEM_GROUP_LIST = reverse("support_item_group_list")
+
+    def test_support_item_group_list(self):
         return None
 
 
