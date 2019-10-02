@@ -313,7 +313,14 @@ class SupportItemGroupApiTests(APITestCase):
         self.URL_SUPPORT_ITEM_GROUP_LIST = reverse("support_item_group_list")
 
     def test_support_item_group_list(self):
-        return None
+        response = self.client.get(
+            self.URL_SUPPORT_ITEM_GROUP_LIST
+            + "?registration-group-id=8&support-category-id=3"
+        )
+        for item in response.data:
+            test = SupportItemGroup.objects.get(id=item["id"])
+            self.assertEqual(test.name, item["name"])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class RegistrationGroupApiTests(APITestCase):
