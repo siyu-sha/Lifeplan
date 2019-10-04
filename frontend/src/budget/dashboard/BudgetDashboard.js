@@ -212,7 +212,7 @@ class BudgetDashBoard extends React.Component {
                   totalColor: LIGHT_BLUE,
                   allocatedColor: DARK_BLUE
                 }}
-                openSupports={() => this.handleOpenSupports(4)}
+                openSupports={() => this.handleOpenSupports(3)}
               />
             </Grid>
           </BudgetCategorySection>

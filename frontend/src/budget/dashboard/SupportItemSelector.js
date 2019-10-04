@@ -92,7 +92,7 @@ export default function SupportItemSelector(props) {
   // 0: large screen; 1: small screen (mobile)
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   // number representing current page
-  // 0: supports list; 1: supports selection; 2: edit/add support
+  // 0: supports list; 1: supports selection; 2: edit support; 3: add support
   const [page, setPage] = useState(0);
   // set of support returned from search
   const [searchResults, setSearchResults] = useState([]);
@@ -106,19 +106,41 @@ export default function SupportItemSelector(props) {
 
   // api call to load support items
   useEffect(() => {
-    api.SupportItemGroups.get({
-      birthYear: birthYear,
-      postcode: postcode,
-      supportCategoryID: supportCategory.id,
-      registrationGroupId
-    }).then(response => {
-      const items = response.data.map(supportItem => {
-        supportItem.label = supportItem.name;
-        return supportItem;
+    if (supportCategory.id === 3) {
+      // load all categories under core supports
+      let items = [];
+      for (var i = 3; i < 7; i++) {
+        api.SupportItemGroups.get({
+          birthYear: birthYear,
+          postcode: postcode,
+          supportCategoryID: i,
+          registrationGroupId
+        }).then(response => {
+          const newItems = response.data.map(supportItem => {
+            supportItem.label = supportItem.name;
+            return supportItem;
+          });
+          items = items.concat(newItems);
+          setSupportItems(items);
+          setSearchResults(items);
+        });
+      }
+    } else {
+      // load single category
+      api.SupportItemGroups.get({
+        birthYear: birthYear,
+        postcode: postcode,
+        supportCategoryID: supportCategory.id,
+        registrationGroupId
+      }).then(response => {
+        const items = response.data.map(supportItem => {
+          supportItem.label = supportItem.name;
+          return supportItem;
+        });
+        setSupportItems(items);
+        setSearchResults(items);
       });
-      setSupportItems(items);
-      setSearchResults(items);
-    });
+    }
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
   // load plan items from backend (logged in) or local storage
