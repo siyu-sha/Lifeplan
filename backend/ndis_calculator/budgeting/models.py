@@ -144,9 +144,9 @@ class Plan(models.Model):
     end_date = models.DateField()
     generated = models.BooleanField(default=False)
 
-    support_categories = models.ManyToManyField(
-        SupportCategory, through="PlanCategory"
-    )
+    # support_categories = models.ManyToManyField(
+    #     SupportCategory, through="PlanCategory"
+    # )
 
     def __str__(self):
         return (
@@ -159,7 +159,9 @@ class Plan(models.Model):
 
 
 class PlanCategory(models.Model):
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    plan = models.ForeignKey(
+        Plan, related_name="plan_categories", on_delete=models.PROTECT
+    )
     support_category = models.ForeignKey(
         SupportCategory, on_delete=models.PROTECT
     )
@@ -168,7 +170,9 @@ class PlanCategory(models.Model):
 
 
 class PlanItem(models.Model):
-    plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
+    plan_category = models.ForeignKey(
+        PlanCategory, related_name="plan_items", on_delete=models.PROTECT
+    )
     support_item_group = models.ForeignKey(
         SupportItemGroup, on_delete=models.PROTECT
     )
