@@ -141,6 +141,20 @@ class BudgetDashBoard extends React.Component {
     }
   };
 
+  calculateCoreAllocated = () => {
+    let allocated = 0;
+    console.log(this.state.supportGroups);
+    let core = this.state.supportGroups.find(obj => {
+      return obj.name === "Core";
+    });
+    console.log(core);
+    _.forEach(core.supportCategories, supportCategory => {
+      const planCategory = this.state.planCategories[supportCategory.id];
+      allocated += calculateAllocated(planCategory.planItems);
+    });
+    return allocated;
+  };
+
   renderSummary = () => {
     let total = 0;
     let allocated = 0;
@@ -208,7 +222,7 @@ class BudgetDashBoard extends React.Component {
                 {...{
                   category: "Core supports",
                   total: coreBudget,
-                  allocated: 0,
+                  allocated: this.calculateCoreAllocated(),
                   totalColor: LIGHT_BLUE,
                   allocatedColor: DARK_BLUE
                 }}
