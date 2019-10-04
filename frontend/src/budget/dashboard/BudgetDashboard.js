@@ -24,7 +24,7 @@ function calculateAllocated(planItems) {
   let allocated = 0;
   _.forEach(planItems, planItem => {
     const { quantity, price_actual, frequency_per_year } = planItem;
-    if ( quantity && price_actual && frequency_per_year) {
+    if (quantity && price_actual && frequency_per_year) {
       allocated +=
         planItem.quantity * planItem.price_actual * planItem.frequency_per_year;
     }
@@ -52,12 +52,12 @@ class BudgetDashBoard extends React.Component {
         console.log(error);
       });
 
-    const personalData = this.props.currentUser ?
-      this.props.currentUser :
-      {
-        birthYear: localStorage.getItem("birthYear"),
-        postcode: localStorage.getItem("postcode")
-      };
+    const personalData = this.props.currentUser
+      ? this.props.currentUser
+      : {
+          birthYear: localStorage.getItem("birthYear"),
+          postcode: localStorage.getItem("postcode")
+        };
     this.setState({
       ...personalData
     });
@@ -187,7 +187,38 @@ class BudgetDashBoard extends React.Component {
   };
 
   renderPlanCategories = () => {
+    console.log(this.state.supportGroups);
     return _.map(this.state.supportGroups, supportGroup => {
+      if (supportGroup.id === 1) {
+        let coreBudget = 0;
+        _.forEach(supportGroup.supportCategories, supportCategory => {
+          const planCategory = this.state.planCategories[supportCategory.id];
+          coreBudget += planCategory.budget;
+        });
+        let core = supportGroup.supportCategories[1];
+        console.log(supportGroup.supportCategories);
+        console.log(core);
+        return (
+          <BudgetCategorySection
+            sectionName={supportGroup.name}
+            key={supportGroup.id}
+          >
+            <Grid key={"1"} item xs={12} sm={6} md={4} lg={3}>
+              <BudgetCategoryCard
+                {...{
+                  category: "Core supports",
+                  total: coreBudget,
+                  allocated: 0,
+                  totalColor: LIGHT_BLUE,
+                  allocatedColor: DARK_BLUE
+                }}
+                openSupports={() => this.handleOpenSupports(4)}
+              />
+            </Grid>
+          </BudgetCategorySection>
+        );
+      }
+
       let renderedPlanCategories = [];
       _.forEach(supportGroup.supportCategories, supportCategory => {
         const planCategory = this.state.planCategories[supportCategory.id];
