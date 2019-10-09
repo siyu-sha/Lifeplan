@@ -401,6 +401,10 @@ class PlanItemApiTests(APITestCase):
             "price": 120.22,
             "number": 1,
         }
+        self.URL_DELETE_PLAN_ITEM = reverse(
+            "plan_item_delete", kwargs={"planCategoryId": 1}
+        )
+        self.DELETE_TEST_DATA = {"planItemIdList": [100, 101]}
 
     def test_create_plan_item(self):
         if Participant.objects.filter(pk=1).__len__() == 0:
@@ -447,6 +451,9 @@ class PlanItemApiTests(APITestCase):
             price_actual=120.22,
         )
         self.assertEqual(len + 1, test.__len__())
+
+    #def test_delete_plan_item(self):
+
 
 
 class DeletePlanItem(APITestCase):
