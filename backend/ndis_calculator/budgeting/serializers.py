@@ -1,6 +1,5 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from .models import (
     Participant,
@@ -50,6 +49,29 @@ class ParticipantSerializer(serializers.ModelSerializer):
         return user
 
 
+class PlanSerializer(serializers.ModelSerializer):
+    participant = serializers.ReadOnlyField(source="participant.id")
+    plan_categories = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True
+    )
+
+    class Meta:
+        model = Plan
+        fields = "__all__"
+
+
+class PlanCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanCategory
+        fields = "__all__"
+
+
+class PlanItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanItem
+        fields = "__all__"
+
+
 class SupportCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportCategory
@@ -62,18 +84,6 @@ class SupportGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportGroup
         fields = ["id", "name", "support_categories"]
-
-
-class RegistrationGroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RegistrationGroup
-        fields = ["id", "number", "name"]
-
-
-class SupportItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SupportItem
-        fields = "__all__"
 
 
 class SupportItemGroupSerializer(serializers.ModelSerializer):
@@ -112,24 +122,13 @@ class SupportItemGroupSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "unit", "price", "description"]
 
 
-class PlanItemSerializer(serializers.ModelSerializer):
+class SupportItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PlanItem
+        model = SupportItem
         fields = "__all__"
 
 
-class PlanCategorySerializer(serializers.ModelSerializer):
+class RegistrationGroupSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PlanCategory
-        fields = "__all__"
-
-
-class PlanSerializer(serializers.ModelSerializer):
-    participant = serializers.ReadOnlyField(source="participant.id")
-    plan_categories = serializers.PrimaryKeyRelatedField(
-        many=True, read_only=True
-    )
-
-    class Meta:
-        model = Plan
-        fields = "__all__"
+        model = RegistrationGroup
+        fields = ["id", "number", "name"]
