@@ -20,6 +20,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -214,12 +215,14 @@ export default function PlanItemEditor(props) {
 
   function displayTotalCost(totalPrice, frequencyUnit, quantityUnit) {
     return totalPrice > 0 ? (
-      <Typography>
-        Total: ${values.price_actual} X {values.quantity} {quantityUnit}
-        (s) X {values.frequency_per_year} {frequencyUnit}(s) = ${totalPrice}
+      <Typography align="right" variant="button">
+        Total: ${values.price_actual} × {values.quantity} {quantityUnit}
+        (s) × {values.frequency_per_year} {frequencyUnit}(s) = ${totalPrice}
       </Typography>
     ) : (
-      <Typography>Total: $0</Typography>
+      <Typography variant="button" align="right">
+        Total: $0
+      </Typography>
     );
   }
   // let uninitialised = true;
@@ -289,6 +292,7 @@ export default function PlanItemEditor(props) {
                   Usage Frequency
                 </InputLabel>
                 <Select
+                  autoWidth
                   value={values.frequency_per_year}
                   onChange={e => handleChange(e)}
                   inputProps={{
@@ -301,6 +305,9 @@ export default function PlanItemEditor(props) {
                   {unitEnum >= 3 && <MenuItem value={12}>monthly</MenuItem>}
                   {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
                 </Select>
+                <FormHelperText>
+                  please select the frequency from the dropdown box
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12}>
@@ -339,8 +346,10 @@ export default function PlanItemEditor(props) {
                 ></Input>
               </FormControl>
             </Grid>
+            <Grid item xs={12}>
+              {displayTotalCost(totalPrice, frequencyUsage, unit)}
+            </Grid>
           </Grid>
-          {displayTotalCost(totalPrice, frequencyUsage, unit)}
         </form>
       </DialogContent>
       <DialogActions>
