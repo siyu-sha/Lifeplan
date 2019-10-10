@@ -46,7 +46,7 @@ class Authentication(APIView):
 
     @api_view(["POST"])
     @csrf_exempt
-    def register(self, request):
+    def register(request):
         if request.method == "POST":
             request.data["username"] = request.data.get("email")
             serializer = ParticipantSerializer(data=request.data)
