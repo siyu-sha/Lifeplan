@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets
@@ -46,7 +47,7 @@ class Authentication(APIView):
 
     @api_view(["POST"])
     @csrf_exempt
-    def register(self, request):
+    def register(request):
         if request.method == "POST":
             request.data["username"] = request.data.get("email")
             serializer = ParticipantSerializer(data=request.data)
@@ -113,12 +114,15 @@ class PlanViewSet(viewsets.ModelViewSet):
         if plan_serializer.is_valid():
             plan = plan_serializer.save(participant=self.request.user)
             plan_categories = []
-            for support_category in SupportCategory.objects.all():
+            # take an array representing the budgets, where each element is an array of (support_category_id, budget)
+            for support_category in request.data["support_categories"]:
                 plan_category_serializer = PlanCategorySerializer(
                     data={
                         "plan": plan_serializer.data["id"],
-                        "support_category": support_category.id,
-                        "budget": 0,
+                        "support_category": support_category[
+                            "support_category"
+                        ],
+                        "budget": support_category["budget"],
                     }
                 )
                 if plan_category_serializer.is_valid():
@@ -138,19 +142,46 @@ class PlanViewSet(viewsets.ModelViewSet):
             plan_serializer.errors, status=status.HTTP_400_BAD_REQUEST
         )
 
+    def partial_update(self, request, plan_id):
+        print(plan_id)
+        plan = get_object_or_404(self.queryset, pk=plan_id)
+        if plan.participant_id == request.user.id:
+            plan_serializer = self.serializer_class(
+                plan, data=request.data, partial=True
+            )
+            if plan_serializer.is_valid():
+                plan_categories = []
+                for plan_category_element in request.data["plan_categories"]:
+                    plan_category = get_object_or_404(
+                        PlanCategory.objects.all(),
+                        pk=plan_category_element["plan_category"],
+                    )
+                    plan_category_serializer = PlanCategorySerializer(
+                        plan_category, data=plan_category_element
+                    )
+                    if (
+                        plan_category.plan_id == plan_id
+                        and plan_category_serializer.is_valid()
+                    ):
+                        plan_categories.append(plan_category_serializer)
+                    else:
+                        return Response(
+                            plan_category_serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                for plan_category in plan_categories:
+                    plan_category.save()
+                plan_serializer.save()
+                return Response(
+                    plan_serializer.data, status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    plan_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
 
-class PlanCategoryViewSet(viewsets.ModelViewSet):
-    """
-    This viewset provides `list`, `create`, `retrieve`, and
-    `update` actions to manipulate the Plan Category model.
-    """
-
-    queryset = PlanCategory.objects.all()
-    serializer_class = PlanCategorySerializer
-    permission_classes = (IsAuthenticated,)
-
-    def destroy(self, request, pk=None):
-        pass
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class PlanItemViewSet(viewsets.ModelViewSet):
@@ -161,79 +192,87 @@ class PlanItemViewSet(viewsets.ModelViewSet):
 
     permission_classes = (IsAuthenticated,)
     serializer_class = PlanItemSerializer
+    queryset = PlanItem.objects.all()
 
-    def list(self, request, **kwargs):
-        queryset1 = PlanItem.objects.all()
-        queryset2 = PlanCategory.objects.all()
-        plan_id = request.query_params.get("plan-id")
-        pc_querysets_ids = [
-            o.id for o in queryset2 if o.plan().__eq__(plan_id)
-        ]
+    def is_plan_category_owner(self, request, plan_category):
 
-        if pc_querysets_ids is not None:
-            queryset1 = queryset1.filter(id__in=pc_querysets_ids)
-        if queryset1 is not None:
-            serializer = self.serializer_class(queryset1, many=True)
+        plan = get_object_or_404(Plan.objects.all(), pk=plan_category.plan_id)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return plan.participant_id == request.user.id
+
+    def is_plan_item_owner(self, request, plan_item):
+
+        plan_category = get_object_or_404(
+            PlanCategory.objects.all(), pk=plan_item.plan_category_id
+        )
+
+        return self.is_plan_category_owner(request, plan_category)
+
+    def list(self, request):
+        plan_category = get_object_or_404(
+            PlanCategory.objects.all(),
+            pk=request.query_params.get("plan-category"),
+        )
+        if self.is_plan_category_owner(request, plan_category):
+            queryset = self.queryset.filter(plan_category_id=plan_category.id)
+            serializer = self.serializer_class(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     def create(self, request, plan_category_id):
         # check if plan category and corresponding plan exists
-        try:
-            plan_category = PlanCategory.objects.get(pk=plan_category_id)
-            plan = Plan.objects.get(pk=plan_category.plan_id)
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        # check if plan belongs to user and the referenced plan category corresponds to the body
-        if plan.participant_id != request.user.id:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        # create plan
-        serializer = self.serializer_class(
-            data={**request.data, "plan_category": plan_category_id}
+        plan_category = get_object_or_404(
+            PlanCategory.objects.all(), pk=plan_category_id
         )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(self, request, plan_item_id):
-        try:
-            plan_item = PlanItem.objects.get(pk=plan_item_id)
-        except ObjectDoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if self.is_plan_category_owner(request, plan_category):
 
-        data = JSONParser().parse(request)
-        serializer = PlanItemSerializer(plan_item, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status.HTTP_200_OK)
-        return JsonResponse(serializer.errors, status=400)
+            # create plan item
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                support_item_group = get_object_or_404(
+                    SupportItemGroup.objects.all(),
+                    pk=request.data["support_item_group"],
+                )
+                serializer.save(
+                    plan_category=plan_category,
+                    support_item_group=support_item_group,
+                )
+                return Response(
+                    serializer.data, status=status.HTTP_201_CREATED
+                )
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
-    def destroy(self, request, plan_category_id=None):
-        if plan_category_id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        items = []
-        id_list = request.data.getlist("plan_item_id_list")
-        for plan_item_id in id_list:
-            item = PlanItem.objects.filter(pk=plan_item_id).first()
-            if (
-                item is not None
-            ):  # it means the id of the plan item does not exist
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            elif item[0].plan_category.id != plan_category_id:
-                # it means the id of the plan item does not belong to the target plan category
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            else:
-                items.append(item[0])
-        # only when all id are correct, the deleting operation will be executed.
-        for item in items:
-            if item.plan.participant_id == request.user.id:
-                item.delete()
-            else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
-        return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def partial_update(self, request, plan_item_id):
+        plan_item = get_object_or_404(self.queryset, pk=plan_item_id)
+        if self.is_plan_item_owner(request, plan_item):
+
+            serializer = self.serializer_class(
+                plan_item, data=request.data, partial=True
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status.HTTP_200_OK)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def destroy(self, request, plan_item_id):
+
+        plan_item = get_object_or_404(self.queryset, pk=plan_item_id)
+        if self.is_plan_item_owner(request, plan_item):
+            plan_item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):

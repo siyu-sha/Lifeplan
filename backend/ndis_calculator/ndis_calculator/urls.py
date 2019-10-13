@@ -29,15 +29,13 @@ from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
 
 plan_list = PlanViewSet.as_view({"get": "list", "post": "create"})
-plan_detail = PlanViewSet.as_view(
-    {"get": "retrieve", "put": "update", "patch": "partial_update"}
-)
+plan_detail = PlanViewSet.as_view({"patch": "partial_update"})
 
-plan_item_list = PlanItemViewSet.as_view(
-    {"get": "list", "post": "create", "delete": "destroy"}
-)
+plan_item_list = PlanItemViewSet.as_view({"get": "list", "post": "create"})
 # Temporary
-plan_item_update = PlanItemViewSet.as_view({"put": "update"})
+plan_item_detail = PlanItemViewSet.as_view(
+    {"patch": "partial_update", "delete": "destroy"}
+)
 
 support_group_list = SupportGroupViewSet.as_view({"get": "list"})
 
@@ -72,16 +70,16 @@ api_patterns = [
     ),
     # Plan
     path("plans", plan_list, name="plan_list"),
-    path("plans/<int:pk>", plan_detail, name="plan_detail"),
+    path("plans/<int:plan_id>", plan_detail, name="plan_detail"),
     path(
         "plan-categories/<int:plan_category_id>/plan-items",
         plan_item_list,
         name="plan_item_list",
     ),
     path(
-        "plan-categories/<int:plan_category_id>/plan-items/<int:plan_item_id>",
-        plan_item_update,
-        name="plan_item_update",
+        "plan-items/<int:plan_item_id>",
+        plan_item_detail,
+        name="plan_item_detail",
     ),
     # Support
     path("support-groups", support_group_list, name="support_group_list"),
