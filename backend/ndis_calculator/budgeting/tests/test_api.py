@@ -508,6 +508,3 @@ class PlanItemApiTests(APITestCase):
             price_actual=120.22,
         )
         self.assertEqual(len + 1, test.__len__())
-
-
-
