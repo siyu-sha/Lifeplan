@@ -72,8 +72,8 @@ MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 class FormPersonalDetails extends React.Component {
   state = {
     supportGroups: [],
-    postcode: "",
-    birthYear: "",
+    postcode: " ",
+    birthYear: " ",
     startDate: today,
     endDate: getYearFromToday(),
     planCategories: {},
