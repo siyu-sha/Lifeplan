@@ -61,12 +61,20 @@ class PlanSerializer(serializers.ModelSerializer):
 
 
 class PlanCategorySerializer(serializers.ModelSerializer):
+    plan = serializers.ReadOnlyField(source="plan.id")
+    support_category = serializers.ReadOnlyField(source="support_category.id")
+
     class Meta:
         model = PlanCategory
         fields = "__all__"
 
 
 class PlanItemSerializer(serializers.ModelSerializer):
+    plan_category = serializers.ReadOnlyField(source="plan_category.id")
+    support_item_group = serializers.ReadOnlyField(
+        source="support_item_group.id"
+    )
+
     class Meta:
         model = PlanItem
         fields = "__all__"
