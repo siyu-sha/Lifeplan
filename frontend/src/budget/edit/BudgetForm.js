@@ -238,12 +238,13 @@ class FormPersonalDetails extends React.Component {
   validate = () => {
     let errors = {};
 
-    if (this.state.postcode.toString().length !== 4) {
+    if (this.state.postcode == null || this.state.postcode.toString().length !== 4) {
       //this.log.console("postcode is not filled");
       errors.postcode = "Invalid Postcode";
     }
 
     if (
+      this.state.birthYear == null ||
       this.state.birthYear.toString().length !== 4 ||
       this.state.birthYear > today.getFullYear()
     ) {

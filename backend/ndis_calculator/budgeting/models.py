@@ -137,7 +137,10 @@ class RegistrationGroup(models.Model):
 
 class Plan(models.Model):
     participant = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL
+        settings.AUTH_USER_MODEL,
+        related_name="plans",
+        null=True,
+        on_delete=models.SET_NULL,
     )
 
     start_date = models.DateField()
