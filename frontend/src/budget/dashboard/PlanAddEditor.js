@@ -272,7 +272,7 @@ export default function PlanAddEditor(props) {
                   {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
                 </Select>
                 <FormHelperText>
-                  please select the frequency from the dropdown box
+                  Please select the frequency from the dropdown box
                 </FormHelperText>
               </FormControl>
             </Grid>
