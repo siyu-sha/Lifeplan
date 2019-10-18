@@ -11,6 +11,7 @@ import api from "../../api";
 import SupportItemSelector from "./SupportItemSelector";
 import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import connect from "react-redux/es/connect/connect";
+import { LocalStorageKeys } from "../../common/constants";
 
 const PLAN_CATEGORIES = "planCategories";
 
@@ -78,8 +79,8 @@ class BudgetDashBoard extends React.Component {
 
   // load plan categories, birthYear and postcode either from backend if logged in else from local storage
   loadState = () => {
-    if (this.props.currentUser) {
-      // todo: call backend
+    if (localStorage.getItem(LocalStorageKeys.ACCESS) != null) {
+      api.Plans.list().then(response => {console.log(response.data)});
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
       const cachedBirthYear = localStorage.getItem("birthYear");

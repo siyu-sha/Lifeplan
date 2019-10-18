@@ -112,29 +112,35 @@ class PlanViewSet(viewsets.ModelViewSet):
     def create(self, request):
         plan_serializer = self.serializer_class(data=request.data)
         if plan_serializer.is_valid():
+
             plan = plan_serializer.save(participant=self.request.user)
+
             plan_categories = []
+
             # take an array representing the budgets, where each element is an array of (support_category_id, budget)
-            for support_category in request.data["support_categories"]:
+            for support_category_dict in request.data["support_categories"]:
+                support_category = get_object_or_404(
+                    SupportCategory.objects.all(),
+                    pk=support_category_dict["support_category"],
+                )
+
                 plan_category_serializer = PlanCategorySerializer(
-                    data={
-                        "plan": plan_serializer.data["id"],
-                        "support_category": support_category[
-                            "support_category"
-                        ],
-                        "budget": support_category["budget"],
-                    }
+                    data={"budget": support_category_dict["budget"]}
                 )
                 if plan_category_serializer.is_valid():
-                    plan_categories.append(plan_category_serializer)
+                    plan_category = plan_category_serializer.save(
+                        plan=plan, support_category=support_category
+                    )
+                    plan_categories.append(plan_category)
+
                 else:
+                    for plan_category in plan_categories:
+                        plan_category.delete()
                     plan.delete()
                     return Response(
                         plan_category_serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-            for plan_category in plan_categories:
-                plan_category.save()
             return Response(
                 plan_serializer.data, status=status.HTTP_201_CREATED
             )
@@ -143,6 +149,7 @@ class PlanViewSet(viewsets.ModelViewSet):
         )
 
     def partial_update(self, request, plan_id):
+
         print(plan_id)
         plan = get_object_or_404(self.queryset, pk=plan_id)
         if plan.participant_id == request.user.id:

@@ -109,7 +109,7 @@ export default function SupportItemSelector(props) {
     if (supportCategory.id === 3) {
       // load all categories under core supports
       let items = [];
-      for (var i = 3; i < 7; i++) {
+      for (let i = 3; i < 7; i++) {
         api.SupportItemGroups.get({
           birthYear: birthYear,
           postcode: postcode,
@@ -120,7 +120,7 @@ export default function SupportItemSelector(props) {
             supportItem.label = supportItem.name;
             return supportItem;
           });
-          items = items.concat(newItems);
+          items.concat(newItems);
           setSupportItems(items);
           setSearchResults(items);
         });

@@ -49,23 +49,21 @@ class ParticipantSerializer(serializers.ModelSerializer):
         return user
 
 
-class PlanSerializer(serializers.ModelSerializer):
-    participant = serializers.ReadOnlyField(source="participant.id")
-    plan_categories = serializers.PrimaryKeyRelatedField(
-        many=True, read_only=True
-    )
-
-    class Meta:
-        model = Plan
-        fields = "__all__"
-
-
 class PlanCategorySerializer(serializers.ModelSerializer):
     plan = serializers.ReadOnlyField(source="plan.id")
     support_category = serializers.ReadOnlyField(source="support_category.id")
 
     class Meta:
         model = PlanCategory
+        fields = "__all__"
+
+
+class PlanSerializer(serializers.ModelSerializer):
+    participant = serializers.ReadOnlyField(source="participant.id")
+    plan_categories = PlanCategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Plan
         fields = "__all__"
 
 

@@ -12,10 +12,15 @@ import ValidatedTextField from "../../common/ValidatedTextField";
 import MomentUtils from "@date-io/moment";
 import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import { ChevronLeft, ChevronRight } from "@material-ui/icons";
-import Api from "../../api";
+import api from "../../api";
 import Button from "@material-ui/core/Button/index";
 import _ from "lodash";
 import connect from "react-redux/es/connect/connect";
+import {LocalStorageKeys} from "../../common/constants";
+
+function dateToString(date) {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
 
 const styles = {
   paper: {
@@ -74,15 +79,16 @@ class FormPersonalDetails extends React.Component {
     supportGroups: [],
     postcode: "",
     birthYear: "",
-    startDate: today,
-    endDate: getYearFromToday(),
+    startDate: null,
+    endDate: null,
     planCategories: {},
     showErrors: false,
     errors: {}
   };
 
   componentDidMount() {
-    Api.SupportGroups.all()
+
+    api.SupportGroups.all()
       .then(response => {
         this.loadState(response.data);
       })
@@ -99,17 +105,54 @@ class FormPersonalDetails extends React.Component {
     }
   }
 
-  loadState = supportGroups => {
+  loadState = async supportGroups => {
+
     this.setState({ supportGroups: [...supportGroups] });
     let planCategories = {};
     let birthYear;
     let postcode;
-    if (this.props.currentUser) {
-      // todo: call backend
+    let startDate;
+    let endDate;
+    const access = localStorage.getItem(LocalStorageKeys.ACCESS);
+    if (access != null) {
+      console.log("logged in");
+      await api.Participants.currentUser().then(response => {
+        birthYear = response.data.birthYear;
+        postcode = response.data.postcode;
+      });
+      await api.Plans.list().then(response => {
+        // TODO: handle new plan
+        if (response.data.length === 0) {
+          this.setState({saveMode: "POST"});
+          _.map(supportGroups, supportGroup => {
+            _.map(supportGroup.supportCategories, supportCategory => {
+              planCategories[supportCategory.id] = {
+                budget: 0
+              };
+            });
+          });
+          startDate = today;
+          endDate = getYearFromToday();
+        }
+        else {
+          const plan = response.data[0];
+          console.log(plan);
+          startDate = new Date(plan.startDate);
+          endDate = new Date(plan.endDate);
+          _.map(plan.planCategories, planCategory => {
+            planCategories[planCategory.supportCategory] = {
+              ...planCategory
+            }
+          });
+        }
+
+      });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
       const cachedBirthYear = localStorage.getItem("birthYear");
       const cachedPostcode = localStorage.getItem("postcode");
+      const cachedStartDate = localStorage.getItem("startdate");
+      const cachedEndDate = localStorage.getItem("endDate");
       if (cachedPlanCategories == null) {
         _.map(supportGroups, supportGroup => {
           _.map(supportGroup.supportCategories, supportCategory => {
@@ -124,13 +167,17 @@ class FormPersonalDetails extends React.Component {
       }
       birthYear = cachedBirthYear ? parseInt(cachedBirthYear) : "";
       postcode = cachedPostcode ? parseInt(cachedPostcode) : "";
+      startDate = cachedStartDate ? new Date(cachedStartDate) : today;
+      endDate = cachedEndDate ? new Date(cachedEndDate) : getYearFromToday();
     }
 
     this.setState(
       {
         planCategories,
         birthYear,
-        postcode
+        postcode,
+        startDate,
+        endDate
       },
       () => {
         console.log(this.state.planCategories);
@@ -217,19 +264,40 @@ class FormPersonalDetails extends React.Component {
 
   handleNext = () => {
     const errors = this.validate();
+    console.log(this.props.currentUser);
     if (Object.keys(errors).length === 0) {
-      if (this.props.currentUser) {
-        // todo: submit plan
-      } else {
+      if (this.props.currentUser != null) {
+        const body = {
+          startDate: dateToString(this.state.startDate),
+          endDate: dateToString(this.state.endDate)
+        };
+        const categories =
+        _.map(this.state.planCategories, (planCategory, supportCategory) => {
+          return {
+            supportCategory: supportCategory,
+            budget: planCategory.budget
+          }
+        });
+        if (this.state.saveMode === "POST") {
+          body.supportCategories = categories;
+          console.log(body);
+
+          api.Plans.create(body).then(response => {console.log(response.data)});
+        }
+      }
+      else {
         localStorage.setItem("postcode", this.state.postcode);
         localStorage.setItem("birthYear", this.state.birthYear);
+        localStorage.setItem("startDate", this.state.startDate);
+        localStorage.setItem("endDate", this.state.endDate);
         localStorage.setItem(
           PLAN_CATEGORIES,
           JSON.stringify(this.state.planCategories)
         );
-        this.props.history.push("/budget/dashboard");
       }
+      // this.props.history.push("/budget/dashboard");
     } else {
+      console.log("error");
       this.setState({ errors: errors });
       this.setState({ showErrors: true });
     }
