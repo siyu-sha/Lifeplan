@@ -161,7 +161,7 @@ class PlanViewSet(viewsets.ModelViewSet):
                 for plan_category_element in request.data["plan_categories"]:
                     plan_category = get_object_or_404(
                         PlanCategory.objects.all(),
-                        pk=plan_category_element["plan_category"],
+                        pk=plan_category_element["id"],
                     )
                     plan_category_serializer = PlanCategorySerializer(
                         plan_category, data=plan_category_element

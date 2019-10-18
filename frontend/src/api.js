@@ -113,8 +113,8 @@ const Plans = {
   create: ({startDate, endDate, supportCategories}) => {
     return axios.post("/plans", {startDate, endDate, supportCategories});
   },
-  update: ({startDate, endDate, planCategories}) => {
-    return axios.patch("/plans", {startDate, endDate, planCategories});
+  update: (planId, {startDate, endDate, planCategories}) => {
+    return axios.patch(`/plans/${planId}`, {startDate, endDate, planCategories});
   },
 };
 

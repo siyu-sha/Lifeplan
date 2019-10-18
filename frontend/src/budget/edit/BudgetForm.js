@@ -83,7 +83,8 @@ class FormPersonalDetails extends React.Component {
     endDate: null,
     planCategories: {},
     showErrors: false,
-    errors: {}
+    errors: {},
+    planId:null
   };
 
   componentDidMount() {
@@ -123,7 +124,6 @@ class FormPersonalDetails extends React.Component {
       await api.Plans.list().then(response => {
         // TODO: handle new plan
         if (response.data.length === 0) {
-          this.setState({saveMode: "POST"});
           _.map(supportGroups, supportGroup => {
             _.map(supportGroup.supportCategories, supportCategory => {
               planCategories[supportCategory.id] = {
@@ -136,6 +136,7 @@ class FormPersonalDetails extends React.Component {
         }
         else {
           const plan = response.data[0];
+          this.setState({planId: plan.id}, () => console.log(this.state.planId));
           console.log(plan);
           startDate = new Date(plan.startDate);
           endDate = new Date(plan.endDate);
@@ -274,16 +275,21 @@ class FormPersonalDetails extends React.Component {
         const categories =
         _.map(this.state.planCategories, (planCategory, supportCategory) => {
           return {
+            ...planCategory,
             supportCategory: supportCategory,
             budget: planCategory.budget
           }
         });
-        if (this.state.saveMode === "POST") {
+        if (this.state.planId == null) {
           body.supportCategories = categories;
           console.log(body);
-
           api.Plans.create(body).then(response => {console.log(response.data)});
         }
+        else {
+          body.planCategories = categories;
+          api.Plans.update(this.state.planId, body);
+        }
+        console.log(body);
       }
       else {
         localStorage.setItem("postcode", this.state.postcode);
