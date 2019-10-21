@@ -234,17 +234,36 @@ export default function SupportItemSelector(props) {
   }
 
   function handleItemUpdate(planItem, values) {
-    setPlanItems(
-      planCategory.planItems.map((item, index) => {
-        if (planItem === item) {
-          return {
-            ...item,
-            ...values
-          };
-        }
-        return item;
+
+    if (currentUser) {
+      api.PlanItems.update(planItem.id, values).then(() => {
+        setPlanItems(
+          planCategory.planItems.map((item, index) => {
+            if (planItem === item) {
+              return {
+                ...item,
+                ...values
+              };
+            }
+            return item;
+          })
+        );
       })
-    );
+    }
+    else {
+      setPlanItems(
+        planCategory.planItems.map((item, index) => {
+          if (planItem === item) {
+            return {
+              ...item,
+              ...values
+            };
+          }
+          return item;
+        })
+      );
+    }
+
   }
 
   function handleChangeUnitPrice(event, planItem) {
@@ -282,7 +301,6 @@ export default function SupportItemSelector(props) {
       supportItem = _.find(supportItems, supportItem => {
         return supportItem.id === planItem.supportItemGroup;
       });
-      console.log(supportItem);
     } else if (page === 1) {
       supportItem = _.find(supportItems, supportItem => {
         return supportItem.id === planItem.id;
@@ -329,8 +347,7 @@ export default function SupportItemSelector(props) {
   }
 
   function renderSupportItemList(list) {
-    console.log(list);
-    var halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
+    let halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
 
     return list.length === 0 ? (
       <div> Press Add New to add a support </div>

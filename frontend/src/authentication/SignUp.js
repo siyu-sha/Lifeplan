@@ -114,7 +114,7 @@ class SignUp extends React.Component {
         localStorage.setItem(LocalStorageKeys.REFRESH, token.refresh);
         this.props.history.replace("/");
         Api.Participants.currentUser()
-          .then((response) => {console.log(response);this.props.loadUser(response.data)})
+          .then((response) => {this.props.loadUser(response.data)})
       })
       .catch(err => {
         this.setState({ submittedSuccess: false });

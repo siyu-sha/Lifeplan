@@ -24,7 +24,6 @@ function mapStateToProps(state) {
 function calculateAllocated(planItems) {
   let allocated = 0;
   _.forEach(planItems, planItem => {
-    console.log(planItem);
     const { quantity, priceActual, frequencyPerYear } = planItem;
     if (quantity && priceActual && frequencyPerYear) {
       allocated +=
@@ -47,7 +46,6 @@ class BudgetDashBoard extends React.Component {
 
   async componentDidMount() {
     // call backend to load all plan groups and corresponding categories
-    let personalData;
     api.SupportGroups.all()
       .then(response => {
         this.setState({ supportGroups: [...response.data] }, this.loadState);
@@ -65,7 +63,6 @@ class BudgetDashBoard extends React.Component {
       this.props.currentUser == null &&
       this.state.planCategories !== prevState.planCategories
     ) {
-      console.log(this.state.planCategories);
       localStorage.setItem(
         PLAN_CATEGORIES,
         JSON.stringify(this.state.planCategories)
@@ -91,12 +88,10 @@ class BudgetDashBoard extends React.Component {
         }
         else {
           const plan = response.data[0];
-          this.setState({planId: plan.id}, () => console.log(this.state.planId));
-          console.log(plan);
+          this.setState({planId: plan.id});
           await Promise.all(
             _.map(plan.planCategories, async planCategory => {
               const response = await api.PlanItems.list(planCategory.id);
-              console.log(response.data);
               planCategories[planCategory.supportCategory] = {
                 ...planCategory,
                 planItems:response.data
@@ -106,7 +101,6 @@ class BudgetDashBoard extends React.Component {
 
         }
       });
-      console.log(planCategories);
       this.setState({
         planCategories,
         birthYear,
@@ -148,7 +142,6 @@ class BudgetDashBoard extends React.Component {
   };
 
   handleOpenSupports = supportCategoryId => {
-    console.log(supportCategoryId);
     this.setState({ activeCategory: supportCategoryId }, () => {
       this.setState({ openSupports: true });
     });
@@ -175,11 +168,9 @@ class BudgetDashBoard extends React.Component {
 
   calculateCoreAllocated = () => {
     let allocated = 0;
-    console.log(this.state.supportGroups);
     let core = this.state.supportGroups.find(obj => {
       return obj.name === "Core";
     });
-    console.log(core);
     _.forEach(core.supportCategories, supportCategory => {
       const planCategory = this.state.planCategories[supportCategory.id];
       allocated += calculateAllocated(planCategory.planItems);
@@ -193,13 +184,11 @@ class BudgetDashBoard extends React.Component {
     _.map(this.state.planCategories, planCategory => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
-        console.log(total);
 
         allocated += calculateAllocated(planCategory.planItems);
       }
     });
     const available = total - allocated;
-    console.log(total);
     return (
       <Card>
         <CardHeader title="Budget Summary" />
@@ -236,7 +225,6 @@ class BudgetDashBoard extends React.Component {
   };
 
   renderPlanCategories = () => {
-    console.log(this.state.supportGroups);
     return _.map(this.state.supportGroups, supportGroup => {
       if (supportGroup.id === 1) {
         let coreBudget = 0;
@@ -244,9 +232,6 @@ class BudgetDashBoard extends React.Component {
           const planCategory = this.state.planCategories[supportCategory.id];
           coreBudget += planCategory.budget;
         });
-        let core = supportGroup.supportCategories[1];
-        console.log(supportGroup.supportCategories);
-        console.log(core);
         if (coreBudget > 0) {
           return (
             <BudgetCategorySection

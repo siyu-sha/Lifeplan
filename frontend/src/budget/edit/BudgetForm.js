@@ -116,7 +116,6 @@ class FormPersonalDetails extends React.Component {
     let endDate;
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
-      console.log("logged in");
       await api.Participants.currentUser().then(response => {
         birthYear = response.data.birthYear;
         postcode = response.data.postcode;
@@ -136,8 +135,7 @@ class FormPersonalDetails extends React.Component {
         }
         else {
           const plan = response.data[0];
-          this.setState({planId: plan.id}, () => console.log(this.state.planId));
-          console.log(plan);
+          this.setState({planId: plan.id});
           startDate = new Date(plan.startDate);
           endDate = new Date(plan.endDate);
           _.map(plan.planCategories, planCategory => {
@@ -179,9 +177,6 @@ class FormPersonalDetails extends React.Component {
         postcode,
         startDate,
         endDate
-      },
-      () => {
-        console.log(this.state.planCategories);
       }
     );
   };
@@ -265,7 +260,6 @@ class FormPersonalDetails extends React.Component {
 
   handleNext = () => {
     const errors = this.validate();
-    console.log(this.props.currentUser);
     if (Object.keys(errors).length === 0) {
       if (this.props.currentUser != null) {
         const body = {
@@ -282,7 +276,6 @@ class FormPersonalDetails extends React.Component {
         });
         if (this.state.planId == null) {
           body.supportCategories = categories;
-          console.log(body);
           api.Plans.create(body).then(() => {
             this.props.history.push("/budget/dashboard");
           });
@@ -293,7 +286,6 @@ class FormPersonalDetails extends React.Component {
             this.props.history.push("/budget/dashboard");
           });
         }
-        console.log(body);
       }
       else {
         localStorage.setItem("postcode", this.state.postcode);

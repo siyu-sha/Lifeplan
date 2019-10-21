@@ -46,7 +46,6 @@ const useStyles = makeStyles(theme => ({
 export default function PlanItemEditor(props) {
   const { editedItem } = props;
   const { editedPlanItem } = props;
-  //const theme = useTheme();
   const classes = useStyles();
 
   let quantityRegex = new RegExp(/^$|^[1-9]\d*$/);
@@ -112,19 +111,6 @@ export default function PlanItemEditor(props) {
     }
     return frequencyEnum;
   }
-
-  // function initialiseValues(name, frequency, quantity, price) {
-  //   if (price === null) {
-  //     price = "";
-  //   }
-  //   setValues({
-  //     ...values,
-  //     name: name,
-  //     frequencyPerYear: frequency,
-  //     quantity: quantity,
-  //     priceActual: price
-  //   });
-  // }
 
   function initialiseValues(supportItem, planItem) {
     let frequency;
@@ -222,11 +208,6 @@ export default function PlanItemEditor(props) {
       <Typography>Total: $0</Typography>
     );
   }
-  // let uninitialised = true;
-  // if( uninitialised){
-  //   initialiseValues(editedItem,editedPlanItem);
-  //   uninitialised = false;
-  // }
   const { name, frequency, quantity, price } = initialiseValues(
     editedItem,
     editedPlanItem
@@ -241,8 +222,6 @@ export default function PlanItemEditor(props) {
   const supportItemName = "name";
   const itemPrice = "priceActual";
   const itemQuantity = "quantity";
-  //const quantity = "quantity";
-  //console.log(editedItem);
   const enumResult = unitEnumeration(editedItem.unit);
   const unitEnum = enumResult.units;
   const unitTime = enumResult.unitTime;
@@ -253,9 +232,6 @@ export default function PlanItemEditor(props) {
     values.frequencyPerYear *
     values.quantity
   ).toFixed(2);
-  //console.log(editedItem);
-  //console.log(frequency);
-  //console.log("the enum is " + unitEnum);
 
   return (
     <main>
@@ -316,7 +292,6 @@ export default function PlanItemEditor(props) {
                   autoFocus
                   defaultValue={values.quantity}
                   onChange={e => handleChange(e)}
-                  //endAdornment={<InputAdornment position="end">per {frequencyUsage}</InputAdornment>}
                 ></Input>
               </FormControl>
             </Grid>
