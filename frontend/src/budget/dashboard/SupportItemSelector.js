@@ -234,7 +234,7 @@ export default function SupportItemSelector(props) {
         if (planItem === item) {
           return {
             ...item,
-            price_actual: event.target.value
+            priceActual: event.target.value
           };
         }
         return item;

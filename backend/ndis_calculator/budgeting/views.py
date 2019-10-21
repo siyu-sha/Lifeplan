@@ -215,10 +215,9 @@ class PlanItemViewSet(viewsets.ModelViewSet):
 
         return self.is_plan_category_owner(request, plan_category)
 
-    def list(self, request):
+    def list(self, request, plan_category_id):
         plan_category = get_object_or_404(
-            PlanCategory.objects.all(),
-            pk=request.query_params.get("plan-category"),
+            PlanCategory.objects.all(), pk=plan_category_id
         )
         if self.is_plan_category_owner(request, plan_category):
             queryset = self.queryset.filter(plan_category_id=plan_category.id)

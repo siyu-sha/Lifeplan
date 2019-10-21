@@ -181,3 +181,4 @@ class PlanItem(models.Model):
     )
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)
+    frequency_per_year = models.IntegerField()

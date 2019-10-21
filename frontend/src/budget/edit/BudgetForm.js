@@ -121,8 +121,8 @@ class FormPersonalDetails extends React.Component {
         birthYear = response.data.birthYear;
         postcode = response.data.postcode;
       });
+      // TODO: refactor into reusable function
       await api.Plans.list().then(response => {
-        // TODO: handle new plan
         if (response.data.length === 0) {
           _.map(supportGroups, supportGroup => {
             _.map(supportGroup.supportCategories, supportCategory => {
@@ -283,11 +283,15 @@ class FormPersonalDetails extends React.Component {
         if (this.state.planId == null) {
           body.supportCategories = categories;
           console.log(body);
-          api.Plans.create(body).then(response => {console.log(response.data)});
+          api.Plans.create(body).then(() => {
+            this.props.history.push("/budget/dashboard");
+          });
         }
         else {
           body.planCategories = categories;
-          api.Plans.update(this.state.planId, body);
+          api.Plans.update(this.state.planId, body).then(() => {
+            this.props.history.push("/budget/dashboard");
+          });
         }
         console.log(body);
       }
@@ -301,7 +305,6 @@ class FormPersonalDetails extends React.Component {
           JSON.stringify(this.state.planCategories)
         );
       }
-      // this.props.history.push("/budget/dashboard");
     } else {
       console.log("error");
       this.setState({ errors: errors });

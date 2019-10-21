@@ -24,10 +24,11 @@ function mapStateToProps(state) {
 function calculateAllocated(planItems) {
   let allocated = 0;
   _.forEach(planItems, planItem => {
-    const { quantity, price_actual, frequency_per_year } = planItem;
-    if (quantity && price_actual && frequency_per_year) {
+    console.log(planItem);
+    const { quantity, priceActual, frequencyPerYear } = planItem;
+    if (quantity && priceActual && frequencyPerYear) {
       allocated +=
-        planItem.quantity * planItem.price_actual * planItem.frequency_per_year;
+        planItem.quantity * planItem.priceActual * planItem.frequencyPerYear;
     }
   });
   return allocated;
@@ -40,11 +41,13 @@ class BudgetDashBoard extends React.Component {
     openSupports: false,
     activeCategory: null,
     birthYear: 1990,
-    postcode: 3000
+    postcode: 3000,
+    planId: null
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     // call backend to load all plan groups and corresponding categories
+    let personalData;
     api.SupportGroups.all()
       .then(response => {
         this.setState({ supportGroups: [...response.data] }, this.loadState);
@@ -53,15 +56,8 @@ class BudgetDashBoard extends React.Component {
         console.log(error);
       });
 
-    const personalData = this.props.currentUser
-      ? this.props.currentUser
-      : {
-          birthYear: localStorage.getItem("birthYear"),
-          postcode: localStorage.getItem("postcode")
-        };
-    this.setState({
-      ...personalData
-    });
+
+
   }
 
   componentDidUpdate(prevProps, prevState, snapShot) {
@@ -78,9 +74,44 @@ class BudgetDashBoard extends React.Component {
   }
 
   // load plan categories, birthYear and postcode either from backend if logged in else from local storage
-  loadState = () => {
+  loadState = async () => {
+    let planCategories = {};
+    let birthYear = null;
+    let postcode = null;
     if (localStorage.getItem(LocalStorageKeys.ACCESS) != null) {
-      api.Plans.list().then(response => {console.log(response.data)});
+      await api.Participants.currentUser().then(response => {
+        birthYear = response.data.birthYear;
+        postcode = response.data.postcode;
+      });
+      await api.Plans.list().then(async response => {
+        // TODO: handle new plan
+        if (response.data.length === 0) {
+          // TODO: redirect to edit
+
+        }
+        else {
+          const plan = response.data[0];
+          this.setState({planId: plan.id}, () => console.log(this.state.planId));
+          console.log(plan);
+          await Promise.all(
+            _.map(plan.planCategories, async planCategory => {
+              const response = await api.PlanItems.list(planCategory.id);
+              console.log(response.data);
+              planCategories[planCategory.supportCategory] = {
+                ...planCategory,
+                planItems:response.data
+              }
+            })
+          )
+
+        }
+      });
+      console.log(planCategories);
+      this.setState({
+        planCategories,
+        birthYear,
+        postcode
+      });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
       const cachedBirthYear = localStorage.getItem("birthYear");
@@ -90,9 +121,9 @@ class BudgetDashBoard extends React.Component {
         cachedBirthYear != null &&
         cachedPlanCategories != null
       ) {
-        const planCategories = JSON.parse(cachedPlanCategories);
-        const birthYear = parseInt(cachedBirthYear);
-        const postcode = parseInt(cachedPostcode);
+        planCategories = JSON.parse(cachedPlanCategories);
+        birthYear = parseInt(cachedBirthYear);
+        postcode = parseInt(cachedPostcode);
         this.setState({
           planCategories,
           birthYear,
@@ -161,11 +192,14 @@ class BudgetDashBoard extends React.Component {
     let allocated = 0;
     _.map(this.state.planCategories, planCategory => {
       if (planCategory.budget !== 0) {
-        total += planCategory.budget;
+        total += parseFloat(planCategory.budget);
+        console.log(total);
+
         allocated += calculateAllocated(planCategory.planItems);
       }
     });
     const available = total - allocated;
+    console.log(total);
     return (
       <Card>
         <CardHeader title="Budget Summary" />
@@ -213,25 +247,31 @@ class BudgetDashBoard extends React.Component {
         let core = supportGroup.supportCategories[1];
         console.log(supportGroup.supportCategories);
         console.log(core);
-        return (
-          <BudgetCategorySection
-            sectionName={supportGroup.name}
-            key={supportGroup.id}
-          >
-            <Grid key={"1"} item xs={12} sm={6} md={4} lg={3}>
-              <BudgetCategoryCard
-                {...{
-                  category: "Core supports",
-                  total: coreBudget,
-                  allocated: this.calculateCoreAllocated(),
-                  totalColor: LIGHT_BLUE,
-                  allocatedColor: DARK_BLUE
-                }}
-                openSupports={() => this.handleOpenSupports(3)}
-              />
-            </Grid>
-          </BudgetCategorySection>
-        );
+        if (coreBudget > 0) {
+          return (
+            <BudgetCategorySection
+              sectionName={supportGroup.name}
+              key={supportGroup.id}
+            >
+              <Grid key={"1"} item xs={12} sm={6} md={4} lg={3}>
+                <BudgetCategoryCard
+                  {...{
+                    category: "Core supports",
+                    total: coreBudget,
+                    allocated: this.calculateCoreAllocated(),
+                    totalColor: LIGHT_BLUE,
+                    allocatedColor: DARK_BLUE
+                  }}
+                  openSupports={() => this.handleOpenSupports(3)}
+                />
+              </Grid>
+            </BudgetCategorySection>
+          );
+        }
+        else {
+          return
+        }
+
       }
 
       let renderedPlanCategories = [];
@@ -264,7 +304,7 @@ class BudgetDashBoard extends React.Component {
                     <BudgetCategoryCard
                       {...{
                         category: supportCategory.name,
-                        total: planCategory.budget,
+                        total: parseFloat(planCategory.budget),
                         allocated: calculateAllocated(planCategory.planItems),
                         totalColor: LIGHT_BLUE,
                         allocatedColor: DARK_BLUE

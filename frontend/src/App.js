@@ -36,6 +36,11 @@ const mapDispatchToProps = dispatch => ({
 });
 
 
+async function fetchUser(loadUser) {
+  const response =  await api.Participants.currentUser();
+  loadUser(response.data);
+}
+
 function App(props) {
   useEffect(() => {
     // redirect if 401
@@ -44,12 +49,8 @@ function App(props) {
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
       api.setAccess(access);
-      const  fetchUser = async () =>  {
-        const response =  await api.Participants.currentUser();
-        props.loadUser(response.data);
-      };
 
-      fetchUser();
+      fetchUser(props.loadUser);
 
       // await api.Participants.currentUser().then(response => {
       //   props.loadUser(response.data);
