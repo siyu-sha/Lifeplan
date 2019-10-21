@@ -482,11 +482,10 @@ export default function SupportItemSelector(props) {
       >
         <DialogTitle className={classes.dialogTitle}>
           <Grid container justify="space-between">
-            <div>
-              {supportCategory.id === 3 ? "Core" : supportCategory.name}{" "}
-              supports{" "}
-            </div>
-            {page !== 2 && matchesMd && (
+
+            <div>{supportCategory.name} supports </div>
+            {page !== 1 && page !== 2 && page !== 3 && matchesMd && (
+
               <Button
                 variant="contained"
                 onClick={goToSupportSelection}

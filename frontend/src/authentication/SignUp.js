@@ -13,8 +13,8 @@ import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Api from "../api";
 import AlertMessage from "../common/AlertMessage";
-import {LocalStorageKeys} from "../common/constants";
-import {loadUser} from "../redux/reducers/auth";
+import { LocalStorageKeys } from "../common/constants";
+import { loadUser } from "../redux/reducers/auth";
 import connect from "react-redux/es/connect/connect";
 
 const mapStateToProps = state => {
@@ -22,7 +22,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  loadUser: (user) => {
+  loadUser: user => {
     dispatch(loadUser(user));
   }
 });
@@ -32,7 +32,7 @@ const styles = theme => ({
     width: "auto",
     display: "block",
     marginLeft: theme.spacing(3),
-    marginRight: theme.spacing (3),
+    marginRight: theme.spacing(3),
     [theme.breakpoints.up(400 + theme.spacing(3 * 2))]: {
       width: 400,
       marginLeft: "auto",
@@ -44,8 +44,7 @@ const styles = theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme
-      .spacing(3)}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px ${theme.spacing(3)}px`
   },
   avatar: {
     margin: theme.spacing(1),
@@ -92,7 +91,14 @@ class SignUp extends React.Component {
 
     event.preventDefault();
 
-    const { email, password, firstName, lastName, postcode, birthYear } = this.state;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      postcode,
+      birthYear
+    } = this.state;
 
     //console.log("I was triggered" + email + password + accept + "test");
 
@@ -115,17 +121,23 @@ class SignUp extends React.Component {
         this.props.history.replace("/");
         Api.Participants.currentUser()
           .then((response) => {this.props.loadUser(response.data)})
+
       })
       .catch(err => {
         this.setState({ submittedSuccess: false });
-        const keys = Object.keys(err.response.data);
+        if (err.response != null) {
+          let keys = Object.keys(err.response.data);
+          let receivedMessage = err.response.data[keys[0]].toString();
+          console.log(receivedMessage);
 
-        for (let key of keys) {
-          errors.push(err.response.data[key].toString());
+          this.setState({
+            alertMessage: receivedMessage
+          });
+        } else {
+          this.setState({
+            alertMessage: "Sign up failed. Server failures have occured."
+          });
         }
-        this.setState({
-          alertMessage: errors[0]
-        });
       });
 
     // send email and password
@@ -255,5 +267,7 @@ class SignUp extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SignUp));
-
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(SignUp));

@@ -20,6 +20,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -202,7 +203,7 @@ export default function PlanAddEditor(props) {
         (s) X {values.frequencyPerYear} {frequencyUnit}(s) = ${totalPrice}
       </Typography>
     ) : (
-      <Typography>Total: $0</Typography>
+      <Typography variant="button">Total: $0</Typography>
     );
   }
 
@@ -258,6 +259,7 @@ export default function PlanAddEditor(props) {
                 </InputLabel>
                 <Select
                   value={values.frequencyPerYear}
+                  autoWidth
                   onChange={e => handleChange(e)}
                   inputProps={{
                     name: usageFrequency,
@@ -269,11 +271,14 @@ export default function PlanAddEditor(props) {
                   {unitEnum >= 3 && <MenuItem value={12}>monthly</MenuItem>}
                   {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
                 </Select>
+                <FormHelperText>
+                  Please select the frequency from the dropdown box
+                </FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Typography cvariant={"body1"} align={"left"}>
-                How many {unitTime} do you this use per {frequencyUsage}?
+                How many {unitTime} do you use this per {frequencyUsage}?
               </Typography>
               <FormControl margin={"normal"} required>
                 <InputLabel htmlFor={itemQuantity}>{unitTime}</InputLabel>
@@ -307,8 +312,10 @@ export default function PlanAddEditor(props) {
                 ></Input>
               </FormControl>
             </Grid>
+            <Grid item xs={12}>
+              {displayTotalCost(totalCost, frequencyUsage, unit)}
+            </Grid>
           </Grid>
-          {displayTotalCost(totalCost, frequencyUsage, unit)}
         </form>
       </DialogContent>
       <DialogActions>
