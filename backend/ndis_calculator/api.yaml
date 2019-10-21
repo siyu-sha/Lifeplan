@@ -226,7 +226,7 @@ paths:
           schema:
             type: integer
           required: true
-        - name: support-group-id
+        - name: support-category-id
           in: query
           schema:
             type: integer

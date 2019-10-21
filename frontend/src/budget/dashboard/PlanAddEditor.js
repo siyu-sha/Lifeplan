@@ -55,8 +55,8 @@ export default function PlanAddEditor(props) {
     props.redirectSelectionPage();
   }
 
-  function onClickSave(values, supportItemId) {
-    const planItem = createNewPlanItem(values, supportItemId);
+  function onClickSave(values, supportItemGroup) {
+    const planItem = createNewPlanItem(values, supportItemGroup);
     props.save(planItem);
     props.redirectSupports();
   }
@@ -76,9 +76,9 @@ export default function PlanAddEditor(props) {
     }
   }
 
-  function createNewPlanItem(values, supportItemId) {
+  function createNewPlanItem(values, supportItemGroup) {
     const planItem = {
-      supportItemId: supportItemId,
+      supportItemGroup: supportItemGroup,
       ...values
     };
     return planItem;

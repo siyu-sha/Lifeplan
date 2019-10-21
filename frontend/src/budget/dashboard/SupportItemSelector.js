@@ -20,6 +20,8 @@ import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
 import PlanItemEditor from "./PlanItemEditor";
 import PlanAddEditor from "./PlanAddEditor";
+import { useSelector } from "react-redux";
+
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -102,6 +104,8 @@ export default function SupportItemSelector(props) {
   const [editedItem, setEditedItem] = useState(0);
   const [editedPlanItem, setEditedPlanItem] = useState(0);
 
+  const currentUser = useSelector(state => state.auth.currentUser);
+
   const classes = useStyles();
 
   // api call to load support items
@@ -137,17 +141,14 @@ export default function SupportItemSelector(props) {
           supportItem.label = supportItem.name;
           return supportItem;
         });
+        
         setSupportItems(items);
         setSearchResults(items);
       });
     }
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
-  // load plan items from backend (logged in) or local storage
-  useEffect(() => {}, [supportCategory]);
 
-  // save plan items (not logged in) into local storage
-  useEffect(() => {});
 
   function goToSupportsList() {
     setPage(0);
@@ -209,7 +210,16 @@ export default function SupportItemSelector(props) {
   }
 
   function handleDelete(planItem) {
-    setPlanItems(_.difference(planCategory.planItems, [planItem]));
+    if (currentUser) {
+      api.PlanItems.delete(planItem.id).then(() => {
+        setPlanItems(_.difference(planCategory.planItems, [planItem]));
+
+      })
+    }
+    else {
+      setPlanItems(_.difference(planCategory.planItems, [planItem]));
+
+    }
 
     //saveToLocalStorage(planCategory.planItems);
   }
@@ -257,12 +267,15 @@ export default function SupportItemSelector(props) {
   }
 
   function renderPlanItem(planItem, index) {
+    console.log(planItem);
+    console.log(supportItems);
     let supportItem;
 
     if (page === 0) {
       supportItem = _.find(supportItems, supportItem => {
-        return supportItem.id === planItem.supportItemId;
+        return supportItem.id === planItem.supportItemGroup;
       });
+      console.log(supportItem);
     } else if (page === 1) {
       supportItem = _.find(supportItems, supportItem => {
         return supportItem.id === planItem.id;
@@ -309,6 +322,7 @@ export default function SupportItemSelector(props) {
   }
 
   function renderSupportItemList(list) {
+    console.log(list);
     var halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
 
     return list.length === 0 ? (
