@@ -108,6 +108,7 @@ export default function SupportItemSelector(props) {
 
   const classes = useStyles();
 
+
   // api call to load support items
   useEffect(() => {
     if (supportCategory.id === 3) {
@@ -141,7 +142,7 @@ export default function SupportItemSelector(props) {
           supportItem.label = supportItem.name;
           return supportItem;
         });
-        
+
         setSupportItems(items);
         setSearchResults(items);
       });
@@ -172,7 +173,15 @@ export default function SupportItemSelector(props) {
 
   function handleAddSupportItem(planItem) {
     const { planItems } = planCategory;
-    setPlanItems([planItem, ...planItems]);
+    if (currentUser) {
+      api.PlanItems.create(planCategory.id, planItem).then(() => {
+        setPlanItems([planItem, ...planItems]);
+
+      })
+    }
+    else {
+      setPlanItems([planItem, ...planItems]);
+    }
   }
 
   function handleSelectSupportItem(supportItem) {
@@ -267,8 +276,6 @@ export default function SupportItemSelector(props) {
   }
 
   function renderPlanItem(planItem, index) {
-    console.log(planItem);
-    console.log(supportItems);
     let supportItem;
 
     if (page === 0) {
