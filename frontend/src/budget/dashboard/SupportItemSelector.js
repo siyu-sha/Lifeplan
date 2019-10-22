@@ -20,6 +20,8 @@ import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
 import PlanItemEditor from "./PlanItemEditor";
 import PlanAddEditor from "./PlanAddEditor";
+import { useSelector } from "react-redux";
+
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -102,14 +104,17 @@ export default function SupportItemSelector(props) {
   const [editedItem, setEditedItem] = useState(0);
   const [editedPlanItem, setEditedPlanItem] = useState(0);
 
+  const currentUser = useSelector(state => state.auth.currentUser);
+
   const classes = useStyles();
+
 
   // api call to load support items
   useEffect(() => {
     if (supportCategory.id === 3) {
       // load all categories under core supports
       let items = [];
-      for (var i = 3; i < 7; i++) {
+      for (let i = 3; i < 7; i++) {
         api.SupportItemGroups.get({
           birthYear: birthYear,
           postcode: postcode,
@@ -120,7 +125,7 @@ export default function SupportItemSelector(props) {
             supportItem.label = supportItem.name;
             return supportItem;
           });
-          items = items.concat(newItems);
+          items.concat(newItems);
           setSupportItems(items);
           setSearchResults(items);
         });
@@ -137,17 +142,14 @@ export default function SupportItemSelector(props) {
           supportItem.label = supportItem.name;
           return supportItem;
         });
+
         setSupportItems(items);
         setSearchResults(items);
       });
     }
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
-  // load plan items from backend (logged in) or local storage
-  useEffect(() => {}, [supportCategory]);
 
-  // save plan items (not logged in) into local storage
-  useEffect(() => {});
 
   function goToSupportsList() {
     setPage(0);
@@ -171,7 +173,15 @@ export default function SupportItemSelector(props) {
 
   function handleAddSupportItem(planItem) {
     const { planItems } = planCategory;
-    setPlanItems([planItem, ...planItems]);
+    if (currentUser) {
+      api.PlanItems.create(planCategory.id, planItem).then(() => {
+        setPlanItems([planItem, ...planItems]);
+
+      })
+    }
+    else {
+      setPlanItems([planItem, ...planItems]);
+    }
   }
 
   function handleSelectSupportItem(supportItem) {
@@ -209,23 +219,51 @@ export default function SupportItemSelector(props) {
   }
 
   function handleDelete(planItem) {
-    setPlanItems(_.difference(planCategory.planItems, [planItem]));
+    if (currentUser) {
+      api.PlanItems.delete(planItem.id).then(() => {
+        setPlanItems(_.difference(planCategory.planItems, [planItem]));
+
+      })
+    }
+    else {
+      setPlanItems(_.difference(planCategory.planItems, [planItem]));
+
+    }
 
     //saveToLocalStorage(planCategory.planItems);
   }
 
   function handleItemUpdate(planItem, values) {
-    setPlanItems(
-      planCategory.planItems.map((item, index) => {
-        if (planItem === item) {
-          return {
-            ...item,
-            ...values
-          };
-        }
-        return item;
+
+    if (currentUser) {
+      api.PlanItems.update(planItem.id, values).then(() => {
+        setPlanItems(
+          planCategory.planItems.map((item, index) => {
+            if (planItem === item) {
+              return {
+                ...item,
+                ...values
+              };
+            }
+            return item;
+          })
+        );
       })
-    );
+    }
+    else {
+      setPlanItems(
+        planCategory.planItems.map((item, index) => {
+          if (planItem === item) {
+            return {
+              ...item,
+              ...values
+            };
+          }
+          return item;
+        })
+      );
+    }
+
   }
 
   function handleChangeUnitPrice(event, planItem) {
@@ -234,7 +272,7 @@ export default function SupportItemSelector(props) {
         if (planItem === item) {
           return {
             ...item,
-            price_actual: event.target.value
+            priceActual: event.target.value
           };
         }
         return item;
@@ -261,7 +299,7 @@ export default function SupportItemSelector(props) {
 
     if (page === 0) {
       supportItem = _.find(supportItems, supportItem => {
-        return supportItem.id === planItem.supportItemId;
+        return supportItem.id === planItem.supportItemGroup;
       });
     } else if (page === 1) {
       supportItem = _.find(supportItems, supportItem => {
@@ -309,7 +347,7 @@ export default function SupportItemSelector(props) {
   }
 
   function renderSupportItemList(list) {
-    var halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
+    let halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
 
     return list.length === 0 ? (
       <div> Press Add New to add a support </div>

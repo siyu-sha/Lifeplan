@@ -47,7 +47,6 @@ const useStyles = makeStyles(theme => ({
 export default function PlanItemEditor(props) {
   const { editedItem } = props;
   const { editedPlanItem } = props;
-  //const theme = useTheme();
   const classes = useStyles();
 
   let quantityRegex = new RegExp(/^$|^[1-9]\d*$/);
@@ -71,7 +70,7 @@ export default function PlanItemEditor(props) {
   function handleChange(event) {
     const name = event.target.name;
     const value = event.target.value;
-    if (name === "price_actual" && !moneyRegex.test(value)) {
+    if (name === "priceActual" && !moneyRegex.test(value)) {
       /*do nothing*/
     } else if (name === "quantity" && !quantityRegex.test(value)) {
       /*do nothing*/
@@ -114,26 +113,13 @@ export default function PlanItemEditor(props) {
     return frequencyEnum;
   }
 
-  // function initialiseValues(name, frequency, quantity, price) {
-  //   if (price === null) {
-  //     price = "";
-  //   }
-  //   setValues({
-  //     ...values,
-  //     name: name,
-  //     frequency_per_year: frequency,
-  //     quantity: quantity,
-  //     price_actual: price
-  //   });
-  // }
-
   function initialiseValues(supportItem, planItem) {
     let frequency;
     if (
-      planItem.frequency_per_year !== undefined &&
-      planItem.frequency_per_year !== null
+      planItem.frequencyPerYear !== undefined &&
+      planItem.frequencyPerYear !== null
     ) {
-      frequency = planItem.frequency_per_year;
+      frequency = planItem.frequencyPerYear;
     } else {
       frequency = enumFrequency(supportItem.unit);
     }
@@ -142,7 +128,7 @@ export default function PlanItemEditor(props) {
     if (name === undefined || name === null) {
       name = supportItem.name;
     }
-    let price = planItem.price_actual;
+    let price = planItem.priceActual;
     let quantity = planItem.quantity;
     if (price === null) {
       price = "";
@@ -215,9 +201,9 @@ export default function PlanItemEditor(props) {
 
   function displayTotalCost(totalPrice, frequencyUnit, quantityUnit) {
     return totalPrice > 0 ? (
-      <Typography align="right" variant="button">
-        Total: ${values.price_actual} × {values.quantity} {quantityUnit}
-        (s) × {values.frequency_per_year} {frequencyUnit}(s) = ${totalPrice}
+      <Typography>
+        Total: ${values.priceActual} X {values.quantity} {quantityUnit}
+        (s) X {values.frequencyPerYear} {frequencyUnit}(s) = ${totalPrice}
       </Typography>
     ) : (
       <Typography variant="button" align="right">
@@ -225,40 +211,30 @@ export default function PlanItemEditor(props) {
       </Typography>
     );
   }
-  // let uninitialised = true;
-  // if( uninitialised){
-  //   initialiseValues(editedItem,editedPlanItem);
-  //   uninitialised = false;
-  // }
   const { name, frequency, quantity, price } = initialiseValues(
     editedItem,
     editedPlanItem
   );
   const [values, setValues] = useState({
     name: name,
-    price_actual: price,
+    priceActual: price,
     quantity: quantity,
-    frequency_per_year: frequency
+    frequencyPerYear: frequency
   });
-  const usageFrequency = "frequency_per_year";
+  const usageFrequency = "frequencyPerYear";
   const supportItemName = "name";
-  const itemPrice = "price_actual";
+  const itemPrice = "priceActual";
   const itemQuantity = "quantity";
-  //const quantity = "quantity";
-  //console.log(editedItem);
   const enumResult = unitEnumeration(editedItem.unit);
   const unitEnum = enumResult.units;
   const unitTime = enumResult.unitTime;
   const unit = enumResult.unit;
-  const frequencyUsage = timeEnumeration(values.frequency_per_year);
+  const frequencyUsage = timeEnumeration(values.frequencyPerYear);
   const totalPrice = (
-    values.price_actual *
-    values.frequency_per_year *
+    values.priceActual *
+    values.frequencyPerYear *
     values.quantity
   ).toFixed(2);
-  //console.log(editedItem);
-  //console.log(frequency);
-  //console.log("the enum is " + unitEnum);
 
   return (
     <main>
@@ -292,8 +268,8 @@ export default function PlanItemEditor(props) {
                   Usage Frequency
                 </InputLabel>
                 <Select
+                  value={values.frequencyPerYear}
                   autoWidth
-                  value={values.frequency_per_year}
                   onChange={e => handleChange(e)}
                   inputProps={{
                     name: usageFrequency,
@@ -323,7 +299,6 @@ export default function PlanItemEditor(props) {
                   autoFocus
                   defaultValue={values.quantity}
                   onChange={e => handleChange(e)}
-                  //endAdornment={<InputAdornment position="end">per {frequencyUsage}</InputAdornment>}
                 ></Input>
               </FormControl>
             </Grid>
@@ -338,7 +313,7 @@ export default function PlanItemEditor(props) {
                   name={itemPrice}
                   autoComplete={itemPrice}
                   autoFocus
-                  value={values.price_actual}
+                  value={values.priceActual}
                   onChange={e => handleChange(e)}
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>

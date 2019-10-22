@@ -56,8 +56,8 @@ export default function PlanAddEditor(props) {
     props.redirectSelectionPage();
   }
 
-  function onClickSave(values, supportItemId) {
-    const planItem = createNewPlanItem(values, supportItemId);
+  function onClickSave(values, supportItemGroup) {
+    const planItem = createNewPlanItem(values, supportItemGroup);
     props.save(planItem);
     props.redirectSupports();
   }
@@ -65,7 +65,7 @@ export default function PlanAddEditor(props) {
   function handleChange(event) {
     const name = event.target.name;
     const value = event.target.value;
-    if (name === "price_actual" && !moneyRegex.test(value)) {
+    if (name === "priceActual" && !moneyRegex.test(value)) {
       /*do nothing*/
     } else if (name === "quantity" && !quantityRegex.test(value)) {
       /*do nothing*/
@@ -77,9 +77,9 @@ export default function PlanAddEditor(props) {
     }
   }
 
-  function createNewPlanItem(values, supportItemId) {
+  function createNewPlanItem(values, supportItemGroup) {
     const planItem = {
-      supportItemId: supportItemId,
+      supportItemGroup: supportItemGroup,
       ...values
     };
     return planItem;
@@ -189,40 +189,40 @@ export default function PlanAddEditor(props) {
   }
 
   function calculateTotalCost(values) {
-    if (values.price_actual === "" || values.quantity === "") {
+    if (values.priceActual === "" || values.quantity === "") {
       return 0;
     } else {
-      return values.price_actual * values.frequency_per_year * values.quantity;
+      return values.priceActual * values.frequencyPerYear * values.quantity;
     }
   }
 
   function displayTotalCost(totalPrice, frequencyUnit, quantityUnit) {
     return totalPrice > 0 ? (
-      <Typography variant="button">
-        Total: ${values.price_actual} × {values.quantity} {quantityUnit}
-        (s) × {values.frequency_per_year} {frequencyUnit}(s) = ${totalPrice}
+      <Typography>
+        Total: ${values.priceActual} X {values.quantity} {quantityUnit}
+        (s) X {values.frequencyPerYear} {frequencyUnit}(s) = ${totalPrice}
       </Typography>
     ) : (
       <Typography variant="button">Total: $0</Typography>
     );
   }
 
-  const usageFrequency = "frequency_per_year";
+  const usageFrequency = "frequencyPerYear";
   const supportItemName = "name";
-  const itemPrice = "price_actual";
+  const itemPrice = "priceActual";
   const itemQuantity = "quantity";
   const { name, frequency, quantity, price } = initialiseValues(supportItem);
   const [values, setValues] = useState({
     name: name,
-    price_actual: price,
+    priceActual: price,
     quantity: quantity,
-    frequency_per_year: frequency
+    frequencyPerYear: frequency
   });
   const enumResult = unitEnumeration(supportItem.unit);
   const unitEnum = enumResult.units;
   const unitTime = enumResult.unitTime;
   const unit = enumResult.unit;
-  const frequencyUsage = timeEnumeration(values.frequency_per_year);
+  const frequencyUsage = timeEnumeration(values.frequencyPerYear);
 
   const totalCost = calculateTotalCost(values);
 
@@ -258,8 +258,8 @@ export default function PlanAddEditor(props) {
                   Usage Frequency
                 </InputLabel>
                 <Select
+                  value={values.frequencyPerYear}
                   autoWidth
-                  value={values.frequency_per_year}
                   onChange={e => handleChange(e)}
                   inputProps={{
                     name: usageFrequency,
@@ -304,7 +304,7 @@ export default function PlanAddEditor(props) {
                   name={itemPrice}
                   autoComplete={itemPrice}
                   autoFocus
-                  value={values.price_actual}
+                  value={values.priceActual}
                   onChange={e => handleChange(e)}
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>

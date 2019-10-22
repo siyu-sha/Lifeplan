@@ -14,6 +14,16 @@ import api from "./api";
 import { connect } from "react-redux";
 import { loadUser } from "./redux/reducers/auth";
 
+// function getCurrentUser() {
+//   const access = localStorage.getItem(LocalStorageKeys.ACCESS);
+//   if (access != null) {
+//     api.setAccess(access);
+//     return api.Participants.currentUser();
+//   }
+//   else {
+//    return null;
+//   }
+// }
 
 const mapStateToProps = state => {
   return {};
@@ -25,6 +35,12 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
+
+async function fetchUser(loadUser) {
+  const response =  await api.Participants.currentUser();
+  loadUser(response.data);
+}
+
 function App(props) {
   useEffect(() => {
     // redirect if 401
@@ -33,9 +49,12 @@ function App(props) {
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
       api.setAccess(access);
-      api.Participants.currentUser().then(response => {
-        props.loadUser(response.data);
-      });
+
+      fetchUser(props.loadUser);
+
+      // await api.Participants.currentUser().then(response => {
+      //   props.loadUser(response.data);
+      // });
     }
   });
 
