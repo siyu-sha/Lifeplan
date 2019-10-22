@@ -3,7 +3,6 @@ import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
-//TODO: update this line to use @material-ui/styles
 import { makeStyles } from "@material-ui/core/styles";
 import { NAV_BAR_HEIGHT } from "../common/theme";
 import Typography from "@material-ui/core/Typography";
@@ -40,7 +39,7 @@ export default function Home() {
                 <Typography variant="h5" align="center">
                   Welcome.
                   <br />
-                  Please select the tool you wish to use:
+                  I want to:
                 </Typography>
               </Grid>
 
@@ -48,7 +47,7 @@ export default function Home() {
               <Grid item xs={12}>
                 <Grid container justify="space-evenly">
                   <Grid item>
-                    <Card raised>
+                    <Card raised onClick={() => (window.location.href = "/budget/edit")}>
                       <CardActionArea
                         className={classNames(
                           classes.planPageSelector,
@@ -61,7 +60,7 @@ export default function Home() {
                             align="center"
                             color="inherit"
                           >
-                            Plan Creator
+                            Add/Edit My Plan
                           </Typography>
                         </CardContent>
                       </CardActionArea>
@@ -71,7 +70,7 @@ export default function Home() {
                   <Grid item>
                     <Card
                       raised
-                      onClick={() => (window.location.href = "/budget/edit")}
+                      onClick={() => (window.location.href = "/budget/dashboard")}
                     >
                       <CardActionArea
                         className={classNames(
@@ -85,7 +84,7 @@ export default function Home() {
                             align="center"
                             color="inherit"
                           >
-                            Plan Budget Calculator
+                            View My Plan
                           </Typography>
                         </CardContent>
                       </CardActionArea>

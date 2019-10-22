@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
-import Theme from "./theme/Theme";
 import Home from "./home/Home";
 import BudgetEdit from "./budget/edit/BudgetEdit.js";
 import "./App.css";
@@ -59,7 +58,8 @@ function App(props) {
   });
 
   function handle401() {
-    localStorage.clear();
+    localStorage.removeItem(LocalStorageKeys.ACCESS);
+    localStorage.removeItem(LocalStorageKeys.REFRESH);
     props.history.push("/signin");
     props.loadUser(null);
   }
@@ -73,7 +73,6 @@ function App(props) {
       <main>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route path="/theme" component={Theme} />
           <Route path="/budget/edit" component={BudgetEdit} />
           <Route path="/budget/dashboard" component={BudgetDashboard} />
           <Route

@@ -100,9 +100,6 @@ class SignUp extends React.Component {
       birthYear
     } = this.state;
 
-    //console.log("I was triggered" + email + password + accept + "test");
-
-    let errors = [];
 
     const Reginfo = {
       email: email,

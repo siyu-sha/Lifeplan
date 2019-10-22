@@ -203,50 +203,12 @@ class FormPersonalDetails extends React.Component {
         }
       });
 
-      // update category total
-      // removed, does not solve any user stories
-      // for (let i in this.state.supportGroups) {
-      //   let group = this.state.supportGroups[i];
-      //
-      //   if (
-      //     group.supportCategories
-      //       .map(function(category) {
-      //         return category.name;
-      //       })
-      //       .indexOf(input) !== -1
-      //   ) {
-      //     let total = 0;
-      //     for (i = 0; i < group.supportCategories.length; i++) {
-      //       if (group.supportCategories[i].name === input) {
-      //         total += new_amount;
-      //       } else if (this.state[group.supportCategories[i].name] !== "") {
-      //         total += parseFloat(this.state[group.supportCategories[i].name]);
-      //       }
-      //     }
-      //     total = Math.round(total * 100) / 100;
-      //
-      //     this.setState({ [group.name]: total });
-      //   }
-      // }
     }
   };
 
-  // adds up the total of a given budget section
-  // commented due to non-usage
-  // addTotal(categories, new_amount, changed) {
-  //   let total = 0;
-  //   for (let i = 0; i < categories.length; i++) {
-  //     if (categories[i] === changed) {
-  //       total += new_amount;
-  //     } else if (this.state[categories[i]] !== "") {
-  //       total += parseFloat(this.state[categories[i]]);
-  //     }
-  //   }
-  //   total = Math.round(total * 100) / 100;
-  //   return total;
-  // }
 
-  // hnadle postcode input by limiting it to 4 digits (also works for year)
+
+  // handle postcode input by limiting it to 4 digits (also works for year)
   handlePostCodeChange = input => e => {
     if (postcodeRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
@@ -266,7 +228,6 @@ class FormPersonalDetails extends React.Component {
           startDate: dateToString(this.state.startDate),
           endDate: dateToString(this.state.endDate)
         };
-        console.log(body);
         const categories =
         _.map(this.state.planCategories, (planCategory, supportCategory) => {
           return {

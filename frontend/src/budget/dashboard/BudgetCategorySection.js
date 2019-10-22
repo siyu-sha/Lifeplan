@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   secondary: {
