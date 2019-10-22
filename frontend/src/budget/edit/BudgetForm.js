@@ -19,7 +19,7 @@ import connect from "react-redux/es/connect/connect";
 import {LocalStorageKeys} from "../../common/constants";
 
 function dateToString(date) {
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+  return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 }
 
 const styles = {
@@ -255,7 +255,7 @@ class FormPersonalDetails extends React.Component {
 
   // handle date input
   handleDateChange = input => date => {
-    this.setState({ [input]: date });
+    this.setState({ [input]: date.toDate() });
   };
 
   handleNext = () => {
@@ -266,6 +266,7 @@ class FormPersonalDetails extends React.Component {
           startDate: dateToString(this.state.startDate),
           endDate: dateToString(this.state.endDate)
         };
+        console.log(body);
         const categories =
         _.map(this.state.planCategories, (planCategory, supportCategory) => {
           return {
@@ -296,9 +297,10 @@ class FormPersonalDetails extends React.Component {
           PLAN_CATEGORIES,
           JSON.stringify(this.state.planCategories)
         );
+        this.props.history.push("/budget/dashboard");
       }
     } else {
-      console.log("error");
+      console.log(errors);
       this.setState({ errors: errors });
       this.setState({ showErrors: true });
     }
