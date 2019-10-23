@@ -37,7 +37,7 @@ export default function Home() {
               {/* welcome text */}
               <Grid item xs={12}>
                 <Typography variant="h5" align="center">
-                  Welcome.
+                  Welcome to NDIS Financial Planner.
                   <br />
                   I want to:
                 </Typography>

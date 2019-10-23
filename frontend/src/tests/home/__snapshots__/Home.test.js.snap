@@ -22,7 +22,7 @@ exports[`Test home rendering 1`] = `
             <h5
               className="MuiTypography-root MuiTypography-h5 MuiTypography-alignCenter"
             >
-              Welcome.
+              Welcome to NDIS Financial Planner.
               <br />
               I want to:
             </h5>
