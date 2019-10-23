@@ -137,7 +137,10 @@ class RegistrationGroup(models.Model):
 
 class Plan(models.Model):
     participant = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL
+        settings.AUTH_USER_MODEL,
+        related_name="plans",
+        null=True,
+        on_delete=models.SET_NULL,
     )
 
     start_date = models.DateField()
@@ -170,9 +173,13 @@ class PlanCategory(models.Model):
 
 
 class PlanItem(models.Model):
-    plan_category = models.ForeignKey(PlanCategory, on_delete=models.CASCADE)
+    plan_category = models.ForeignKey(
+        PlanCategory, related_name="plan_items", on_delete=models.PROTECT
+    )
     support_item_group = models.ForeignKey(
         SupportItemGroup, on_delete=models.PROTECT
     )
     quantity = models.DecimalField(max_digits=10, decimal_places=1)
     price_actual = models.DecimalField(max_digits=10, decimal_places=2)
+    frequency_per_year = models.IntegerField()
+    name = models.CharField(max_length=255)

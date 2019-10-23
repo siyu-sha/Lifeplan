@@ -20,6 +20,8 @@ import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
 import PlanItemEditor from "./PlanItemEditor";
 import PlanAddEditor from "./PlanAddEditor";
+import { useSelector } from "react-redux";
+
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {
@@ -73,6 +75,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+
+
 export default function SupportItemSelector(props) {
   const {
     birthYear,
@@ -92,7 +96,7 @@ export default function SupportItemSelector(props) {
   // 0: large screen; 1: small screen (mobile)
   const matchesMd = useMediaQuery(theme.breakpoints.up("md"));
   // number representing current page
-  // 0: supports list; 1: supports selection; 2: edit/add support
+  // 0: supports list; 1: supports selection; 2: edit support; 3: add support
   const [page, setPage] = useState(0);
   // set of support returned from search
   const [searchResults, setSearchResults] = useState([]);
@@ -102,30 +106,62 @@ export default function SupportItemSelector(props) {
   const [editedItem, setEditedItem] = useState(0);
   const [editedPlanItem, setEditedPlanItem] = useState(0);
 
+  const currentUser = useSelector(state => state.auth.currentUser);
+
   const classes = useStyles();
+
 
   // api call to load support items
   useEffect(() => {
-    api.SupportItemGroups.get({
-      birthYear: birthYear,
-      postcode: postcode,
-      supportCategoryID: supportCategory.id,
-      registrationGroupId
-    }).then(response => {
-      const items = response.data.map(supportItem => {
-        supportItem.label = supportItem.name;
-        return supportItem;
+    if (supportCategory.id === 3) {
+      // load all categories under core supports
+      let items = [];
+      // TODO: no magic numbers
+      const body = {
+        birthYear: birthYear,
+        postcode: postcode,
+        registrationGroupId
+      };
+      Promise.all([
+        api.SupportItemGroups.get({...body, supportCategoryID:3}),
+        api.SupportItemGroups.get({...body, supportCategoryID:4}),
+        api.SupportItemGroups.get({...body, supportCategoryID:5}),
+        api.SupportItemGroups.get({...body, supportCategoryID:6})
+        ]
+      ).then(responses => {
+        _.map(responses, response => {
+
+          const newItems = response.data.map(supportItem => {
+                  supportItem.label = supportItem.name;
+                  return supportItem;
+                });
+          items = [...items, ...newItems];
+        });
+        setSupportItems(items);
+        setSearchResults(items);
+
+      })
+
+    } else {
+      // load single category
+      api.SupportItemGroups.get({
+        birthYear: birthYear,
+        postcode: postcode,
+        supportCategoryID: supportCategory.id,
+        registrationGroupId
+      }).then(response => {
+        const items = response.data.map(supportItem => {
+          supportItem.label = supportItem.name;
+          return supportItem;
+        });
+
+        setSupportItems(items);
+        setSearchResults(items);
       });
-      setSupportItems(items);
-      setSearchResults(items);
-    });
+    }
   }, [birthYear, postcode, supportCategory, registrationGroupId]);
 
-  // load plan items from backend (logged in) or local storage
-  useEffect(() => {}, [supportCategory]);
 
-  // save plan items (not logged in) into local storage
-  useEffect(() => {});
 
   function goToSupportsList() {
     setPage(0);
@@ -149,7 +185,15 @@ export default function SupportItemSelector(props) {
 
   function handleAddSupportItem(planItem) {
     const { planItems } = planCategory;
-    setPlanItems([planItem, ...planItems]);
+    if (currentUser) {
+      api.PlanItems.create(planCategory.id, planItem).then(() => {
+        setPlanItems([planItem, ...planItems]);
+
+      })
+    }
+    else {
+      setPlanItems([planItem, ...planItems]);
+    }
   }
 
   function handleSelectSupportItem(supportItem) {
@@ -187,59 +231,88 @@ export default function SupportItemSelector(props) {
   }
 
   function handleDelete(planItem) {
-    setPlanItems(_.difference(planCategory.planItems, [planItem]));
+    if (currentUser) {
+      api.PlanItems.delete(planItem.id).then(() => {
+        setPlanItems(_.difference(planCategory.planItems, [planItem]));
+
+      })
+    }
+    else {
+      setPlanItems(_.difference(planCategory.planItems, [planItem]));
+
+    }
 
     //saveToLocalStorage(planCategory.planItems);
   }
 
   function handleItemUpdate(planItem, values) {
-    setPlanItems(
-      planCategory.planItems.map((item, index) => {
-        if (planItem === item) {
-          return {
-            ...item,
-            ...values
-          };
-        }
-        return item;
+
+    if (currentUser) {
+      api.PlanItems.update(planItem.id, values).then(() => {
+        setPlanItems(
+          planCategory.planItems.map((item, index) => {
+            if (planItem === item) {
+              return {
+                ...item,
+                ...values
+              };
+            }
+            return item;
+          })
+        );
       })
-    );
+    }
+    else {
+      setPlanItems(
+        planCategory.planItems.map((item, index) => {
+          if (planItem === item) {
+            return {
+              ...item,
+              ...values
+            };
+          }
+          return item;
+        })
+      );
+    }
+
   }
 
-  function handleChangeUnitPrice(event, planItem) {
-    setPlanItems(
-      planCategory.planItems.map((item, index) => {
-        if (planItem === item) {
-          return {
-            ...item,
-            price_actual: event.target.value
-          };
-        }
-        return item;
-      })
-    );
-  }
-
-  function handleChangeUnits(event, planItem) {
-    setPlanItems(
-      planCategory.planItems.map(item => {
-        if (planItem === item) {
-          return {
-            ...item,
-            quantity: event.target.value
-          };
-        }
-        return item;
-      })
-    );
-  }
+  // unused for now
+  // function handleChangeUnitPrice(event, planItem) {
+  //   setPlanItems(
+  //     planCategory.planItems.map((item, index) => {
+  //       if (planItem === item) {
+  //         return {
+  //           ...item,
+  //           priceActual: event.target.value
+  //         };
+  //       }
+  //       return item;
+  //     })
+  //   );
+  // }
+  //
+  // function handleChangeUnits(event, planItem) {
+  //   setPlanItems(
+  //     planCategory.planItems.map(item => {
+  //       if (planItem === item) {
+  //         return {
+  //           ...item,
+  //           quantity: event.target.value
+  //         };
+  //       }
+  //       return item;
+  //     })
+  //   );
+  // }
 
   function renderPlanItem(planItem, index) {
     let supportItem;
 
     if (page === 0) {
       supportItem = _.find(supportItems, supportItem => {
-        return supportItem.id === planItem.supportItemId;
+        return supportItem.id === planItem.supportItemGroup;
       });
     } else if (page === 1) {
       supportItem = _.find(supportItems, supportItem => {
@@ -287,7 +360,7 @@ export default function SupportItemSelector(props) {
   }
 
   function renderSupportItemList(list) {
-    var halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
+    let halfOfItems = matchesMd ? list.length / 2 + 1 : list.length;
 
     return list.length === 0 ? (
       <div> Press Add New to add a support </div>
@@ -422,8 +495,10 @@ export default function SupportItemSelector(props) {
       >
         <DialogTitle className={classes.dialogTitle}>
           <Grid container justify="space-between">
+
             <div>{supportCategory.name} supports </div>
-            {page !== 2 && matchesMd && (
+            {page !== 1 && page !== 2 && page !== 3 && matchesMd && (
+
               <Button
                 variant="contained"
                 onClick={goToSupportSelection}

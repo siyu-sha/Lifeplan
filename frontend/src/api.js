@@ -7,6 +7,7 @@ axios.defaults.baseURL =
     : "http://localhost:8000/api/v1/";
 
 
+
 // intercept 401 errors, and attempt to get new access token, otherwise redirect to signin
 function set401Interceptor(on401){
   axios.interceptors.response.use(null,error => {
@@ -40,6 +41,8 @@ const setAccess = access => {
 
   }
 };
+
+
 
 const Auth = {
   login: ({ email, password }) => {
@@ -103,12 +106,44 @@ const SupportGroups = {
   }
 };
 
+const Plans = {
+  list: () => {
+    return axios.get("/plans");
+  },
+  create: ({startDate, endDate, supportCategories}) => {
+    return axios.post("/plans", {startDate, endDate, supportCategories});
+  },
+  update: (planId, {startDate, endDate, planCategories}) => {
+    return axios.patch(`/plans/${planId}`, {startDate, endDate, planCategories});
+  },
+};
+
+const PlanItems = {
+  list: (planCategoryId) => {
+    return axios.get(`/plan-categories/${planCategoryId}/plan-items`);
+  },
+  create: (planCategoryId, {supportItemGroup, quantity, priceActual, name, frequencyPerYear}) => {
+    return axios.post(`/plan-categories/${planCategoryId}/plan-items`, {supportItemGroup, quantity, priceActual, name, frequencyPerYear});
+  },
+  delete: (planItemId) => {
+    return axios.delete(`/plan-items/${planItemId}`);
+  },
+  update: (planItemId, {quantity, priceActual, name, frequencyPerYear}) => {
+    return axios.patch(`/plan-items/${planItemId}`, {quantity, priceActual, name, frequencyPerYear});
+  }
+};
+
+
+
+
 export default {
   Auth,
   Participants,
   SupportGroups,
   SupportItems,
   SupportItemGroups,
+  Plans,
+  PlanItems,
   setAccess,
   set401Interceptor
 };

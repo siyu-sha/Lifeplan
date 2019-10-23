@@ -45,8 +45,8 @@ class BudgetCategoryCard extends Component {
               labels: [`Allocated: $${allocated}`, `Available: $${available}`],
               datasets: [
                 {
-                  data: [allocated, available],
-                  backgroundColor: [allocatedColor, totalColor]
+                  data: available >= 0 ? [allocated, available] : [1, 0],
+                  backgroundColor: available >= 0 ? [allocatedColor, totalColor] : ["red", totalColor]
                 }
               ]
             }}

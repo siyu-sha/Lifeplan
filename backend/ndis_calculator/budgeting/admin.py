@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import ParticipantChangeForm, ParticipantCreationForm
@@ -31,11 +30,11 @@ class ParticipantAdmin(UserAdmin):
 
 admin.site.register(Participant, ParticipantAdmin)
 # Default registrations
-admin.site.register(SupportGroup)
-admin.site.register(SupportItem)
-admin.site.register(SupportItemGroup)
-admin.site.register(SupportCategory)
-admin.site.register(RegistrationGroup)
 admin.site.register(Plan)
 admin.site.register(PlanCategory)
 admin.site.register(PlanItem)
+admin.site.register(SupportGroup)
+admin.site.register(SupportCategory)
+admin.site.register(SupportItemGroup)
+admin.site.register(SupportItem)
+admin.site.register(RegistrationGroup)
