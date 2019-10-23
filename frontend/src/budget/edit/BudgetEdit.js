@@ -1,7 +1,7 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid/index";
 import { NAV_BAR_HEIGHT } from "../../common/theme";
-import { makeStyles } from "@material-ui/styles/index";
+import { makeStyles } from "@material-ui/core/styles";
 import FormPersonalDetails from "./BudgetForm";
 
 const useStyles = makeStyles({

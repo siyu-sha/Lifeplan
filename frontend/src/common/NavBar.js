@@ -1,9 +1,10 @@
 import React from "react";
 import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import { NAV_BAR_HEIGHT } from "./theme";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import connect from "react-redux/es/connect/connect";
+import {LocalStorageKeys} from "./constants";
 
 const navBarStyles = makeStyles({
   navBar: {
@@ -23,7 +24,9 @@ function mapStateToProps(state) {
 
 function NavBar(props) {
   function handleSignOut() {
-    localStorage.clear();
+    localStorage.removeItem(LocalStorageKeys.ACCESS);
+    localStorage.removeItem(LocalStorageKeys.REFRESH);
+
     window.location.replace("/");
   }
   const classes = navBarStyles();
@@ -31,14 +34,11 @@ function NavBar(props) {
     <AppBar position="static">
       <Toolbar className={classes.navBar}>
         <Typography variant="h6" color="inherit">
-          NDIS Tools
+          NDIS Financial Planner
         </Typography>
         <div className={classes.grow}>
           <Button href="/" color="inherit">
             Home
-          </Button>
-          <Button href="/theme" color="inherit">
-            Theme
           </Button>
           {
             props.currentUser ?

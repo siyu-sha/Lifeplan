@@ -75,6 +75,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+
+
 export default function SupportItemSelector(props) {
   const {
     birthYear,
@@ -114,22 +116,32 @@ export default function SupportItemSelector(props) {
     if (supportCategory.id === 3) {
       // load all categories under core supports
       let items = [];
-      for (let i = 3; i < 7; i++) {
-        api.SupportItemGroups.get({
-          birthYear: birthYear,
-          postcode: postcode,
-          supportCategoryID: i,
-          registrationGroupId
-        }).then(response => {
+      // TODO: no magic numbers
+      const body = {
+        birthYear: birthYear,
+        postcode: postcode,
+        registrationGroupId
+      };
+      Promise.all([
+        api.SupportItemGroups.get({...body, supportCategoryID:3}),
+        api.SupportItemGroups.get({...body, supportCategoryID:4}),
+        api.SupportItemGroups.get({...body, supportCategoryID:5}),
+        api.SupportItemGroups.get({...body, supportCategoryID:6})
+        ]
+      ).then(responses => {
+        _.map(responses, response => {
+
           const newItems = response.data.map(supportItem => {
-            supportItem.label = supportItem.name;
-            return supportItem;
-          });
-          items.concat(newItems);
-          setSupportItems(items);
-          setSearchResults(items);
+                  supportItem.label = supportItem.name;
+                  return supportItem;
+                });
+          items = [...items, ...newItems];
         });
-      }
+        setSupportItems(items);
+        setSearchResults(items);
+
+      })
+
     } else {
       // load single category
       api.SupportItemGroups.get({
@@ -266,33 +278,34 @@ export default function SupportItemSelector(props) {
 
   }
 
-  function handleChangeUnitPrice(event, planItem) {
-    setPlanItems(
-      planCategory.planItems.map((item, index) => {
-        if (planItem === item) {
-          return {
-            ...item,
-            priceActual: event.target.value
-          };
-        }
-        return item;
-      })
-    );
-  }
-
-  function handleChangeUnits(event, planItem) {
-    setPlanItems(
-      planCategory.planItems.map(item => {
-        if (planItem === item) {
-          return {
-            ...item,
-            quantity: event.target.value
-          };
-        }
-        return item;
-      })
-    );
-  }
+  // unused for now
+  // function handleChangeUnitPrice(event, planItem) {
+  //   setPlanItems(
+  //     planCategory.planItems.map((item, index) => {
+  //       if (planItem === item) {
+  //         return {
+  //           ...item,
+  //           priceActual: event.target.value
+  //         };
+  //       }
+  //       return item;
+  //     })
+  //   );
+  // }
+  //
+  // function handleChangeUnits(event, planItem) {
+  //   setPlanItems(
+  //     planCategory.planItems.map(item => {
+  //       if (planItem === item) {
+  //         return {
+  //           ...item,
+  //           quantity: event.target.value
+  //         };
+  //       }
+  //       return item;
+  //     })
+  //   );
+  // }
 
   function renderPlanItem(planItem, index) {
     let supportItem;

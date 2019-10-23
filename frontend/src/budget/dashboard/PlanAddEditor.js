@@ -78,6 +78,7 @@ export default function PlanAddEditor(props) {
   }
 
   function createNewPlanItem(values, supportItemGroup) {
+    console.log(supportItemGroup);
     const planItem = {
       supportItemGroup: supportItemGroup,
       ...values
@@ -114,12 +115,12 @@ export default function PlanAddEditor(props) {
 
   function initialiseValues(supportItem) {
     let name, frequency, price;
-    let quantity = "";
+    let quantity = 0;
     name = supportItem.name;
     if (supportItem.price !== null) {
       price = supportItem.price;
     } else {
-      price = "";
+      price = 0;
     }
     frequency = enumFrequency(supportItem.unit);
     return { name, frequency, quantity, price };
@@ -216,7 +217,7 @@ export default function PlanAddEditor(props) {
     name: name,
     priceActual: price,
     quantity: quantity,
-    frequencyPerYear: frequency
+    frequencyPerYear: frequency,
   });
   const enumResult = unitEnumeration(supportItem.unit);
   const unitEnum = enumResult.units;
