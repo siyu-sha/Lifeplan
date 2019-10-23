@@ -24,7 +24,7 @@ exports[`Test home rendering 1`] = `
             >
               Welcome.
               <br />
-              Please select the tool you wish to use:
+              I want to:
             </h5>
           </div>
           <div
@@ -38,9 +38,11 @@ exports[`Test home rendering 1`] = `
               >
                 <div
                   className="MuiPaper-root MuiPaper-elevation8 MuiCard-root MuiPaper-rounded"
+                  onClick={[Function]}
                 >
                   <button
                     className="MuiButtonBase-root MuiCardActionArea-root makeStyles-planPageSelector-2 makeStyles-pageSelector-4"
+                    disabled={false}
                     onBlur={[Function]}
                     onDragLeave={[Function]}
                     onFocus={[Function]}
@@ -61,7 +63,7 @@ exports[`Test home rendering 1`] = `
                       <h6
                         className="MuiTypography-root MuiTypography-h6 MuiTypography-colorInherit MuiTypography-alignCenter"
                       >
-                        Plan Creator
+                        Add/Edit My Plan
                       </h6>
                     </div>
                     <span
@@ -79,6 +81,7 @@ exports[`Test home rendering 1`] = `
                 >
                   <button
                     className="MuiButtonBase-root MuiCardActionArea-root makeStyles-budgetPageSelector-3 makeStyles-pageSelector-4"
+                    disabled={false}
                     onBlur={[Function]}
                     onDragLeave={[Function]}
                     onFocus={[Function]}
@@ -99,7 +102,7 @@ exports[`Test home rendering 1`] = `
                       <h6
                         className="MuiTypography-root MuiTypography-h6 MuiTypography-colorInherit MuiTypography-alignCenter"
                       >
-                        Plan Budget Calculator
+                        View My Plan
                       </h6>
                     </div>
                     <span
