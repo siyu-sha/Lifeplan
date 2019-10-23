@@ -42,7 +42,6 @@ exports[`Test home rendering 1`] = `
                 >
                   <button
                     className="MuiButtonBase-root MuiCardActionArea-root makeStyles-planPageSelector-2 makeStyles-pageSelector-4"
-                    disabled={false}
                     onBlur={[Function]}
                     onDragLeave={[Function]}
                     onFocus={[Function]}
@@ -81,7 +80,6 @@ exports[`Test home rendering 1`] = `
                 >
                   <button
                     className="MuiButtonBase-root MuiCardActionArea-root makeStyles-budgetPageSelector-3 makeStyles-pageSelector-4"
-                    disabled={false}
                     onBlur={[Function]}
                     onDragLeave={[Function]}
                     onFocus={[Function]}
