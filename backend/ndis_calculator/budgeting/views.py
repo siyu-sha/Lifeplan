@@ -109,6 +109,12 @@ class PlanViewSet(viewsets.ModelViewSet):
     serializer_class = PlanSerializer
     permission_classes = (IsAuthenticated,)
 
+    def list(self, request):
+        queryset = self.queryset.filter(participant_id=self.request.user.id)
+        serializer = self.serializer_class(queryset, many=True)
+
+        return Response(serializer.data)
+
     def create(self, request):
         plan_serializer = self.serializer_class(data=request.data)
         if plan_serializer.is_valid():
