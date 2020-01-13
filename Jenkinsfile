@@ -20,9 +20,9 @@ pipeline{
                     steps {
                         sh "ls -la"
                         sh "cat frontend/package.json"
-                        sh "npm --prefix frontend/ install --verbose"
-                        sh "npm list -g"
-                        sh "npm --prefix frontend/ test --exit"
+                        sh "yarn --prefix frontend/ install --verbose"
+                        sh "yarn list -g"
+                        sh "yarn --prefix frontend/ test --exit"
                     }
                 }
                 stage("Backend Tests"){

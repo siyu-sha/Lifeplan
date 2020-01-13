@@ -4,7 +4,7 @@ FROM node:alpine
 COPY ./package.json /app/frontend/package.json
 COPY ./package-lock.json /app/frontend/package-lock.json
 WORKDIR /app/frontend
-RUN npm install --verbose
+RUN yarn install --verbose
 
 # Copy Source, Expose, Run Entry
 COPY . /app/frontend/
