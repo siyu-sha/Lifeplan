@@ -36,6 +36,24 @@
   },
   {
     "model": "budgeting.supportcategory",
+    "pk": 7,
+    "fields": {
+      "support_group": 3,
+      "number": 5,
+      "name": "Assistive technology"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 8,
+    "fields": {
+      "support_group": 3,
+      "number": 6,
+      "name": "Home modifications"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
     "pk": 9,
     "fields": {
       "support_group": 2,
@@ -113,24 +131,6 @@
       "support_group": 2,
       "number": 15,
       "name": "Improved daily living skills"
-    }
-  },
-  {
-    "model": "budgeting.supportcategory",
-    "pk": 7,
-    "fields": {
-      "support_group": 3,
-      "number": 5,
-      "name": "Assistive technology"
-    }
-  },
-  {
-    "model": "budgeting.supportcategory",
-    "pk": 8,
-    "fields": {
-      "support_group": 3,
-      "number": 6,
-      "name": "Home modifications"
     }
   }
 ]
