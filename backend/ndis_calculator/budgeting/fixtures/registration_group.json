@@ -1,8 +1,10 @@
-[
-  {
+[{
     "model": "budgeting.registrationgroup",
     "pk": 8,
-    "fields": { "number": 101, "name": "Accommodation / Tenancy Assistance" }
+    "fields": {
+      "number": 101,
+      "name": "Accommodation / Tenancy Assistance"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -23,7 +25,10 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 11,
-    "fields": { "number": 120, "name": "Household Tasks" }
+    "fields": {
+      "number": 120,
+      "name": "Household Tasks"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -60,27 +65,42 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 16,
-    "fields": { "number": 135, "name": "Customised Prosthetics" }
+    "fields": {
+      "number": 135,
+      "name": "Customised Prosthetics"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 17,
-    "fields": { "number": 121, "name": "Interpreting And Translation" }
+    "fields": {
+      "number": 121,
+      "name": "Interpreting And Translation"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 18,
-    "fields": { "number": 105, "name": "Personal Mobility Equipment" }
+    "fields": {
+      "number": 105,
+      "name": "Personal Mobility Equipment"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 19,
-    "fields": { "number": 113, "name": "Vision Equipment" }
+    "fields": {
+      "number": 113,
+      "name": "Vision Equipment"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 20,
-    "fields": { "number": 122, "name": "Hearing Equipment" }
+    "fields": {
+      "number": 122,
+      "name": "Hearing Equipment"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -109,17 +129,26 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 24,
-    "fields": { "number": 136, "name": "Group And Centre Based Activities" }
+    "fields": {
+      "number": 136,
+      "name": "Group And Centre Based Activities"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 25,
-    "fields": { "number": 109, "name": "Vehicle Modifications" }
+    "fields": {
+      "number": 109,
+      "name": "Vehicle Modifications"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 26,
-    "fields": { "number": 112, "name": "Assistive Equipment For Recreation" }
+    "fields": {
+      "number": 112,
+      "name": "Assistive Equipment For Recreation"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -148,12 +177,18 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 30,
-    "fields": { "number": 134, "name": "Hearing Services" }
+    "fields": {
+      "number": 134,
+      "name": "Hearing Services"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 31,
-    "fields": { "number": 131, "name": "Specialised Disability Accommodation" }
+    "fields": {
+      "number": 131,
+      "name": "Specialised Disability Accommodation"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -166,22 +201,34 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 33,
-    "fields": { "number": 132, "name": "Support Coordination" }
+    "fields": {
+      "number": 132,
+      "name": "Support Coordination"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 34,
-    "fields": { "number": 116, "name": "Innovative Community Participation" }
+    "fields": {
+      "number": 116,
+      "name": "Innovative Community Participation"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 35,
-    "fields": { "number": 128, "name": "Therapeutic Supports" }
+    "fields": {
+      "number": 128,
+      "name": "Therapeutic Supports"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 36,
-    "fields": { "number": 133, "name": "Specialised Supported Employment" }
+    "fields": {
+      "number": 133,
+      "name": "Specialised Supported Employment"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -194,7 +241,10 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 38,
-    "fields": { "number": 110, "name": "Behaviour Support" }
+    "fields": {
+      "number": 110,
+      "name": "Behaviour Support"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
@@ -223,11 +273,17 @@
   {
     "model": "budgeting.registrationgroup",
     "pk": 42,
-    "fields": { "number": 114, "name": "Community Nursing Care For High Needs" }
+    "fields": {
+      "number": 114,
+      "name": "Community Nursing Care For High Needs"
+    }
   },
   {
     "model": "budgeting.registrationgroup",
     "pk": 43,
-    "fields": { "number": 129, "name": "Specialised Driver Training" }
+    "fields": {
+      "number": 129,
+      "name": "Specialised Driver Training"
+    }
   }
 ]

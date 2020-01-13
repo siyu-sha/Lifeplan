@@ -1,13 +1,22 @@
-[
-  { "model": "budgeting.supportgroup", "pk": 1, "fields": { "name": "Core" } },
+[{
+    "model": "budgeting.supportgroup",
+    "pk": 1,
+    "fields": {
+      "name": "Core"
+    }
+  },
   {
     "model": "budgeting.supportgroup",
     "pk": 2,
-    "fields": { "name": "Capacity Building" }
+    "fields": {
+      "name": "Capacity Building"
+    }
   },
   {
     "model": "budgeting.supportgroup",
     "pk": 3,
-    "fields": { "name": "Capital" }
+    "fields": {
+      "name": "Capital"
+    }
   }
 ]

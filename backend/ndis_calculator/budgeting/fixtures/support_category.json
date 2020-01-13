@@ -1,5 +1,4 @@
-[
-  {
+[{
     "model": "budgeting.supportcategory",
     "pk": 3,
     "fields": {
@@ -11,12 +10,20 @@
   {
     "model": "budgeting.supportcategory",
     "pk": 4,
-    "fields": { "support_group": 1, "number": 2, "name": "Transport" }
+    "fields": {
+      "support_group": 1,
+      "number": 2,
+      "name": "Transport"
+    }
   },
   {
     "model": "budgeting.supportcategory",
     "pk": 5,
-    "fields": { "support_group": 1, "number": 3, "name": "Consumables" }
+    "fields": {
+      "support_group": 1,
+      "number": 3,
+      "name": "Consumables"
+    }
   },
   {
     "model": "budgeting.supportcategory",
@@ -26,20 +33,6 @@
       "number": 4,
       "name": "Assistance with social and community participation"
     }
-  },
-  {
-    "model": "budgeting.supportcategory",
-    "pk": 7,
-    "fields": {
-      "support_group": 2,
-      "number": 5,
-      "name": "Assistive technology"
-    }
-  },
-  {
-    "model": "budgeting.supportcategory",
-    "pk": 8,
-    "fields": { "support_group": 2, "number": 6, "name": "Home modifications" }
   },
   {
     "model": "budgeting.supportcategory",
@@ -98,13 +91,17 @@
   {
     "model": "budgeting.supportcategory",
     "pk": 15,
-    "fields": { "support_group": 2, "number": 13, "name": "Improved learning" }
+    "fields": {
+      "support_group": 2,
+      "number": 13,
+      "name": "Improved learning"
+    }
   },
   {
     "model": "budgeting.supportcategory",
     "pk": 16,
     "fields": {
-      "support_group": 3,
+      "support_group": 2,
       "number": 14,
       "name": "Improved life choices "
     }
@@ -113,9 +110,27 @@
     "model": "budgeting.supportcategory",
     "pk": 17,
     "fields": {
-      "support_group": 3,
+      "support_group": 2,
       "number": 15,
       "name": "Improved daily living skills"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 7,
+    "fields": {
+      "support_group": 3,
+      "number": 5,
+      "name": "Assistive technology"
+    }
+  },
+  {
+    "model": "budgeting.supportcategory",
+    "pk": 8,
+    "fields": {
+      "support_group": 3,
+      "number": 6,
+      "name": "Home modifications"
     }
   }
 ]

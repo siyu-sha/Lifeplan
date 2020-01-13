@@ -1,5 +1,4 @@
-[
-  {
+[{
     "model": "budgeting.supportitem",
     "pk": 45,
     "fields": {
