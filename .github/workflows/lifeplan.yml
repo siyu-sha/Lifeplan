@@ -1,0 +1,101 @@
+name: Lifeplan
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - develop
+  # pull_request:
+  #   branches:
+  #     - master
+  #     - develop
+
+jobs:
+  backend:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-18.04]
+        python-version: [3.7]
+        mysql-version: ["8.0"]
+
+    services:
+      mysql:
+        image: mysql/mysql-server:${{ matrix.mysql-version }}
+        env:
+          MYSQL_DATABASE: ndis
+          MYSQL_USER: ndis
+          MYSQL_PASSWORD: ndisFP2019
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: ndisFP2019
+          MYSQL_ROOT_HOST: "%"
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1.1.1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify MySQL connection from host
+        run: |
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -pndisFP2019 -e "SHOW DATABASES"
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install -y --no-install-recommends \
+            default-libmysqlclient-dev \
+      - name: Install dependencies
+        working-directory: ./backend/ndis_calculator
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Prepare for tests
+        working-directory: ./backend/ndis_calculator
+        run: |
+          python manage.py makemigrations --no-input
+          python manage.py migrate --no-input
+          python manage.py collectstatic --no-input
+          python manage.py loaddata budgeting/fixtures/*
+        env:
+          DATABASE_USER: root
+          DATABASE_HOST: 127.0.0.1
+          DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Run tests
+        working-directory: ./backend/ndis_calculator
+        run: |
+          python manage.py test budgeting
+        env:
+          DATABASE_USER: root
+          DATABASE_HOST: 127.0.0.1
+          DATABASE_PORT: ${{ job.services.mysql.ports['3306'] }}
+
+  frontend:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-18.04]
+        node-version: [13]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1.3.0
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: List packages
+        run: |
+          cat frontend/package.json
+      - name: Install dependencies
+        run: |
+          yarn --cwd frontend/
+      - name: Build production assets
+        run: |
+          yarn --cwd frontend/ build
+      - name: Run tests
+        run: |
+          CI=true yarn --cwd frontend/ test

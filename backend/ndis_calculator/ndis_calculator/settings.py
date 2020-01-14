@@ -90,22 +90,21 @@ APPEND_SLASH = False
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASE_HOST = (
-    os.environ["DATABASE_HOST"] if "DATABASE_HOST" in os.environ else "db"
-)
+DATABASE_USER = os.environ.get("DATABASE_USER", "root")
+DATABASE_HOST = os.environ.get("DATABASE_HOST", "db")
+DATABASE_PORT = os.environ.get("DATABASE_PORT", "3306")
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "ndis",
-        "USER": "root",
+        "USER": DATABASE_USER,
         "PASSWORD": "ndisFP2019",
         "HOST": DATABASE_HOST,
-        "PORT": "3306",
+        "PORT": DATABASE_PORT,
         "OPTIONS": {"init_command": "SET foreign_key_checks = 0;"},
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
