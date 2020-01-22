@@ -21,6 +21,26 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import CustomDatePicker from "./CustomDatePicker";
+import _ from "lodash";
+import isSameDay from "date-fns/isSameDay";
+
+export const DAY_UNITS = ["H", "D", "EA"];
+const DAY_DAILY = "Every day";
+const DAY_WEEKLY = "Once or more per week recurringly";
+const DAY_MONTHLY = "Once or more per month recurringly";
+const DAY_YEARLY = "Specific times in the year";
+
+// const WEEK_WEEKLY = "Weekly";
+// const WEEK_FORTNIGHTLY = "Fortnightly";
+// const WEEK_MONTHLY = "Monthly";
+// const WEEK_YEARLY = "Specific weeks of the year";
+
+export const DAILY = "DAILY";
+export const WEEKLY = "WEEKLY";
+//export const FORTNIGHTLY = "FORTNIGHTLY";
+export const MONTHLY = "MONTHLY";
+export const YEARLY = "YEARLY";
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -86,43 +106,43 @@ export default function PlanAddEditor(props) {
     return planItem;
   }
 
-  function enumFrequency(itemUnit) {
-    let frequencyEnum = 0;
-    switch (itemUnit) {
-      case "H":
-        frequencyEnum = 365;
-        break;
-      case "EA":
-        frequencyEnum = 365;
-        break;
-      case "D":
-        frequencyEnum = 52;
-        break;
-      case "WK":
-        frequencyEnum = 12;
-        break;
-      case "MON":
-        frequencyEnum = 1;
-        break;
-      case "YR":
-        frequencyEnum = 1;
-        break;
-      default:
-        break;
-    }
-    return frequencyEnum;
-  }
+  // function enumFrequency(itemUnit) {
+  //   let frequencyEnum = 0;
+  //   switch (itemUnit) {
+  //     case "H":
+  //       frequencyEnum = 365;
+  //       break;
+  //     case "EA":
+  //       frequencyEnum = 365;
+  //       break;
+  //     case "D":
+  //       frequencyEnum = 52;
+  //       break;
+  //     case "WK":
+  //       frequencyEnum = 12;
+  //       break;
+  //     case "MON":
+  //       frequencyEnum = 1;
+  //       break;
+  //     case "YR":
+  //       frequencyEnum = 1;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //   return frequencyEnum;
+  // }
 
   function initialiseValues(supportItem) {
     let name, frequency, price;
     let quantity = 0;
     name = supportItem.name;
-    if (supportItem.price !== null) {
+    if (supportItem.price != null) {
       price = supportItem.price;
     } else {
       price = 0;
     }
-    frequency = enumFrequency(supportItem.unit);
+    frequency = YEARLY;
     return { name, frequency, quantity, price };
   }
 
@@ -211,24 +231,93 @@ export default function PlanAddEditor(props) {
   const usageFrequency = "frequencyPerYear";
   const supportItemName = "name";
   const itemPrice = "priceActual";
-  const itemQuantity = "quantity";
   const { name, frequency, quantity, price } = initialiseValues(supportItem);
   const [values, setValues] = useState({
     name: name,
     priceActual: price,
     quantity: quantity,
-    frequencyPerYear: frequency,
+    frequencyPerYear: frequency
   });
+  const [itemStartDates, setItemStartDates] = useState([]);
+
+  const handleDayYearlyDateChange = date => {
+    const newItemStartDates = _.unionWith([date], itemStartDates, isSameDay);
+
+    setItemStartDates(newItemStartDates);
+  };
+
   const enumResult = unitEnumeration(supportItem.unit);
-  const unitEnum = enumResult.units;
-  const unitTime = enumResult.unitTime;
   const unit = enumResult.unit;
   const frequencyUsage = timeEnumeration(values.frequencyPerYear);
 
   const totalCost = calculateTotalCost(values);
 
+  const renderFrequencySelector = () => {
+    return (
+      DAY_UNITS.concat("WK").includes(supportItem.unit) && (
+        <>
+          <Typography variant={"body1"} align={"left"}>
+            How often do you use this support item?
+          </Typography>
+          <FormControl margin={"normal"} required>
+            <InputLabel htmlFor={usageFrequency}>Usage Frequency</InputLabel>
+            <Select
+              value={values.frequencyPerYear}
+              autoWidth
+              onChange={e => handleChange(e)}
+              inputProps={{
+                name: usageFrequency,
+                id: usageFrequency
+              }}
+            >
+              {DAY_UNITS.includes(supportItem.unit) && [
+                <MenuItem value={YEARLY} key={DAY_YEARLY}>
+                  {DAY_YEARLY}
+                </MenuItem>,
+                <MenuItem value={MONTHLY} key={DAY_MONTHLY}>
+                  {DAY_MONTHLY}
+                </MenuItem>,
+                <MenuItem value={WEEKLY} key={DAY_WEEKLY}>
+                  {DAY_WEEKLY}
+                </MenuItem>,
+                <MenuItem value={DAILY} key={DAY_DAILY}>
+                  {DAY_DAILY}
+                </MenuItem>
+              ]}
+            </Select>
+            <FormHelperText>
+              Please select the frequency from the dropdown box
+            </FormHelperText>
+          </FormControl>
+        </>
+      )
+    );
+  };
+
+  const renderStartDatePicker = () => {
+    if (DAY_UNITS.concat("WK").includes(supportItem.unit)) {
+      return (
+        <>
+          {[YEARLY, MONTHLY].includes(values.frequencyPerYear) && (
+            <>
+              <Typography variant={"body1"} align={"left"}>
+                Please select the starting date/s
+              </Typography>
+              <CustomDatePicker
+                frequency={values.frequencyPerYear}
+                unit={supportItem.unit}
+                handleChange={handleDayYearlyDateChange}
+                itemStartDates={itemStartDates}
+              />
+            </>
+          )}
+        </>
+      );
+    }
+  };
+
   return (
-    <main>
+    <>
       <DialogContent>
         <form className={classes.form}>
           <Grid container spacing={5}>
@@ -251,48 +340,10 @@ export default function PlanAddEditor(props) {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant={"body1"} align={"left"}>
-                How often do you use this support item?
-              </Typography>
-              <FormControl margin={"normal"} required>
-                <InputLabel htmlFor={usageFrequency}>
-                  Usage Frequency
-                </InputLabel>
-                <Select
-                  value={values.frequencyPerYear}
-                  autoWidth
-                  onChange={e => handleChange(e)}
-                  inputProps={{
-                    name: usageFrequency,
-                    id: usageFrequency
-                  }}
-                >
-                  {unitEnum >= 5 && <MenuItem value={365}>daily</MenuItem>}
-                  {unitEnum >= 4 && <MenuItem value={52}>weekly</MenuItem>}
-                  {unitEnum >= 3 && <MenuItem value={12}>monthly</MenuItem>}
-                  {unitEnum >= 1 && <MenuItem value={1}>yearly</MenuItem>}
-                </Select>
-                <FormHelperText>
-                  Please select the frequency from the dropdown box
-                </FormHelperText>
-              </FormControl>
+              {renderFrequencySelector()}
             </Grid>
             <Grid item xs={12}>
-              <Typography cvariant={"body1"} align={"left"}>
-                How many {unitTime} do you use this per {frequencyUsage}?
-              </Typography>
-              <FormControl margin={"normal"} required>
-                <InputLabel htmlFor={itemQuantity}>{unitTime}</InputLabel>
-                <Input
-                  id={itemQuantity}
-                  name={itemQuantity}
-                  autoComplete={itemQuantity}
-                  autoFocus
-                  defaultValue={values.quantity}
-                  onChange={e => handleChange(e)}
-                  //endAdornment={<InputAdornment position="end">per {frequencyUsage}</InputAdornment>}
-                ></Input>
-              </FormControl>
+              {renderStartDatePicker()}
             </Grid>
             <Grid item xs={12}>
               <Typography cvariant={"body1"} align={"left"}>
@@ -310,11 +361,8 @@ export default function PlanAddEditor(props) {
                   startAdornment={
                     <InputAdornment position="start">$</InputAdornment>
                   }
-                ></Input>
+                />
               </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              {displayTotalCost(totalCost, frequencyUsage, unit)}
             </Grid>
           </Grid>
         </form>
@@ -335,6 +383,6 @@ export default function PlanAddEditor(props) {
           Save
         </Button>
       </DialogActions>
-    </main>
+    </>
   );
 }
