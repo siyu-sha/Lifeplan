@@ -46,7 +46,10 @@ class BudgetCategoryCard extends Component {
               datasets: [
                 {
                   data: available >= 0 ? [allocated, available] : [1, 0],
-                  backgroundColor: available >= 0 ? [allocatedColor, totalColor] : ["red", totalColor]
+                  backgroundColor:
+                    available >= 0
+                      ? [allocatedColor, totalColor]
+                      : ["red", totalColor]
                 }
               ]
             }}
@@ -58,7 +61,12 @@ class BudgetCategoryCard extends Component {
         <CardActions disableSpacing className={classes.noVerticalPadding}>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button onClick={this.props.openSupports} size="small">
+              <Button onClick={() => this.props.addSupports()} size="small">
+                Add
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button onClick={() => this.props.openSupports()} size="small">
                 View
               </Button>
             </Grid>
