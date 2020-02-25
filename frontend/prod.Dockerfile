@@ -1,3 +1,5 @@
+# Stage 1
+
 FROM node:alpine as builder
 
 RUN yarn global add serve
@@ -19,9 +21,3 @@ FROM nginx:alpine
 
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/frontend/build /usr/share/nginx/html
-
-# EXPOSE 80
-
-# EXPOSE 3000
-
-# CMD serve -s build -l 3000
