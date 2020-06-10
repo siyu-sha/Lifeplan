@@ -1,17 +1,8 @@
 import React from "react";
 import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
-import {
-  addMinutes,
-  format,
-  getHours,
-  getMinutes,
-  setHours,
-  setMinutes
-} from "date-fns";
+import { getHours, getMinutes, setHours, setMinutes } from "date-fns";
 import MenuItem from "@material-ui/core/MenuItem";
-
-const defaultDate = new Date();
 
 const options = ({ minHour, minMinute }) => {
   let i, j;
@@ -55,6 +46,8 @@ const options = ({ minHour, minMinute }) => {
 
 export default function CustomTimePicker(props) {
   const { onChange, value, minHour, minMinute } = props;
+
+  const defaultDate = new Date(value);
 
   const convertedValue = `${getHours(value)},${getMinutes(value)}`;
 
