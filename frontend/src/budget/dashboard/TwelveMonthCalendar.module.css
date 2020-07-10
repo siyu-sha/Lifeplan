@@ -1,0 +1,8 @@
+.container {
+  max-width: 1000px;
+}
+
+.calendarGrid:hover {
+  background-color: #97c7ef;
+  cursor: pointer;
+}

@@ -16,7 +16,6 @@ import { DARK_BLUE, LIGHT_BLUE } from "../../common/theme";
 import TextField from "@material-ui/core/TextField";
 import PlanItemGroupCalendarView from "./PlanItemGroupCalendarView";
 import PlanAddEditor from "./PlanAddEditor";
-import { useSelector } from "react-redux";
 import Divider from "@material-ui/core/Divider";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -111,11 +110,12 @@ export default function SupportItemDialog(props) {
     postcode,
     planCategory,
     supportCategory,
-    setPlanItemGroups,
+    onEditPlanItemGroups,
     registrationGroups,
     page,
     setPage
   } = props;
+  console.log(supportCategory);
 
   // React Hooks
   // list of all support items for this group
@@ -145,7 +145,7 @@ export default function SupportItemDialog(props) {
     planItem: null
   });
 
-  const currentUser = useSelector(state => state.auth.currentUser);
+  // const currentUser = useSelector(state => state.auth.currentUser);
 
   const classes = useStyles();
 
@@ -259,15 +259,15 @@ export default function SupportItemDialog(props) {
 
   function handleAddPlanItemGroup(planItemGroup) {
     const { planItemGroups } = planCategory;
-    console.log(planCategory);
-    if (currentUser) {
-      // TODO: handle registered users
-      api.PlanItems.create(planCategory.id, planItemGroup).then(() => {
-        setPlanItemGroups([planItemGroup, ...planItemGroups]);
-      });
-    } else {
-      setPlanItemGroups([planItemGroup, ...planItemGroups]);
-    }
+    // if (currentUser) {
+    //   // TODO: handle registered users
+    //   api.PlanItems.create(planCategory.id, planItemGroup).then(() => {
+    //     onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
+    //   });
+    onEditPlanItemGroups(supportCategory.id, [
+      planItemGroup,
+      ...planItemGroups
+    ]);
   }
 
   function handleSelectSupportItem(supportItem) {
@@ -300,41 +300,28 @@ export default function SupportItemDialog(props) {
 
   function handleDeletePlanItemGroup(planItemGroup) {
     goToSupportsList();
-    // TODO: use newer API
-    if (currentUser) {
-      // api.PlanItems.delete(planItemGroup.id).then(() => {
-      //   setPlanItemGroups(
-      //     _.difference(planCategory.planItemGroups, [planItemGroup])
-      //   );
-      // });
-    } else {
-      setPlanItemGroups(
-        _.difference(planCategory.planItemGroups, [planItemGroup])
-      );
-    }
-
-    //saveToLocalStorage(planCategory.planItems);
+    onEditPlanItemGroups(
+      supportCategory.id,
+      _.difference(planCategory.planItemGroups, [planItemGroup])
+    );
   }
 
   function handleDeletePlanItem(planItem) {
-    if (currentUser) {
-      // TODO: call backend
-    } else {
-      const editedPlanItemGroup = {
-        ...selectedPlanItemGroup,
-        planItems: _.difference(selectedPlanItemGroup.planItems, [planItem])
-      };
-      setPlanItemGroups(
-        planCategory.planItemGroups.map(pIG => {
-          if (selectedPlanItemGroup === pIG) {
-            return editedPlanItemGroup;
-          } else {
-            return pIG;
-          }
-        })
-      );
-      setSelectedPlanItemGroup(editedPlanItemGroup);
-    }
+    const editedPlanItemGroup = {
+      ...selectedPlanItemGroup,
+      planItems: _.difference(selectedPlanItemGroup.planItems, [planItem])
+    };
+    onEditPlanItemGroups(
+      supportCategory.id,
+      planCategory.planItemGroups.map(pIG => {
+        if (selectedPlanItemGroup === pIG) {
+          return editedPlanItemGroup;
+        } else {
+          return pIG;
+        }
+      })
+    );
+    setSelectedPlanItemGroup(editedPlanItemGroup);
   }
 
   function handleEditPlanItem(planItem) {
@@ -376,7 +363,8 @@ export default function SupportItemDialog(props) {
       };
     }
 
-    setPlanItemGroups(
+    onEditPlanItemGroups(
+      supportCategory.id,
       planCategory.planItemGroups.map(pIG => {
         if (selectedPlanItemGroup === pIG) {
           return editedPlanItemGroup;

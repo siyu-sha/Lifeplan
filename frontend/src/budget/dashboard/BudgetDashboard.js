@@ -1,9 +1,18 @@
-import { Button, CardActions, CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import Grid from "@material-ui/core/Grid";
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Grid
+} from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
-import { differenceInMinutes } from "date-fns";
+import CloseIcon from "@material-ui/icons/Close";
+import { differenceInMinutes, setMonth } from "date-fns";
 import _ from "lodash";
 import React from "react";
 import connect from "react-redux/es/connect/connect";
@@ -19,6 +28,15 @@ import {
   REGISTRATION_GROUPS_VIEW
 } from "./SupportItemDialog";
 
+import "react-calendar/dist/Calendar.css";
+import TwelveMonthCalendar from "./TwelveMonthCalendar";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import PlanItemCalendarDialog from "./PlanItemCalendarDialog";
+import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
+import PlanItemEditView from "./PlanItemEditView";
+import styles from "./BudgetDashboard.module.css";
+
 const PLAN_CATEGORIES = "planCategories";
 
 function mapStateToProps(state) {
@@ -26,21 +44,25 @@ function mapStateToProps(state) {
     currentUser: state.auth.currentUser
   };
 }
+export function calculatePlanItemCost(planItem) {
+  const amount = planItem.allDay
+    ? Math.round(planItem.priceActual * 100) / 100
+    : Math.round(
+        ((planItem.priceActual *
+          differenceInMinutes(
+            new Date(planItem.endDate),
+            new Date(planItem.startDate)
+          )) /
+          60) *
+          100
+      ) / 100;
+  return amount;
+}
 
 export function calculateTotalCost(planItemGroup) {
   let allocated = 0;
   _.forEach(planItemGroup.planItems, planItem => {
-    const amount = planItem.allDay
-      ? Math.round(planItem.priceActual * 100) / 100
-      : Math.round(
-          ((planItem.priceActual *
-            differenceInMinutes(
-              new Date(planItem.endDate),
-              new Date(planItem.startDate)
-            )) /
-            60) *
-            100
-        ) / 100;
+    const amount = calculatePlanItemCost(planItem);
 
     allocated += amount;
   });
@@ -56,7 +78,27 @@ export function calculateAllocated(planItemGroups) {
   return Math.round(allocated * 100) / 100;
 }
 
-class BudgetDashBoard extends React.Component {
+export function planItemGroupToEvents(planItemGroup) {
+  const events = planItemGroup.planItems.map(planItem => {
+    const { allDay, endDate, name, startDate } = planItem;
+    return {
+      allDay,
+      start: new Date(startDate),
+      end: new Date(endDate),
+      title: name,
+      planItem
+    };
+  });
+  return events;
+}
+
+const PLAN_ITEM_DIALOG_PAGES = {
+  preview: 0,
+  delete: 1,
+  edit: 2
+};
+
+class BudgetDashboard extends React.Component {
   state = {
     supportGroups: [],
     planCategories: {},
@@ -66,7 +108,11 @@ class BudgetDashBoard extends React.Component {
     postcode: 3000,
     planId: null,
     registrationGroups: [],
-    dialogPage: PLAN_ITEM_GROUPS_VIEW
+    dialogPage: PLAN_ITEM_GROUPS_VIEW,
+    showMonthView: false,
+    monthViewDate: setMonth(new Date(), 1),
+    planItemDialogPage: -1,
+    selectedPlanItem: null
   };
 
   async componentDidMount() {
@@ -188,19 +234,116 @@ class BudgetDashBoard extends React.Component {
     this.setState({ openSupports: false });
   };
 
-  handleSetPlanItemGroups = planItemGroups => {
-    this.setState({
-      planCategories: {
-        ...this.state.planCategories,
-        [this.state.activeCategory]: {
-          ...this.state.planCategories[this.state.activeCategory],
-          planItemGroups: planItemGroups
-        }
-      }
-    });
+  handleEditPlanItemGroups = (planCategory, planItemGroups) => {
     if (this.props.currentUser) {
       // todo: call backend to save changes
+    } else {
+      this.setState(
+        {
+          planCategories: {
+            ...this.state.planCategories,
+            [planCategory]: {
+              ...this.state.planCategories[planCategory],
+              planItemGroups: planItemGroups
+            }
+          }
+        },
+        () => {
+          this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
+        }
+      );
     }
+  };
+
+  handleDeletePlanItem = () => {
+    const planItem = this.state.selectedPlanItem;
+    let editedPlanItemGroups;
+    let supportCategory;
+    for (const [key, value] of Object.entries(this.state.planCategories)) {
+      for (let i = 0; i < value.planItemGroups.length; i++) {
+        if (value.planItemGroups[i].planItems.includes(planItem)) {
+          const planItemGroup = value.planItemGroups[i];
+
+          const editedPlanItemGroup = {
+            ...planItemGroup,
+            planItems: _.difference(planItemGroup.planItems, [planItem])
+          };
+          editedPlanItemGroups = _.difference(value.planItemGroups, [
+            planItemGroup
+          ]);
+          editedPlanItemGroups.push(editedPlanItemGroup);
+          supportCategory = key;
+
+          break;
+        }
+      }
+      if (supportCategory != null) {
+        break;
+      }
+    }
+
+    this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
+  };
+
+  handleEditPlanItem = editedPlanItem => {
+    const planItem = this.state.selectedPlanItem;
+    let editedPlanItemGroups;
+    let supportCategory;
+    for (const [key, value] of Object.entries(this.state.planCategories)) {
+      for (let i = 0; i < value.planItemGroups.length; i++) {
+        if (value.planItemGroups[i].planItems.includes(planItem)) {
+          const planItemGroup = value.planItemGroups[i];
+
+          const editedPlanItemGroup = {
+            ...planItemGroup,
+            planItems: planItemGroup.planItems.map(pI => {
+              if (pI === planItem) {
+                return editedPlanItem;
+              } else {
+                return pI;
+              }
+            })
+          };
+          editedPlanItemGroups = _.difference(value.planItemGroups, [
+            planItemGroup
+          ]);
+          editedPlanItemGroups.push(editedPlanItemGroup);
+          supportCategory = key;
+
+          break;
+        }
+      }
+      if (supportCategory != null) {
+        break;
+      }
+    }
+
+    this.handleEditPlanItemGroups(supportCategory, editedPlanItemGroups);
+  };
+
+  handleSetMonthView = date => {
+    this.setState({ monthViewDate: date }, () =>
+      this.setState({ showMonthView: true })
+    );
+  };
+
+  handleCloseDialog = () => {
+    this.setState({ planItemDialogPage: -1 });
+  };
+
+  handleSelectEvent = info => {
+    this.setState({
+      selectedPlanItem: info.event.extendedProps.planItem,
+      planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.preview
+    });
+  };
+
+  handleClickDelete = () => {
+    this.setState({ planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.delete });
+  };
+
+  handleClickEdit = () => {
+    this.setState({ planItemDialogPage: PLAN_ITEM_DIALOG_PAGES.edit });
   };
 
   calculateCoreAllocated = () => {
@@ -218,6 +361,12 @@ class BudgetDashBoard extends React.Component {
   renderSummary = () => {
     let total = 0;
     let allocated = 0;
+    let events = [];
+    Object.values(this.state.planCategories).forEach(planCategories => {
+      planCategories.planItemGroups.forEach(planItemGroup => {
+        events = events.concat(planItemGroupToEvents(planItemGroup));
+      });
+    });
     _.map(this.state.planCategories, planCategory => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
@@ -226,42 +375,114 @@ class BudgetDashBoard extends React.Component {
       }
     });
     return (
-      <Card>
-        <CardHeader title="Budget Summary" />
-        <CardContent>
-          <Grid container>
-            <Grid item xs={12} sm={8} md={6} lg={4}>
-              {total === 0 ? (
-                <div>
-                  No budgets allocated to any category! Please edit your plan.
-                </div>
-              ) : (
-                <DoughnutBody allocated={allocated} total={total} />
-              )}
-            </Grid>
-          </Grid>
-        </CardContent>
-        <CardActions disableSpacing>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Button
-                onClick={() => (window.location.href = "/budget/edit")}
-                size="small"
+      <div>
+        {this.state.selectedPlanItem != null &&
+          ((this.state.planItemDialogPage ===
+            PLAN_ITEM_DIALOG_PAGES.preview && (
+            <PlanItemCalendarDialog
+              open={
+                this.state.planItemDialogPage ===
+                  PLAN_ITEM_DIALOG_PAGES.preview &&
+                this.state.selectedPlanItem != null
+              }
+              planItem={this.state.selectedPlanItem}
+              onClose={this.handleCloseDialog}
+              onDelete={this.handleClickDelete}
+              onEdit={this.handleClickEdit}
+            />
+          )) ||
+            (this.state.planItemDialogPage ===
+              PLAN_ITEM_DIALOG_PAGES.delete && (
+              <PlanItemDeleteDialog
+                open={
+                  this.state.planItemDialogPage ===
+                    PLAN_ITEM_DIALOG_PAGES.delete &&
+                  this.state.selectedPlanItem != null
+                }
+                onClose={this.handleCloseDialog}
+                onDelete={this.handleDeletePlanItem}
+              />
+            )) ||
+            (this.state.planItemDialogPage === PLAN_ITEM_DIALOG_PAGES.edit && (
+              <Dialog
+                open={
+                  this.state.planItemDialogPage ===
+                    PLAN_ITEM_DIALOG_PAGES.edit &&
+                  this.state.selectedPlanItem != null
+                }
               >
-                <EditIcon />
-                Edit Plan
-              </Button>
-              {/*<Button*/}
-              {/*  onClick={() => printPage(this.state.planCategories)}*/}
-              {/*  size="small"*/}
-              {/*>*/}
-              {/*  <PrintIcon />*/}
-              {/*  Print Plan*/}
-              {/*</Button>*/}
+                <PlanItemEditView
+                  planItem={this.state.selectedPlanItem}
+                  onSave={this.handleEditPlanItem}
+                />
+              </Dialog>
+            )))}
+        {this.state.showMonthView === true && (
+          <Dialog
+            open={this.state.showMonthView === true}
+            onClose={() => this.setState({ showMonthView: false })}
+          >
+            <DialogTitle classes={{ root: styles.dialogTitle }}>
+              <IconButton
+                aria-label="close"
+                className={styles.closeButton}
+                onClick={() => this.setState({ showMonthView: false })}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent>
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                defaultDate={this.state.monthViewDate}
+                fixedWeekCount={false}
+                height="parent"
+                events={this.events()}
+                eventClick={this.handleSelectEvent}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
+
+        <Card>
+          <CardHeader title="Budget Summary" />
+          <CardContent>
+            <Grid container justify="center">
+              <Grid item>
+                {total === 0 ? (
+                  <div>
+                    No budgets allocated to any category! Please edit your plan.
+                  </div>
+                ) : (
+                  <Grid item>
+                    <DoughnutBody allocated={allocated} total={total} />
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        </CardActions>
-      </Card>
+          </CardContent>
+          <CardActions disableSpacing>
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button
+                  onClick={() => (window.location.href = "/budget/edit")}
+                  size="small"
+                >
+                  <EditIcon />
+                  Edit Plan
+                </Button>
+                {/*<Button*/}
+                {/*  onClick={() => printPage(this.state.planCategories)}*/}
+                {/*  size="small"*/}
+                {/*>*/}
+                {/*  <PrintIcon />*/}
+                {/*  Print Plan*/}
+                {/*</Button>*/}
+              </Grid>
+            </Grid>
+          </CardActions>
+        </Card>
+      </div>
     );
   };
 
@@ -354,6 +575,18 @@ class BudgetDashBoard extends React.Component {
     });
   };
 
+  events = () => {
+    const events = [];
+    for (const planCategory of Object.values(this.state.planCategories)) {
+      planCategory.planItemGroups.forEach(planItemGroup => {
+        const toAdd = planItemGroupToEvents(planItemGroup);
+        events.push(...toAdd);
+      });
+    }
+
+    return events;
+  };
+
   render() {
     const { planCategories, birthYear, postcode } = this.state;
 
@@ -363,6 +596,12 @@ class BudgetDashBoard extends React.Component {
           {this.state.planCategories !== {} && (
             <Grid item xs={12} md={11} xl={10}>
               {this.renderSummary()}
+
+              <TwelveMonthCalendar
+                supportGroups={this.state.supportGroups}
+                planCategories={this.state.planCategories}
+                onClick={this.handleSetMonthView}
+              />
               {Object.keys(planCategories).length !== 0 &&
                 this.renderPlanCategories()}
             </Grid>
@@ -376,7 +615,7 @@ class BudgetDashBoard extends React.Component {
             postcode={postcode}
             onClose={this.handleCloseSupports}
             planCategory={this.state.planCategories[this.state.activeCategory]}
-            setPlanItemGroups={this.handleSetPlanItemGroups}
+            onEditPlanItemGroups={this.handleEditPlanItemGroups}
             openAddSupports={this.state.openAddSupports}
             registrationGroups={this.state.registrationGroups}
             page={this.state.dialogPage}
@@ -388,4 +627,4 @@ class BudgetDashBoard extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(BudgetDashBoard);
+export default connect(mapStateToProps)(BudgetDashboard);
