@@ -61,3 +61,7 @@ Django settings can be found in backend/ndis_calculator/ndis_calculator/settings
 
 If the develop branch is currently building, the app will be deployed at http://lifeplan.yefta.com/
 Please note HTTPS is not currently enabled and as such, only enter dummy data over the internet!
+
+## API
+
+The API is documented in OpenAPI specification using Swagger. The api.yaml file in Lifeplan/backend/ndis_calculator can be viewed at https://editor.swagger.io/
