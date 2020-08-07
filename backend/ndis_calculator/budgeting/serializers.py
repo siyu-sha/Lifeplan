@@ -5,6 +5,7 @@ from .models import (
     Participant,
     Plan,
     PlanCategory,
+    PlanItemGroup,
     PlanItem,
     RegistrationGroup,
     SupportCategory,
@@ -67,11 +68,19 @@ class PlanSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PlanItemSerializer(serializers.ModelSerializer):
+class PlanItemGroupSerializer(serializers.ModelSerializer):
     plan_category = serializers.ReadOnlyField(source="plan_category.id")
     support_item_group = serializers.ReadOnlyField(
         source="support_item_group.id"
     )
+
+    class Meta:
+        model = PlanItemGroup
+        fields = "__all__"
+
+
+class PlanItemSerializer(serializers.ModelSerializer):
+    plan_item_group = serializers.ReadOnlyField(source="plan_item_group.id")
 
     class Meta:
         model = PlanItem
