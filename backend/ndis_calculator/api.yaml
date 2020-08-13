@@ -255,8 +255,8 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  ? /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items
-  : get:
+  /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items:
+    get:
       security:
         - JWT: []
       tags:
@@ -320,8 +320,8 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  ? /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items/{plan_item_id}
-  : patch:
+  /plans/{plan_id}/categories/{plan_category_id}/groups/{plan_item_group_id}/items/{plan_item_id}:
+    patch:
       security:
         - JWT: []
       tags:
