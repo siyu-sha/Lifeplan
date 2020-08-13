@@ -31,12 +31,11 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile-CI
+      dockerfile: prod.Dockerfile
     environment:
       - NODE_ENV=production
     ports:
-      - "80:3000"
-    command: ./entrypoint.prod.sh
+      - "80:80"
     volumes:
       - npm-cache:/root/.npm
 

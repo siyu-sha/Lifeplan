@@ -12,4 +12,4 @@ RUN yarn install --verbose
 COPY . /app/frontend/
 EXPOSE 3000
 
-CMD ./entrypoint.sh
+CMD ./entrypoint.prod.sh
