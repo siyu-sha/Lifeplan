@@ -23,6 +23,9 @@ services:
     working_dir: /app/ndis_calculator/
     command: >
       sh -c "./entrypoint.sh"
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PASSWORD: ndisFP2019
     depends_on:
       - db
 
