@@ -17,16 +17,14 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt import views as jwt_views
 
-from budgeting.views import (
+from budgeting.views import (  # SupportCategoryViewSet,
     Authentication,
     DefaultView,
     ParticipantView,
-    ParticipantViewSet,
     PlanItemGroupViewSet,
     PlanItemViewSet,
     PlanViewSet,
     RegistrationGroupViewSet,
-    SupportCategoryViewSet,
     SupportGroupViewSet,
     SupportItemGroupViewSet,
     SupportItemViewSet,
@@ -49,14 +47,14 @@ api_patterns = [
     ),
     path("auth/register", Authentication.register, name="auth_register"),
     path(
-        "participant/current-user",
+        "participants/current-user",
         ParticipantView.current_user,
         name="participant_current_user",
     ),
     # Participant
     path(
         "participant/<int:participant_id>",
-        ParticipantViewSet.as_view({"patch": "update"}),
+        ParticipantView.update,
         name="participant_update",
     ),
     # Plan
@@ -96,12 +94,7 @@ api_patterns = [
         SupportGroupViewSet.as_view({"get": "list"}),
         name="support_group_list",
     ),
-    # support_category
-    path(
-        "support-categories",
-        SupportCategoryViewSet.as_view({"get": "list"}),
-        name="support_category_list",
-    ),
+    # support_category missing?
     path(
         "support-item-groups",
         SupportItemGroupViewSet.as_view({"get": "list"}),

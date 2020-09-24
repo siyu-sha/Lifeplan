@@ -102,8 +102,6 @@ class BudgetDashboard extends React.Component {
   state = {
     supportGroups: [],
     planCategories: {},
-    planItemGroups: {},
-    planItems: {},
     openSupports: false,
     activeCategory: null,
     birthYear: 1990,
@@ -146,8 +144,6 @@ class BudgetDashboard extends React.Component {
   // load plan categories, birthYear and postcode either from backend if logged in else from local storage
   loadState = async () => {
     let planCategories = {};
-    let planItemGroups = {};
-    let planItems = {};
     let birthYear = null;
     let postcode = null;
     // TODO: update for planItemGroups
@@ -160,27 +156,16 @@ class BudgetDashboard extends React.Component {
         if (response.data.length === 0) {
           window.location.href = "/budget/edit";
         } else {
-          const plans = response.data;
+          const plan = response.data[0];
+          this.setState({ planId: plan.id });
           await Promise.all(
-            // _.map(plans, async (plan) => {
-            _.map(plans.planCategories, async (planCategory) => {
-              planItemGroups = await api.PlanItemGroups.list(
-                planCategory.plan,
-                planCategory.id
-              );
-              planItems = await api.PlanItems.list(
-                plans.id,
-                planCategory.id,
-                planItemGroups.data[0].id
-              );
-
+            _.map(plan.planCategories, async (planCategory) => {
+              const response = await api.PlanItems.list(planCategory.id);
               planCategories[planCategory.supportCategory] = {
                 ...planCategory,
-                planItemGroups: planItemGroups.data,
-                planItems: planItems.data,
+                planItems: response.data,
               };
             })
-            // })
           );
         }
       });
@@ -508,9 +493,7 @@ class BudgetDashboard extends React.Component {
 
         _.forEach(supportGroup.supportCategories, (supportCategory) => {
           const planCategory = this.state.planCategories[supportCategory.id];
-          if (planCategory != null) {
-            coreBudget += parseFloat(planCategory.budget);
-          }
+          coreBudget += parseFloat(planCategory.budget);
         });
         if (coreBudget > 0) {
           return (
@@ -614,14 +597,13 @@ class BudgetDashboard extends React.Component {
             <Grid item xs={12} md={11} xl={10}>
               {this.renderSummary()}
 
-              {Object.keys(planCategories).length !== 0 &&
-                this.renderPlanCategories()}
-
               <TwelveMonthCalendar
                 supportGroups={this.state.supportGroups}
                 planCategories={this.state.planCategories}
                 onClick={this.handleSetMonthView}
               />
+              {Object.keys(planCategories).length !== 0 &&
+                this.renderPlanCategories()}
             </Grid>
           )}
         </Grid>

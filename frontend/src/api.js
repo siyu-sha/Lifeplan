@@ -69,14 +69,7 @@ const Auth = {
 
 const Participants = {
   currentUser: () => {
-    return axios.get("participant/current-user");
-  },
-  update: (participantId, { firstName, lastName, email }) => {
-    return axios.patch(`/participant/${participantId}`, {
-      firstName,
-      lastName,
-      email,
-    });
+    return axios.get("participants/current-user");
   },
 };
 
@@ -113,32 +106,15 @@ const SupportGroups = {
   },
 };
 
-const SupportCategories = {
-  list: () => {
-    return axios.get("/support-categories");
-  },
-};
-
 const Plans = {
   list: () => {
     return axios.get("/plans");
   },
-  create: ({ name, ndisNumber, startDate, endDate, supportCategories }) => {
-    return axios.post("/plans", {
-      name,
-      ndisNumber,
-      startDate,
-      endDate,
-      supportCategories,
-    });
+  create: ({ startDate, endDate, supportCategories }) => {
+    return axios.post("/plans", { startDate, endDate, supportCategories });
   },
-  update: (
-    planId,
-    { name, ndisNumber, startDate, endDate, planCategories }
-  ) => {
+  update: (planId, { startDate, endDate, planCategories }) => {
     return axios.patch(`/plans/${planId}`, {
-      name,
-      ndisNumber,
       startDate,
       endDate,
       planCategories,
@@ -147,10 +123,8 @@ const Plans = {
 };
 
 const PlanItems = {
-  list: (planId, planCategoryId, planItemGroupId) => {
-    return axios.get(
-      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items`
-    );
+  list: (planCategoryId) => {
+    return axios.get(`/plan-categories/${planCategoryId}/plan-items`);
   },
   create: (
     planCategoryId,
@@ -177,12 +151,6 @@ const PlanItems = {
   },
 };
 
-const PlanItemGroups = {
-  list: (planId, planCategoryId) => {
-    return axios.get(`/plans/${planId}/categories/${planCategoryId}/groups`);
-  },
-};
-
 const RegistrationGroups = {
   list: () => {
     return axios.get("/registration-groups");
@@ -193,12 +161,10 @@ export default {
   Auth,
   Participants,
   SupportGroups,
-  SupportCategories,
   SupportItems,
   SupportItemGroups,
   Plans,
   PlanItems,
-  PlanItemGroups,
   RegistrationGroups,
   setAccess,
   set401Interceptor,

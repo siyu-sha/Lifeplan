@@ -17,7 +17,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 export default function TwelveMonthCalendar(props) {
   const { onClick, planCategories, supportGroups } = props;
   const [year, setYear] = useState(getYear(new Date()));
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   // each array in costs represents a month,
   // where month[0] is Core, month[1] is Capacity, month[2] is Capital
 
@@ -79,15 +79,7 @@ export default function TwelveMonthCalendar(props) {
               >
                 {"<"}
               </Button>
-              {getMonth(new Date()) > 1 ? (
-                <Typography display="inline">
-                  {year}
-                  {"/"}
-                  {year + 1}
-                </Typography>
-              ) : (
-                <Typography display="inline">{year}</Typography>
-              )}
+              <Typography display="inline">{year}</Typography>
               <Button
                 onClick={() => {
                   setYear(year + 1);
@@ -116,8 +108,7 @@ export default function TwelveMonthCalendar(props) {
 
 function renderCalendars(costs, year, showPreview, onClick) {
   const calendars = [];
-  const currentMonth = getMonth(new Date());
-  for (let i = currentMonth; i < currentMonth + 12; i++) {
+  for (let i = 0; i < 12; i++) {
     const date = setYear(setMonth(new Date(), i), year);
 
     calendars.push(

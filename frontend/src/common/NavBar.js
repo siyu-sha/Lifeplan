@@ -39,28 +39,18 @@ function NavBar(props) {
           <Button href="/" color="inherit">
             Home
           </Button>
-          {props.currentUser && (
-            <Button href="/profile" color="inherit">
-              Profile
-            </Button>
-          )}
           {props.currentUser ? (
             <Button onClick={handleSignOut} color="inherit">
               Sign out
             </Button>
           ) : (
             <Button href="/signin" color="inherit">
-              Login
+              Sign In
             </Button>
           )}
         </div>
-        {props.currentUser ? (
+        {props.currentUser && (
           <Typography>Welcome, {props.currentUser.firstName}</Typography>
-        ) : (
-          <Typography>
-            Register or login to save your information and access from other
-            computers
-          </Typography>
         )}
       </Toolbar>
     </AppBar>
