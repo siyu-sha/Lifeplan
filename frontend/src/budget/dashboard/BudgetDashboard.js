@@ -102,6 +102,7 @@ class BudgetDashboard extends React.Component {
   state = {
     supportGroups: [],
     planCategories: {},
+    planDates: {},
     planItemGroups: {},
     planItems: {},
     openSupports: false,
@@ -146,6 +147,7 @@ class BudgetDashboard extends React.Component {
   // load plan categories, birthYear and postcode either from backend if logged in else from local storage
   loadState = async () => {
     let planCategories = {};
+    let planDates = {};
     let planItemGroups = {};
     let planItems = {};
     let birthYear = null;
@@ -162,29 +164,34 @@ class BudgetDashboard extends React.Component {
         } else {
           const plans = response.data;
           await Promise.all(
-            // _.map(plans, async (plan) => {
-            _.map(plans.planCategories, async (planCategory) => {
-              planItemGroups = await api.PlanItemGroups.list(
-                planCategory.plan,
-                planCategory.id
-              );
-              planItems = await api.PlanItems.list(
-                plans.id,
-                planCategory.id,
-                planItemGroups.data[0].id
-              );
-
-              planCategories[planCategory.supportCategory] = {
-                ...planCategory,
-                planItemGroups: planItemGroups.data,
-                planItems: planItems.data,
+            _.map(plans, async (plan) => {
+              planDates[plan.id] = {
+                startDate: plan.startDate,
+                endDate: plan.endDate,
               };
+              _.map(plan.planCategories, async (planCategory) => {
+                // planItemGroups = await api.PlanItemGroups.list(
+                //   planCategory.plan,
+                //   planCategory.id
+                // );
+                // planItems = await api.PlanItems.list(
+                //   plans.id,
+                //   planCategory.id,
+                //   planItemGroups.data[0].id
+                // );
+
+                planCategories[planCategory.supportCategory] = {
+                  ...planCategory,
+                  // planItemGroups: planItemGroups.data,
+                  // planItems: planItems.data,
+                };
+              });
             })
-            // })
           );
         }
       });
       this.setState({
+        planDates,
         planCategories,
         birthYear,
         postcode,
@@ -377,11 +384,11 @@ class BudgetDashboard extends React.Component {
     let total = 0;
     let allocated = 0;
     let events = [];
-    Object.values(this.state.planCategories).forEach((planCategories) => {
-      planCategories.planItemGroups.forEach((planItemGroup) => {
-        events = events.concat(planItemGroupToEvents(planItemGroup));
-      });
-    });
+    // Object.values(this.state.planCategories).forEach((planCategories) => {
+    //   planCategories.planItemGroups.forEach((planItemGroup) => {
+    //     events = events.concat(planItemGroupToEvents(planItemGroup));
+    //   });
+    // });
     _.map(this.state.planCategories, (planCategory) => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
@@ -595,18 +602,17 @@ class BudgetDashboard extends React.Component {
   events = () => {
     const events = [];
     for (const planCategory of Object.values(this.state.planCategories)) {
-      planCategory.planItemGroups.forEach((planItemGroup) => {
-        const toAdd = planItemGroupToEvents(planItemGroup);
-        events.push(...toAdd);
-      });
+      // planCategory.planItemGroups.forEach((planItemGroup) => {
+      //   const toAdd = planItemGroupToEvents(planItemGroup);
+      //   events.push(...toAdd);
+      // });
     }
 
     return events;
   };
 
   render() {
-    const { planCategories, birthYear, postcode } = this.state;
-
+    const { planDates, planCategories, birthYear, postcode } = this.state;
     return (
       <div className="root">
         <Grid container justify="center">
@@ -620,6 +626,7 @@ class BudgetDashboard extends React.Component {
               <TwelveMonthCalendar
                 supportGroups={this.state.supportGroups}
                 planCategories={this.state.planCategories}
+                planDates={this.state.planDates}
                 onClick={this.handleSetMonthView}
               />
             </Grid>

@@ -41,6 +41,18 @@ const styles = {
   sectionTotalColor: {
     color: "grey",
   },
+  addNewButton: {
+    marginTop: 16,
+  },
+  outerPaper: {
+    margin: 24,
+    marginLeft: "auto",
+    marginRight: "auto",
+    padding: 16,
+  },
+  buttonMargin: {
+    marginTop: 10,
+  },
 };
 
 //test
@@ -262,8 +274,8 @@ class FormPersonalDetails extends React.Component {
     if (Object.keys(errors).length === 0) {
       if (this.props.currentUser != null) {
         const body = {
-          name: dateToString(this.state.name),
-          ndisNumber: dateToString(this.state.ndisNumber),
+          name: this.state.name,
+          ndisNumber: this.state.ndisNumber,
           startDate: dateToString(this.state.startDate),
           endDate: dateToString(this.state.endDate),
         };
@@ -365,100 +377,105 @@ class FormPersonalDetails extends React.Component {
     }
   };
 
-  renderPersonalDetailsForm = () => {
+  renderPersonalDetailsForm = (planId) => {
     const { classes } = this.props;
     const { errors, showErrors } = this.state;
-    return (
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Personal Details</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.name}
-                required
-                label="Name"
-                onChange={this.handleNameChange("name")}
-                value={this.state.name}
-                type="text"
-                error={showErrors}
-                errortext={errors.name}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.number}
-                required
-                label="NDIS #"
-                onChange={this.handleNDISNumberChange("ndisNumber")}
-                value={this.state.ndisNumber}
-                helperText={"Used to determine NDIS Number"}
-                type="number"
-                error={showErrors}
-                errortext={errors.ndisNumber}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.number}
-                required
-                label="Postcode"
-                onChange={this.handlePostCodeChange("postcode")}
-                value={this.state.postcode}
-                helperText={"Used to determine appropriate support item prices"}
-                type="number"
-                error={showErrors}
-                errortext={errors.postcode}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.number}
-                required
-                label="Year of Birth"
-                onChange={this.handleBirthYearChange("birthYear")}
-                value={this.state.birthYear}
-                helperText={"Used to determine birth year"}
-                type="number"
-                error={showErrors}
-                errortext={errors.birthYear}
-              />
-            </Grid>
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-              <Grid item xs={12}>
-                <DatePicker
-                  label="Plan Start Date"
-                  value={this.state.startDate}
-                  onChange={this.handleDateChange("startDate")}
-                  leftArrowIcon={<ChevronLeft />}
-                  rightArrowIcon={<ChevronRight />}
-                  required
-                  format="D MMMM Y"
-                />
+    return this.state.allPlans.map((plan, index) => {
+      if (plan.id === planId) {
+        return (
+          <ExpansionPanel key={index}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Personal Details</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <ValidatedTextField
+                    className={classes.name}
+                    required
+                    label="Name"
+                    onChange={this.handleNameChange("name")}
+                    value={plan.name}
+                    type="text"
+                    error={showErrors}
+                    errortext={errors.name}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ValidatedTextField
+                    className={classes.number}
+                    required
+                    label="NDIS #"
+                    onChange={this.handleNDISNumberChange("ndisNumber")}
+                    value={plan.ndisNumber}
+                    helperText={"Used to determine NDIS Number"}
+                    type="number"
+                    error={showErrors}
+                    errortext={errors.ndisNumber}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ValidatedTextField
+                    className={classes.number}
+                    required
+                    label="Postcode"
+                    onChange={this.handlePostCodeChange("postcode")}
+                    value={this.state.postcode}
+                    helperText={
+                      "Used to determine appropriate support item prices"
+                    }
+                    type="number"
+                    error={showErrors}
+                    errortext={errors.postcode}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ValidatedTextField
+                    className={classes.number}
+                    required
+                    label="Year of Birth"
+                    onChange={this.handleBirthYearChange("birthYear")}
+                    value={this.state.birthYear}
+                    helperText={"Used to determine birth year"}
+                    type="number"
+                    error={showErrors}
+                    errortext={errors.birthYear}
+                  />
+                </Grid>
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <Grid item xs={12}>
+                    <DatePicker
+                      label="Plan Start Date"
+                      value={plan.startDate}
+                      onChange={this.handleDateChange("startDate")}
+                      leftArrowIcon={<ChevronLeft />}
+                      rightArrowIcon={<ChevronRight />}
+                      required
+                      format="D MMMM Y"
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <DatePicker
+                      margin="normal"
+                      label="Plan End Date"
+                      value={plan.endDate}
+                      onChange={this.handleDateChange("endDate")}
+                      leftArrowIcon={<ChevronLeft />}
+                      rightArrowIcon={<ChevronRight />}
+                      required
+                      format="D MMMM Y"
+                    />
+                  </Grid>
+                </MuiPickersUtilsProvider>
               </Grid>
-              <Grid item xs={12}>
-                <DatePicker
-                  margin="normal"
-                  label="Plan End Date"
-                  value={this.state.endDate}
-                  onChange={this.handleDateChange("endDate")}
-                  leftArrowIcon={<ChevronLeft />}
-                  rightArrowIcon={<ChevronRight />}
-                  required
-                  format="D MMMM Y"
-                />
-              </Grid>
-            </MuiPickersUtilsProvider>
-          </Grid>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    );
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        );
+      }
+    });
   };
 
-  renderPlanCategories = () => {
-    const { planCategories } = this.state;
+  renderPlanCategories = (planId) => {
     const { classes } = this.props;
     return this.state.supportGroups.map((group, index) => {
       return (
@@ -477,25 +494,40 @@ class FormPersonalDetails extends React.Component {
           <ExpansionPanelDetails>
             <Grid container spacing={3}>
               {group.supportCategories.map((category, index) => {
-                return (
-                  <Grid item xs={12} key={index}>
-                    <Typography variant="body1">
-                      {titleCase(category.name)}
-                    </Typography>
-                    <ValidatedTextField
-                      className={classes.number}
-                      onChange={(event) =>
-                        this.handleChange(event, category.id)
+                return this.state.allPlans.map((plan) => {
+                  if (plan.id === planId) {
+                    return plan.planCategories.map((planCategory) => {
+                      if (
+                        planCategory.plan === planId &&
+                        category.id === planCategory.supportCategory
+                      ) {
+                        return (
+                          <Grid item xs={12} key={index}>
+                            <Typography variant="body1">
+                              {titleCase(category.name)}
+                            </Typography>
+                            <ValidatedTextField
+                              className={classes.number}
+                              onChange={(event) =>
+                                this.handleChange(event, category.id)
+                              }
+                              value={planCategory.budget || ""}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    $
+                                  </InputAdornment>
+                                ),
+                              }}
+                            />
+                          </Grid>
+                        );
                       }
-                      value={planCategories[category.id] || ""}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">$</InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
-                );
+                      return;
+                    });
+                  }
+                  return;
+                });
               })}
             </Grid>
           </ExpansionPanelDetails>
@@ -507,7 +539,7 @@ class FormPersonalDetails extends React.Component {
   renderAddNew = () => {
     const { classes } = this.props;
     return (
-      <Paper className={classes.paper}>
+      <div className={classes.addNewButton}>
         <Grid container justify="flex-start">
           <Button
             className={classes.button}
@@ -518,17 +550,17 @@ class FormPersonalDetails extends React.Component {
             Add New +
           </Button>
         </Grid>
-      </Paper>
+      </div>
     );
   };
 
-  renderPlan() {
+  renderPlan(planId) {
     const { classes } = this.props;
     return (
       <Paper className={classes.paper}>
-        {this.renderPersonalDetailsForm()}
-        {this.renderPlanCategories()}
-        <Grid container justify="flex-end">
+        {this.renderPersonalDetailsForm(planId)}
+        {this.renderPlanCategories(planId)}
+        <Grid container justify="flex-end" className={classes.buttonMargin}>
           <Button
             className={classes.button}
             color="primary"
@@ -543,13 +575,16 @@ class FormPersonalDetails extends React.Component {
   }
 
   renderAllPlans() {
+    const { allPlans } = this.state;
     return this.state.allPlans.map((plan, index) => {
       return (
         <ExpansionPanel key={index}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6">{plan.name}</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>{this.renderPlan()}</ExpansionPanelDetails>
+          <ExpansionPanelDetails>
+            {this.renderPlan(plan.id)}
+          </ExpansionPanelDetails>
         </ExpansionPanel>
       );
     });
@@ -559,7 +594,7 @@ class FormPersonalDetails extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Paper className={classes.paper}>
+      <Paper className={classes.outerPaper}>
         {this.renderAllPlans()}
         {this.renderAddNew()}
       </Paper>

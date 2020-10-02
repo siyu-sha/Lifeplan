@@ -102,7 +102,7 @@ class SupportItem(models.Model):
 
 class SupportItemGroup(models.Model):
     """
-        Simple english naming for a set of highly related support items
+    Simple english naming for a set of highly related support items
     """
 
     name = models.CharField(max_length=255)
@@ -150,9 +150,9 @@ class Plan(models.Model):
     end_date = models.DateField()
     generated = models.BooleanField(default=False)
 
-    # support_categories = models.ManyToManyField(
-    #     SupportCategory, through="PlanCategory"
-    # )
+    support_categories = models.ManyToManyField(
+        SupportCategory, through="PlanCategory"
+    )
 
     def __str__(self):
         return (
