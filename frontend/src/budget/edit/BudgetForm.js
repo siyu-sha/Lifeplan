@@ -103,6 +103,7 @@ class FormPersonalDetails extends React.Component {
     errors: {},
     planId: null,
     allPlans: [],
+    updatePlans: [],
   };
 
   componentDidMount() {
@@ -129,6 +130,7 @@ class FormPersonalDetails extends React.Component {
     this.setState({ supportGroups: [...supportGroups] });
     let planCategories = {};
     let allPlans = [];
+    let updatePlans = [];
     let birthYear;
     let postcode;
     let name;
@@ -163,6 +165,13 @@ class FormPersonalDetails extends React.Component {
             endDate = new Date(plan.endDate);
             allPlans[index] = {
               ...plan,
+            };
+            updatePlans[index] = {
+              name: plan.name,
+              ndisNumber: plan.ndisNumber,
+              startDate: plan.startDate,
+              endDate: plan.endDate,
+              planCategories: plan.planCategories,
             };
             _.map(plan.planCategories, (planCategory) => {
               planCategories[planCategory.supportCategory] = {
@@ -209,13 +218,14 @@ class FormPersonalDetails extends React.Component {
       startDate,
       endDate,
       allPlans,
+      updatePlans,
     });
   };
 
   // handle money input
-  handleChange = (e, supportCategoryId) => {
+  handleChange = async (e, supportCategoryId, indexPlan, indexPlanCategory) => {
     // check if input string is the correct format for money
-    if (moneyRegex.test(e.target.value)) {
+    if (e.target.value == "" || moneyRegex.test(e.target.value)) {
       // set new amount
       let new_amount;
       if (e.target.value === "") {
@@ -223,13 +233,20 @@ class FormPersonalDetails extends React.Component {
       } else {
         new_amount = parseFloat(e.target.value);
       }
-      const planCategories = this.state.planCategories;
-      this.setState({
-        planCategories: {
-          ...planCategories,
-          [supportCategoryId]: {
-            ...planCategories[supportCategoryId],
-            budget: new_amount,
+      const updatePlans = this.state.updatePlans;
+      const planCategories = this.state.updatePlans[indexPlan].planCategories;
+      await this.setState({
+        updatePlans: {
+          ...updatePlans,
+          [indexPlan]: {
+            ...updatePlans[indexPlan],
+            planCategories: {
+              ...planCategories,
+              [indexPlanCategory]: {
+                ...planCategories[indexPlanCategory],
+                budget: new_amount,
+              },
+            },
           },
         },
       });
@@ -244,9 +261,13 @@ class FormPersonalDetails extends React.Component {
   };
 
   // handle name input
-  handleNameChange = (input) => (e) => {
-    if (nameRegex.test(e.target.value)) {
-      this.setState({ [input]: e.target.value });
+  handleNameChange = (input, index) => async (e) => {
+    if (e.target.value == "" || nameRegex.test(e.target.value)) {
+      let updatePlans = [...this.state.updatePlans];
+      let updatePlan = { ...updatePlans[index] };
+      updatePlan[input] = e.target.value;
+      updatePlans[index] = updatePlan;
+      await this.setState({ updatePlans });
     }
   };
 
@@ -258,29 +279,38 @@ class FormPersonalDetails extends React.Component {
   };
 
   // handle NDIS number input by limiting it to 9 numeric value
-  handleNDISNumberChange = (input) => (e) => {
-    if (NDISNumberRegex.test(e.target.value)) {
-      this.setState({ [input]: e.target.value });
+  handleNDISNumberChange = (input, index) => async (e) => {
+    if (e.target.value == "" || NDISNumberRegex.test(e.target.value)) {
+      let updatePlans = [...this.state.updatePlans];
+      let updatePlan = { ...updatePlans[index] };
+      updatePlan[input] = e.target.value;
+      updatePlans[index] = updatePlan;
+      await this.setState({ updatePlans });
     }
   };
 
   // handle date input
-  handleDateChange = (input) => (date) => {
-    this.setState({ [input]: date.toDate() });
+  handleDateChange = (input, index) => async (e) => {
+    let updatePlans = [...this.state.updatePlans];
+    let updatePlan = { ...updatePlans[index] };
+    updatePlan[input] = dateToString(new Date(dateToString(new Date(e))));
+    updatePlans[index] = updatePlan;
+    await this.setState({ updatePlans });
   };
 
-  handleNext = () => {
+  handleNext = (event, planId, index) => {
+    event.preventDefault();
     const errors = this.validate();
     if (Object.keys(errors).length === 0) {
       if (this.props.currentUser != null) {
         const body = {
-          name: this.state.name,
-          ndisNumber: this.state.ndisNumber,
-          startDate: dateToString(this.state.startDate),
-          endDate: dateToString(this.state.endDate),
+          name: this.state.updatePlans[index].name,
+          ndisNumber: this.state.updatePlans[index].ndisNumber,
+          startDate: this.state.updatePlans[index].startDate,
+          endDate: this.state.updatePlans[index].endDate,
         };
         const categories = _.map(
-          this.state.planCategories,
+          this.state.updatePlans[index].planCategories,
           (planCategory, supportCategory) => {
             return {
               ...planCategory,
@@ -296,7 +326,7 @@ class FormPersonalDetails extends React.Component {
           });
         } else {
           body.planCategories = categories;
-          api.Plans.update(this.state.planId, body).then(() => {
+          api.Plans.update(planId, body).then(() => {
             this.props.history.push("/budget/dashboard");
           });
         }
@@ -394,8 +424,8 @@ class FormPersonalDetails extends React.Component {
                     className={classes.name}
                     required
                     label="Name"
-                    onChange={this.handleNameChange("name")}
-                    value={plan.name}
+                    onChange={this.handleNameChange("name", index)}
+                    value={this.state.updatePlans[index].name}
                     type="text"
                     error={showErrors}
                     errortext={errors.name}
@@ -406,8 +436,8 @@ class FormPersonalDetails extends React.Component {
                     className={classes.number}
                     required
                     label="NDIS #"
-                    onChange={this.handleNDISNumberChange("ndisNumber")}
-                    value={plan.ndisNumber}
+                    onChange={this.handleNDISNumberChange("ndisNumber", index)}
+                    value={this.state.updatePlans[index].ndisNumber}
                     helperText={"Used to determine NDIS Number"}
                     type="number"
                     error={showErrors}
@@ -446,11 +476,13 @@ class FormPersonalDetails extends React.Component {
                   <Grid item xs={12}>
                     <DatePicker
                       label="Plan Start Date"
-                      value={plan.startDate}
-                      onChange={this.handleDateChange("startDate")}
+                      value={this.state.updatePlans[index].startDate}
+                      onChange={this.handleDateChange("startDate", index)}
                       leftArrowIcon={<ChevronLeft />}
                       rightArrowIcon={<ChevronRight />}
                       required
+                      id="startDate"
+                      name="startDate"
                       format="D MMMM Y"
                     />
                   </Grid>
@@ -458,8 +490,8 @@ class FormPersonalDetails extends React.Component {
                     <DatePicker
                       margin="normal"
                       label="Plan End Date"
-                      value={plan.endDate}
-                      onChange={this.handleDateChange("endDate")}
+                      value={this.state.updatePlans[index].endDate}
+                      onChange={this.handleDateChange("endDate", index)}
                       leftArrowIcon={<ChevronLeft />}
                       rightArrowIcon={<ChevronRight />}
                       required
@@ -494,9 +526,11 @@ class FormPersonalDetails extends React.Component {
           <ExpansionPanelDetails>
             <Grid container spacing={3}>
               {group.supportCategories.map((category, index) => {
-                return this.state.allPlans.map((plan) => {
+                return this.state.allPlans.map((plan, index) => {
                   if (plan.id === planId) {
-                    return plan.planCategories.map((planCategory) => {
+                    const indexPlan = index;
+                    return plan.planCategories.map((planCategory, index) => {
+                      const indexPlanCategory = index;
                       if (
                         planCategory.plan === planId &&
                         category.id === planCategory.supportCategory
@@ -509,9 +543,18 @@ class FormPersonalDetails extends React.Component {
                             <ValidatedTextField
                               className={classes.number}
                               onChange={(event) =>
-                                this.handleChange(event, category.id)
+                                this.handleChange(
+                                  event,
+                                  category.id,
+                                  indexPlan,
+                                  indexPlanCategory
+                                )
                               }
-                              value={planCategory.budget || ""}
+                              value={
+                                this.state.updatePlans[indexPlan]
+                                  .planCategories[indexPlanCategory].budget ||
+                                ""
+                              }
                               InputProps={{
                                 startAdornment: (
                                   <InputAdornment position="start">
@@ -554,7 +597,7 @@ class FormPersonalDetails extends React.Component {
     );
   };
 
-  renderPlan(planId) {
+  renderPlan(planId, index) {
     const { classes } = this.props;
     return (
       <Paper className={classes.paper}>
@@ -565,7 +608,7 @@ class FormPersonalDetails extends React.Component {
             className={classes.button}
             color="primary"
             variant="contained"
-            onClick={this.handleNext}
+            onClick={(event) => this.handleNext(event, planId, index)}
           >
             Next
           </Button>
@@ -583,7 +626,7 @@ class FormPersonalDetails extends React.Component {
             <Typography variant="h6">{plan.name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            {this.renderPlan(plan.id)}
+            {this.renderPlan(plan.id, index)}
           </ExpansionPanelDetails>
         </ExpansionPanel>
       );

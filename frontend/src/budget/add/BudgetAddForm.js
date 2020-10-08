@@ -56,6 +56,15 @@ let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let nameRegex = new RegExp(/^[a-zA-Z ]+$/);
 let NDISNumberRegex = new RegExp(/^\d{0,9}$/);
 
+const today = new Date();
+
+// return date exactly a year from today's date
+function getYearFromToday() {
+  const nextYear = new Date();
+  nextYear.setFullYear(today.getFullYear() + 1);
+  return nextYear;
+}
+
 // processes a string to capitalise the first letter every word
 function titleCase(str) {
   str = str.toLowerCase().split(" ");
@@ -98,6 +107,10 @@ class BudgetAddForm extends React.Component {
           budget: 0,
         };
       });
+    });
+    this.setState({
+      startDate: today,
+      endDate: getYearFromToday(),
     });
   };
 
