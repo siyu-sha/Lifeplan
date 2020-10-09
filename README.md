@@ -1,6 +1,6 @@
 # ndis-financial-planner
 
-This project is the brainchild of Capital Guardians: An intelligent estimator for the NIDS, aiming to facilitate access for all potential participants.
+This project is the brainchild of Capital Guardians: An intelligent estimator for the NDIS, aiming to facilitate access for all potential participants.
 
 ## Technology Overview
 
