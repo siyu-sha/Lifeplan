@@ -153,16 +153,22 @@ const PlanItems = {
     );
   },
   create: (
+    planId,
     planCategoryId,
-    { supportItemGroup, quantity, priceActual, name, frequencyPerYear }
+    planItemGroupId,
+    { planitemGroup, name, priceActual, startDate, endDate, allDay }
   ) => {
-    return axios.post(`/plan-categories/${planCategoryId}/plan-items`, {
-      supportItemGroup,
-      quantity,
-      priceActual,
-      name,
-      frequencyPerYear,
-    });
+    return axios.post(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items`,
+      {
+        planitemGroup,
+        name,
+        priceActual,
+        startDate,
+        endDate,
+        allDay,
+      }
+    );
   },
   delete: (planItemId) => {
     return axios.delete(`/plan-items/${planItemId}`);
@@ -180,6 +186,25 @@ const PlanItems = {
 const PlanItemGroups = {
   list: (planId, planCategoryId) => {
     return axios.get(`/plans/${planId}/categories/${planCategoryId}/groups`);
+  },
+  create: (
+    planId,
+    planCategoryId,
+    { planCategory, supportItemGroup, name }
+  ) => {
+    return axios.post(`/plans/${planId}/categories/${planCategoryId}/groups`, {
+      planCategory,
+      supportItemGroup,
+      name,
+    });
+  },
+  update: (planId, planCategoryId, planItemGroupId, { name }) => {
+    return axios.patch(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}`,
+      {
+        name,
+      }
+    );
   },
 };
 

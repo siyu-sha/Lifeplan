@@ -32,6 +32,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import DoughnutBody from "../../DoughnutChart/DoughnutBody";
 import PlanItemEditView from "./PlanItemEditView";
 import { getHours, getMinutes, setHours, setMinutes } from "date-fns";
+import moment from "moment";
 
 export const PLAN_ITEM_GROUPS_VIEW = 0;
 export const SUPPORTS_SELECTION = 1;
@@ -104,6 +105,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function dateToString(date) {
+  return moment(date).format("YYYY-MM-DD");
+}
+
 export default function SupportItemDialog(props) {
   const {
     birthYear,
@@ -115,7 +120,6 @@ export default function SupportItemDialog(props) {
     page,
     setPage,
   } = props;
-  console.log(supportCategory);
 
   // React Hooks
   // list of all support items for this group
@@ -259,11 +263,41 @@ export default function SupportItemDialog(props) {
 
   function handleAddPlanItemGroup(planItemGroup) {
     const { planItemGroups } = planCategory;
-    // if (currentUser) {
-    //   // TODO: handle registered users
-    //   api.PlanItems.create(planCategory.id, planItemGroup).then(() => {
-    //     onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
-    //   });
+    // TODO: handle registered users
+    if (planCategory.plan !== null) {
+      let planId = planCategory.plan;
+      let planCategoryId = planCategory.id;
+      const planItemGroupData = {
+        planCategory: planCategory.id,
+        supportItemGroup: planItemGroup.supportItemGroup,
+        name: planItemGroup.name,
+      };
+
+      api.PlanItemGroups.create(planId, planCategoryId, planItemGroupData).then(
+        (response) => {
+          let planItemGroupId = response.data.id;
+          for (let i = 0; i < planItemGroup.planItems.length; i++) {
+            const planItemData = {
+              planitemGroup: planItemGroupId,
+              name: planItemGroup.name,
+              priceActual: planItemGroup.planItems[i].priceActual,
+              startDate: dateToString(planItemGroup.planItems[i].startDate),
+              endDate: dateToString(planItemGroup.planItems[i].endDate),
+              allDay: planItemGroup.planItems[i].allDay,
+            };
+
+            api.PlanItems.create(
+              planId,
+              planCategoryId,
+              planItemGroupId,
+              planItemData
+            ).then((response) => {
+              // onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
+            });
+          }
+        }
+      );
+    }
     onEditPlanItemGroups(supportCategory.id, [
       planItemGroup,
       ...planItemGroups,

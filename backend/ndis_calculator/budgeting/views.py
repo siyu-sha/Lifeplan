@@ -243,6 +243,13 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         )
         return self.is_plan_category_owner(request, plan_category)
 
+    def is_plan_item_owner(self, request, plan_item):
+        print("plan item owner called")
+        plan_item_group = get_object_or_404(
+            PlanItemGroup.objects.all(), pk=plan_item
+        )
+        return self.is_plan_item_group_owner(request, plan_item_group)
+
     def list(self, request, plan_id, plan_category_id):
         plan_category = get_object_or_404(
             PlanCategory.objects.all(), pk=plan_category_id
@@ -254,7 +261,7 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def create(self, request, plan_category_id):
+    def create(self, request, plan_id, plan_category_id):
         # check if plan category and corresponding plan exists
         plan_category = get_object_or_404(
             PlanCategory.objects.all(), pk=plan_category_id
@@ -281,9 +288,12 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def update(self, request, plan_item_group_id):
+    def update(self, request, plan_id, plan_category_id, plan_item_group_id):
         plan_item_group = get_object_or_404(
             self.queryset, pk=plan_item_group_id
+        )
+        plan_category = get_object_or_404(
+            PlanCategory.objects.all(), pk=plan_category_id
         )
         if self.is_plan_item_owner(request, plan_item_group):
 
@@ -291,7 +301,12 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
                 plan_item_group, data=request.data, partial=True
             )
             if serializer.is_valid():
-                serializer.save()
+                # serializer.save()
+                serializer.save(
+                    plan_category=plan_category,
+                    plan_item_group=plan_item_group,
+                    name=request.data["name"],
+                )
                 return Response(serializer.data, status.HTTP_200_OK)
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
@@ -349,7 +364,7 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def create(self, request, plan_item_group_id):
+    def create(self, request, plan_id, plan_category_id, plan_item_group_id):
         # check if plan item group, plan category, and corresponding plan exists
         plan_item_group = get_object_or_404(
             PlanItemGroup.objects.all(), pk=plan_item_group_id

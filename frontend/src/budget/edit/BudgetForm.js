@@ -68,6 +68,7 @@ let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let postcodeRegex = new RegExp(/^\d{0,4}$/);
 let nameRegex = new RegExp(/^[a-zA-Z ]+$/);
 let NDISNumberRegex = new RegExp(/^\d{0,9}$/);
+let BirthYearRegex = new RegExp(/^\d{0,4}$/);
 
 const today = new Date();
 
@@ -253,11 +254,67 @@ class FormPersonalDetails extends React.Component {
     }
   };
 
+  // handle money input
+  handleChangeOffline = (e, supportCategoryId) => {
+    // check if input string is the correct format for money
+    if (moneyRegex.test(e.target.value)) {
+      // set new amount
+      let new_amount;
+      if (e.target.value === "") {
+        new_amount = 0;
+      } else {
+        new_amount = parseFloat(e.target.value);
+      }
+      const planCategories = this.state.planCategories;
+      this.setState({
+        planCategories: {
+          ...planCategories,
+          [supportCategoryId]: {
+            ...planCategories[supportCategoryId],
+            budget: new_amount,
+          },
+        },
+      });
+      console.log(this.state.planCategories, " : this.state.planCategories");
+    }
+  };
+
   // handle postcode input by limiting it to 4 digits (also works for year)
   handlePostCodeChange = (input) => (e) => {
     if (postcodeRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
     }
+  };
+
+  // handle offline Name
+  handleOfflineNameChange = (input) => (e) => {
+    if (e.target.value == "" || nameRegex.test(e.target.value)) {
+      this.setState({ [input]: e.target.value });
+    }
+  };
+
+  // handle offline NDIS NUmber
+  handleOfflineNDISNumberChange = (input) => (e) => {
+    if (e.target.value == "" || NDISNumberRegex.test(e.target.value)) {
+      this.setState({ [input]: e.target.value });
+    }
+  };
+
+  // handle offline birth year input
+  handleOfflineBirthYearChange = (input) => (e) => {
+    if (
+      e.target.value == "" ||
+      e.target.value == 0 ||
+      BirthYearRegex.test(e.target.value)
+    ) {
+      this.setState({ [input]: e.target.value });
+    }
+  };
+
+  // handle date change
+  handleOfflineDateChange = (input) => async (e) => {
+    let date = dateToString(new Date(dateToString(new Date(e))));
+    await this.setState({ [input]: date });
   };
 
   // handle name input
@@ -343,6 +400,27 @@ class FormPersonalDetails extends React.Component {
         );
         this.props.history.push("/budget/dashboard");
       }
+    } else {
+      console.log(errors);
+      this.setState({ errors: errors });
+      this.setState({ showErrors: true });
+    }
+  };
+
+  handleNextOffline = () => {
+    const errors = this.validate();
+    if (Object.keys(errors).length === 0) {
+      localStorage.setItem("name", this.state.name);
+      localStorage.setItem("ndisNumber", this.state.ndisNumber);
+      localStorage.setItem("postcode", this.state.postcode);
+      localStorage.setItem("birthYear", this.state.birthYear);
+      localStorage.setItem("startDate", this.state.startDate);
+      localStorage.setItem("endDate", this.state.endDate);
+      localStorage.setItem(
+        PLAN_CATEGORIES,
+        JSON.stringify(this.state.planCategories)
+      );
+      this.props.history.push("/budget/dashboard");
     } else {
       console.log(errors);
       this.setState({ errors: errors });
@@ -610,7 +688,7 @@ class FormPersonalDetails extends React.Component {
             variant="contained"
             onClick={(event) => this.handleNext(event, planId, index)}
           >
-            Next
+            View
           </Button>
         </Grid>
       </Paper>
@@ -633,15 +711,180 @@ class FormPersonalDetails extends React.Component {
     });
   }
 
+  renderOfflinePersonalDetailsForm = () => {
+    const { classes } = this.props;
+    const { errors, showErrors } = this.state;
+    return (
+      <ExpansionPanel defaultExpanded>
+        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Personal Details</Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <ValidatedTextField
+                className={classes.name}
+                required
+                label="Name"
+                onChange={this.handleOfflineNameChange("name")}
+                value={this.state.name}
+                type="text"
+                error={showErrors}
+                errortext={errors.name}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ValidatedTextField
+                className={classes.number}
+                required
+                label="NDIS #"
+                onChange={this.handleOfflineNDISNumberChange("ndisNumber")}
+                value={this.state.ndisNumber}
+                helperText={"Used to determine NDIS Number"}
+                type="number"
+                error={showErrors}
+                errortext={errors.ndisNumber}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ValidatedTextField
+                className={classes.number}
+                required
+                label="Postcode"
+                onChange={this.handlePostCodeChange("postcode")}
+                value={this.state.postcode}
+                helperText={"Used to determine appropriate support item prices"}
+                type="number"
+                error={showErrors}
+                errortext={errors.postcode}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ValidatedTextField
+                className={classes.number}
+                required
+                label="Year of Birth"
+                onChange={this.handleOfflineBirthYearChange("birthYear")}
+                value={this.state.birthYear}
+                helperText={"Used to determine birth year"}
+                type="number"
+                error={showErrors}
+                errortext={errors.birthYear}
+              />
+            </Grid>
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+              <Grid item xs={12}>
+                <DatePicker
+                  label="Plan Start Date"
+                  value={this.state.startDate}
+                  onChange={this.handleOfflineDateChange("startDate")}
+                  leftArrowIcon={<ChevronLeft />}
+                  rightArrowIcon={<ChevronRight />}
+                  required
+                  id="startDate"
+                  name="startDate"
+                  format="D MMMM Y"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <DatePicker
+                  margin="normal"
+                  label="Plan End Date"
+                  value={this.state.endDate}
+                  onChange={this.handleOfflineDateChange("endDate")}
+                  leftArrowIcon={<ChevronLeft />}
+                  rightArrowIcon={<ChevronRight />}
+                  required
+                  format="D MMMM Y"
+                />
+              </Grid>
+            </MuiPickersUtilsProvider>
+          </Grid>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    );
+  };
+
+  renderOfflinePlanCategories = () => {
+    const { planCategories } = this.state;
+    const { classes } = this.props;
+    return this.state.supportGroups.map((group, index) => {
+      return (
+        <ExpansionPanel key={index}>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">{titleCase(group.name)}</Typography>
+            <Typography
+              variant="h6"
+              className={this.props.sectionTotalColor}
+              inline="true"
+            >
+              {" "}
+              {/*&nbsp;|&nbsp;Total: ${this.state[group.name]}*/}
+            </Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Grid container spacing={3}>
+              {group.supportCategories.map((category, index) => {
+                return (
+                  <Grid item xs={12} key={index}>
+                    <Typography variant="body1">
+                      {titleCase(category.name)}
+                    </Typography>
+                    <ValidatedTextField
+                      className={classes.number}
+                      onChange={(event) =>
+                        this.handleChangeOffline(event, category.id)
+                      }
+                      value={
+                        this.state.planCategories[category.id]
+                          ? this.state.planCategories[category.id].budget
+                          : ""
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      );
+    });
+  };
+
   // render page
   render() {
     const { classes } = this.props;
-    return (
-      <Paper className={classes.outerPaper}>
-        {this.renderAllPlans()}
-        {this.renderAddNew()}
-      </Paper>
-    );
+    const access = localStorage.getItem(LocalStorageKeys.ACCESS);
+    if (access == null) {
+      return (
+        <Paper className={classes.outerPaper}>
+          {access == null ? this.renderOfflinePersonalDetailsForm() : ""}
+          {access == null ? this.renderOfflinePlanCategories() : ""}
+          <Grid container justify="flex-end" className={classes.buttonMargin}>
+            <Button
+              className={classes.button}
+              color="primary"
+              variant="contained"
+              onClick={this.handleNextOffline}
+            >
+              View
+            </Button>
+          </Grid>
+        </Paper>
+      );
+    } else {
+      return (
+        <Paper className={classes.outerPaper}>
+          {this.renderAllPlans()}
+          {this.renderAddNew()}
+        </Paper>
+      );
+    }
   }
 }
 

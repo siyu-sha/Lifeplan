@@ -45,17 +45,18 @@ function mapStateToProps(state) {
   };
 }
 export function calculatePlanItemCost(planItem) {
-  const amount = planItem.allDay
-    ? Math.round(planItem.priceActual * 100) / 100
-    : Math.round(
-        ((planItem.priceActual *
-          differenceInMinutes(
-            new Date(planItem.endDate),
-            new Date(planItem.startDate)
-          )) /
-          60) *
-          100
-      ) / 100;
+  const amount =
+    planItem.allDay !== null
+      ? Math.round(planItem.priceActual * 100) / 100
+      : Math.round(
+          ((planItem.priceActual *
+            differenceInMinutes(
+              new Date(planItem.endDate),
+              new Date(planItem.startDate)
+            )) /
+            60) *
+            100
+        ) / 100;
   return amount;
 }
 
@@ -116,6 +117,7 @@ class BudgetDashboard extends React.Component {
     monthViewDate: setMonth(new Date(), 1),
     planItemDialogPage: -1,
     selectedPlanItem: null,
+    flag: false,
   };
 
   async componentDidMount() {
@@ -152,6 +154,8 @@ class BudgetDashboard extends React.Component {
     let planItems = {};
     let birthYear = null;
     let postcode = null;
+    let flag = false;
+
     // TODO: update for planItemGroups
     if (localStorage.getItem(LocalStorageKeys.ACCESS) != null) {
       await api.Participants.currentUser().then((response) => {
@@ -165,36 +169,84 @@ class BudgetDashboard extends React.Component {
           const plans = response.data;
           await Promise.all(
             _.map(plans, async (plan) => {
+              this.state.planId = plan.id;
               planDates[plan.id] = {
                 startDate: plan.startDate,
                 endDate: plan.endDate,
               };
               _.map(plan.planCategories, async (planCategory) => {
-                // planItemGroups = await api.PlanItemGroups.list(
-                //   planCategory.plan,
-                //   planCategory.id
-                // );
-                // planItems = await api.PlanItems.list(
-                //   plans.id,
-                //   planCategory.id,
-                //   planItemGroups.data[0].id
-                // );
-
+                api.PlanItemGroups.list(
+                  planCategory.plan,
+                  planCategory.id
+                ).then((responsePlanItemGroup) => {
+                  let planItemGroups = [];
+                  // let indexPlanItemGroup = 0;
+                  if (responsePlanItemGroup.data.length !== 0) {
+                    planItemGroups = responsePlanItemGroup.data.map(
+                      (planItemGroup, index) => {
+                        if (planCategory.id === planItemGroup.planCategory) {
+                          api.PlanItems.list(
+                            planCategory.plan,
+                            planCategory.id,
+                            planItemGroup.id
+                          ).then((responsePlanItem) => {
+                            let planItems = [];
+                            // let indexPlanItem = 0;
+                            if (responsePlanItem.data.length !== 0) {
+                              planItems = responsePlanItem.data.map(
+                                (planItem, index) => {
+                                  if (
+                                    planItemGroup.id === planItem.planItemGroup
+                                  ) {
+                                    planItems[index] = {
+                                      ...planItem,
+                                    };
+                                    // index2++;
+                                    return {
+                                      ...planItem,
+                                    };
+                                  }
+                                  return {};
+                                }
+                              );
+                              planItemGroups[index] = {
+                                ...planItemGroup,
+                                planItems: planItems || [],
+                              };
+                              // index++;
+                            }
+                          });
+                          return {
+                            ...planItemGroup,
+                          };
+                        }
+                        return {};
+                      }
+                    );
+                    if (plan.id === planCategory.plan) {
+                      planCategories[planCategory.supportCategory] = {
+                        ...planCategory,
+                        planItemGroups: planItemGroups || [],
+                      };
+                    }
+                  }
+                });
                 planCategories[planCategory.supportCategory] = {
                   ...planCategory,
-                  // planItemGroups: planItemGroups.data,
-                  // planItems: planItems.data,
+                  planItemGroups: [],
                 };
               });
             })
           );
         }
       });
+      flag = true;
       this.setState({
         planDates,
         planCategories,
         birthYear,
         postcode,
+        flag,
       });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
@@ -217,7 +269,14 @@ class BudgetDashboard extends React.Component {
         this.props.history.push("/budget/edit");
       }
     }
+    this.updateState();
   };
+
+  updateState() {
+    setInterval(() => {
+      this.setState({ planCategories: this.state.planCategories });
+    }, 2000);
+  }
 
   findSupportCategory = () => {
     let result = null;
@@ -259,6 +318,27 @@ class BudgetDashboard extends React.Component {
   handleEditPlanItemGroups = (planCategory, planItemGroups) => {
     if (this.props.currentUser) {
       // todo: call backend to save changes
+      // const data = {
+      //   name: planItemGroups[0].name,
+      // };
+      // let result = api.PlanItemGroups.update(planId, planCategoryId, planItemGroupId, data).then(() => {
+      //   console.log("Update success");
+      // });
+      // console.log(result, " :result of plaItemGroups Update API Call");
+      this.setState(
+        {
+          planCategories: {
+            ...this.state.planCategories,
+            [planCategory]: {
+              ...this.state.planCategories[planCategory],
+              planItemGroups: planItemGroups,
+            },
+          },
+        },
+        () => {
+          this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
+        }
+      );
     } else {
       this.setState(
         {
@@ -602,17 +682,17 @@ class BudgetDashboard extends React.Component {
   events = () => {
     const events = [];
     for (const planCategory of Object.values(this.state.planCategories)) {
-      // planCategory.planItemGroups.forEach((planItemGroup) => {
-      //   const toAdd = planItemGroupToEvents(planItemGroup);
-      //   events.push(...toAdd);
-      // });
+      planCategory.planItemGroups.forEach((planItemGroup) => {
+        const toAdd = planItemGroupToEvents(planItemGroup);
+        events.push(...toAdd);
+      });
     }
 
     return events;
   };
 
   render() {
-    const { planDates, planCategories, birthYear, postcode } = this.state;
+    const { planDates, planCategories, birthYear, postcode, flag } = this.state;
     return (
       <div className="root">
         <Grid container justify="center">
