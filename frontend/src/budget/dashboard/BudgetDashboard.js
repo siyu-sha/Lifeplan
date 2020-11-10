@@ -36,6 +36,7 @@ import PlanItemCalendarDialog from "./PlanItemCalendarDialog";
 import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
 import PlanItemEditView from "./PlanItemEditView";
 import styles from "./BudgetDashboard.module.css";
+import moment from "moment";
 
 const PLAN_CATEGORIES = "planCategories";
 
@@ -98,6 +99,10 @@ const PLAN_ITEM_DIALOG_PAGES = {
   delete: 1,
   edit: 2,
 };
+
+function dateToString(date) {
+  return moment(date).format("YYYY-MM-DD");
+}
 
 class BudgetDashboard extends React.Component {
   state = {
@@ -316,44 +321,64 @@ class BudgetDashboard extends React.Component {
   };
 
   handleEditPlanItemGroups = (planCategory, planItemGroups) => {
-    if (this.props.currentUser) {
-      // todo: call backend to save changes
-      // const data = {
-      //   name: planItemGroups[0].name,
-      // };
-      // let result = api.PlanItemGroups.update(planId, planCategoryId, planItemGroupId, data).then(() => {
-      //   console.log("Update success");
-      // });
-      // console.log(result, " :result of plaItemGroups Update API Call");
-      this.setState(
-        {
-          planCategories: {
-            ...this.state.planCategories,
-            [planCategory]: {
-              ...this.state.planCategories[planCategory],
-              planItemGroups: planItemGroups,
-            },
+    this.setState(
+      {
+        planCategories: {
+          ...this.state.planCategories,
+          [planCategory]: {
+            ...this.state.planCategories[planCategory],
+            planItemGroups: planItemGroups,
           },
         },
-        () => {
-          this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
+      },
+      () => {
+        this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
+      }
+    );
+    if (planItemGroups.length !== 0 || planItemGroups.length !== undefined) {
+      for (let i = 0; i < planItemGroups.length; i++) {
+        if (
+          planItemGroups[i].planCategory !== undefined &&
+          planItemGroups[i].id !== undefined
+        ) {
+          let planId = 0;
+          let planCategoryId = planItemGroups[i].planCategory;
+          let planItemGroupId = planItemGroups[i].id;
+          const data = {
+            name: planItemGroups[i].name,
+          };
+          // api.PlanItemGroups.update(planId, planCategoryId, planItemGroupId, data).then((response) => {
+          // let planItemGroupId = response.data.id;
+          if (
+            planItemGroups[i].planItems.length !== 0 ||
+            planItemGroups[i].planItems.length !== undefined
+          ) {
+            for (let j = 0; j < planItemGroups[i].planItems.length; j++) {
+              let planItemId = planItemGroups[i].planItems[j].id;
+              const planItemData = {
+                name: planItemGroups[i].planItems[j].name,
+                priceActual: planItemGroups[i].planItems[j].priceActual,
+                startDate: dateToString(
+                  planItemGroups[i].planItems[j].startDate
+                ),
+                endDate: dateToString(planItemGroups[i].planItems[j].endDate),
+                allDay: planItemGroups[i].planItems[j].allDay,
+              };
+
+              api.PlanItems.update(
+                planId,
+                planCategoryId,
+                planItemGroupId,
+                planItemId,
+                planItemData
+              ).then((response) => {
+                // onEditPlanItemGroups([planItemGroup, ...planItemGroups]);
+              });
+            }
+          }
+          // });
         }
-      );
-    } else {
-      this.setState(
-        {
-          planCategories: {
-            ...this.state.planCategories,
-            [planCategory]: {
-              ...this.state.planCategories[planCategory],
-              planItemGroups: planItemGroups,
-            },
-          },
-        },
-        () => {
-          this.setState({ selectedPlanItem: null, planItemDialogPage: -1 });
-        }
-      );
+      }
     }
   };
 

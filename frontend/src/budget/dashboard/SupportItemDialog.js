@@ -31,7 +31,14 @@ import CloseIcon from "@material-ui/icons/Close";
 import Toolbar from "@material-ui/core/Toolbar";
 import DoughnutBody from "../../DoughnutChart/DoughnutBody";
 import PlanItemEditView from "./PlanItemEditView";
-import { getHours, getMinutes, setHours, setMinutes } from "date-fns";
+import {
+  getHours,
+  getMinutes,
+  setHours,
+  setMinutes,
+  parseISO,
+  format,
+} from "date-fns";
 import moment from "moment";
 
 export const PLAN_ITEM_GROUPS_VIEW = 0;
@@ -264,7 +271,7 @@ export default function SupportItemDialog(props) {
   function handleAddPlanItemGroup(planItemGroup) {
     const { planItemGroups } = planCategory;
     // TODO: handle registered users
-    if (planCategory.plan !== null) {
+    if (planCategory.plan !== undefined || planCategory.id !== undefined) {
       let planId = planCategory.plan;
       let planCategoryId = planCategory.id;
       const planItemGroupData = {
@@ -322,9 +329,13 @@ export default function SupportItemDialog(props) {
     //saveToLocalStorage(planItems);
   }
 
-  function handleEditSupportItem(supportItem, planItem) {
+  function handleEditSupportItem(supportItem, planItemGroup) {
     setEditedItem(supportItem);
-    setSelectedPlanItemGroup(planItem);
+    setSelectedPlanItemGroup(planItemGroup);
+    setEditPlanItemGroupOptions({
+      editAll: PLAN_ITEM_GROUP_EDIT_ALL,
+      planItem: planItemGroup.planItems[0],
+    });
     goToPlanItemGroupCalendarView();
   }
 
@@ -359,8 +370,6 @@ export default function SupportItemDialog(props) {
   }
 
   function handleEditPlanItem(planItem) {
-    console.log(planItem);
-
     let editedPlanItemGroup = {};
     if (editPlanItemGroupOptions.editAll === true) {
       const { name, priceActual } = planItem;
@@ -374,11 +383,11 @@ export default function SupportItemDialog(props) {
             name,
             priceActual,
             startDate: setMinutes(
-              setHours(pI.startDate, getHours(startDate)),
+              setHours(new Date(pI.startDate), getHours(startDate)),
               getMinutes(startDate)
             ),
             endDate: setMinutes(
-              setHours(pI.endDate, getHours(endDate)),
+              setHours(new Date(pI.startDate), getHours(endDate)),
               getMinutes(endDate)
             ),
           };
@@ -408,16 +417,15 @@ export default function SupportItemDialog(props) {
       })
     );
     setSelectedPlanItemGroup(editedPlanItemGroup);
-    goToPlanItemGroupCalendarView();
     setEditPlanItemGroupOptions({
       editAll: !PLAN_ITEM_GROUP_EDIT_ALL,
       planItem: null,
     });
+    goToPlanItemGroupCalendarView();
   }
 
   function renderPlanItemGroup(planItemGroup) {
     let supportItem;
-
     if (page === PLAN_ITEM_GROUPS_VIEW) {
       supportItem = _.find(supportItems, (supportItem) => {
         return supportItem.id === planItemGroup.supportItemGroup;
@@ -586,13 +594,19 @@ export default function SupportItemDialog(props) {
 
   function renderPlanItemGroupCalendarView() {
     return (
-      <PlanItemGroupCalendarView
-        planItemGroup={selectedPlanItemGroup}
-        onDeletePlanItemGroup={handleDeletePlanItemGroup}
-        onDeletePlanItem={handleDeletePlanItem}
-        back={goToSupportsList}
-        onEditPlanItem={goToEditPlanItem}
-      />
+      editPlanItemGroupOptions.planItem != null && (
+        <Grid container>
+          <PlanItemGroupCalendarView
+            planItemGroup={selectedPlanItemGroup}
+            onDeletePlanItemGroup={handleDeletePlanItemGroup}
+            onDeletePlanItem={handleDeletePlanItem}
+            back={goToSupportsList}
+            onEditPlanItem={goToEditPlanItem}
+            planItem={editPlanItemGroupOptions.planItem}
+            onSave={handleEditPlanItem}
+          />
+        </Grid>
+      )
     );
   }
 
@@ -611,6 +625,7 @@ export default function SupportItemDialog(props) {
     return (
       editPlanItemGroupOptions.planItem != null && (
         <PlanItemEditView
+          back={goToSupportsList}
           planItem={editPlanItemGroupOptions.planItem}
           onSave={handleEditPlanItem}
         />

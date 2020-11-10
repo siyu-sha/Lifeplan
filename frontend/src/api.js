@@ -173,13 +173,23 @@ const PlanItems = {
   delete: (planItemId) => {
     return axios.delete(`/plan-items/${planItemId}`);
   },
-  update: (planItemId, { quantity, priceActual, name, frequencyPerYear }) => {
-    return axios.patch(`/plan-items/${planItemId}`, {
-      quantity,
-      priceActual,
-      name,
-      frequencyPerYear,
-    });
+  update: (
+    planId,
+    planCategoryId,
+    planItemGroupId,
+    planItemId,
+    { name, priceActual, startDate, endDate, allDay }
+  ) => {
+    return axios.patch(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items/${planItemId}`,
+      {
+        name,
+        priceActual,
+        startDate,
+        endDate,
+        allDay,
+      }
+    );
   },
 };
 

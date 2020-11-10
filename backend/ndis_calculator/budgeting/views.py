@@ -248,6 +248,7 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         plan_item_group = get_object_or_404(
             PlanItemGroup.objects.all(), pk=plan_item
         )
+        print(plan_item_group)
         return self.is_plan_item_group_owner(request, plan_item_group)
 
     def list(self, request, plan_id, plan_category_id):
@@ -292,27 +293,16 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         plan_item_group = get_object_or_404(
             self.queryset, pk=plan_item_group_id
         )
-        plan_category = get_object_or_404(
-            PlanCategory.objects.all(), pk=plan_category_id
+        # if self.is_plan_item_owner(request, plan_item_group):
+        serializer = self.serializer_class(
+            plan_item_group, data=request.data, partial=True
         )
-        if self.is_plan_item_owner(request, plan_item_group):
-
-            serializer = self.serializer_class(
-                plan_item_group, data=request.data, partial=True
-            )
-            if serializer.is_valid():
-                # serializer.save()
-                serializer.save(
-                    plan_category=plan_category,
-                    plan_item_group=plan_item_group,
-                    name=request.data["name"],
-                )
-                return Response(serializer.data, status.HTTP_200_OK)
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     return Response(status=status.HTTP_403_FORBIDDEN)
 
     def destroy(self, request, plan_item_group_id):
         plan_item_group = get_object_or_404(
@@ -390,7 +380,14 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def update(self, request, plan_item_id):
+    def update(
+        self,
+        request,
+        plan_id,
+        plan_category_id,
+        plan_item_group_id,
+        plan_item_id,
+    ):
         plan_item = get_object_or_404(self.queryset, pk=plan_item_id)
         if self.is_plan_item_owner(request, plan_item):
             serializer = self.serializer_class(

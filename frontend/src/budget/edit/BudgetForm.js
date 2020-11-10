@@ -275,7 +275,6 @@ class FormPersonalDetails extends React.Component {
           },
         },
       });
-      console.log(this.state.planCategories, " : this.state.planCategories");
     }
   };
 

@@ -118,7 +118,6 @@ export default function PlanAddEditor(props) {
       supportItemGroup,
       events
     );
-    console.log(planItemGroup);
     props.save(planItemGroup);
     props.redirectSupports();
   }
@@ -139,7 +138,6 @@ export default function PlanAddEditor(props) {
   }
 
   function createNewPlanItemGroup(values, supportItemGroup, events) {
-    console.log(events);
     const planItems = events.map((event) => {
       return {
         startDate: event.start,
