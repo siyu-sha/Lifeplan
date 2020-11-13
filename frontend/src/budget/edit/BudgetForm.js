@@ -383,7 +383,10 @@ class FormPersonalDetails extends React.Component {
         } else {
           body.planCategories = categories;
           api.Plans.update(planId, body).then(() => {
-            this.props.history.push("/budget/dashboard");
+            this.props.history.push({
+              pathname: "/budget/dashboard",
+              state: planId,
+            });
           });
         }
       } else {

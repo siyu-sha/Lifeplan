@@ -41,7 +41,7 @@ export default function TwelveMonthCalendar(props) {
     let supportGroupId = -1;
     for (const supportGroup of supportGroups) {
       for (const supportCategory of supportGroup.supportCategories) {
-        if (supportCategory.id === intKey) {
+        if (parseInt(supportCategory.id) === intKey) {
           supportGroupId = supportGroup.id - 1;
           break;
         }
@@ -50,17 +50,34 @@ export default function TwelveMonthCalendar(props) {
         break;
       }
     }
-    // // support group found, now find month of events
-    // value.planItemGroups.forEach((planItemGroup) => {
-    //   planItemGroup.planItems.forEach((planItem) => {
-    //     const startDate = new Date(planItem.startDate);
-    //     const itemMonth = getMonth(startDate);
-    //     const itemYear = getYear(startDate);
-    //     if (itemYear === year) {
-    //       costs[itemMonth][supportGroupId] += calculatePlanItemCost(planItem);
-    //     }
-    //   });
-    // });
+    // support group found, now find month of events
+    value.planItemGroups.forEach((planItemGroup) => {
+      planItemGroup.planItems.forEach((planItem) => {
+        const startDate = new Date(planItem.startDate);
+        const itemMonth = getMonth(startDate);
+        const itemYear = getYear(startDate);
+        if (itemYear >= year) {
+          const currentMonth = getMonth(new Date());
+          const currentYear = getYear(new Date());
+          if (itemYear > year) {
+            if (itemMonth < currentMonth) {
+              if (year === currentYear) {
+                costs[itemMonth][supportGroupId] += calculatePlanItemCost(
+                  planItem
+                );
+              }
+            }
+          }
+          if (itemYear == year) {
+            if (itemMonth >= currentMonth) {
+              costs[itemMonth][supportGroupId] += calculatePlanItemCost(
+                planItem
+              );
+            }
+          }
+        }
+      });
+    });
   }
 
   return (
@@ -117,8 +134,30 @@ export default function TwelveMonthCalendar(props) {
 function renderCalendars(costs, year, showPreview, onClick, planDates) {
   const calendars = [];
   const currentMonth = getMonth(new Date());
+
+  let revcounter = 0;
+  if (currentMonth !== 0) {
+    revcounter = 13 - currentMonth;
+  }
+
+  let j = 0;
   for (let i = currentMonth; i < currentMonth + 12; i++) {
-    const date = setYear(setMonth(new Date(), i), year);
+    if (i > getMonth(new Date()) + 1) {
+      j = i - 12;
+    } else {
+      j = i;
+    }
+
+    let date = "";
+    if (revcounter !== 0 || revcounter > 0) {
+      revcounter--;
+    }
+
+    if (revcounter === 0) {
+      date = setYear(setMonth(new Date(), i), year + 1);
+    } else {
+      date = setYear(setMonth(new Date(), i), year);
+    }
 
     calendars.push(
       <Grid
@@ -129,7 +168,7 @@ function renderCalendars(costs, year, showPreview, onClick, planDates) {
         <PreviewCalendar
           showPreview={showPreview}
           startDate={date}
-          costs={costs[i]}
+          costs={costs[j]}
           planDates={planDates}
         />
       </Grid>

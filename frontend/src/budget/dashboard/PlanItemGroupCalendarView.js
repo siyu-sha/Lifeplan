@@ -155,7 +155,6 @@ export default function PlanItemGroupCalendarView(props) {
   }, [editedPlanItem]);
 
   function handleChangeStart(startDate) {
-    console.log(startDate);
     setEditedPlanItem({ ...editedPlanItem, startDate });
   }
 

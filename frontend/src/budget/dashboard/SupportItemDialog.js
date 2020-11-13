@@ -178,8 +178,6 @@ export default function SupportItemDialog(props) {
         api.SupportItemGroups.get({ ...body, supportCategoryID: 6 }),
       ]).then((responses) => {
         _.map(responses, (response) => {
-          // console.log(response.data);
-
           const newItems = response.data.map((supportItem) => {
             return {
               ...supportItem,
@@ -199,7 +197,6 @@ export default function SupportItemDialog(props) {
         supportCategoryID: supportCategory.id,
         registrationGroupId,
       }).then((response) => {
-        // console.log(response.data);
         const items = response.data.map((supportItem) => {
           return {
             ...supportItem,

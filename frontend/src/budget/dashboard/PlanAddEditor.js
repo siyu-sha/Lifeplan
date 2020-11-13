@@ -583,7 +583,6 @@ export default function PlanAddEditor(props) {
   };
 
   const handleTimeChange = (name) => (value) => {
-    console.log(value);
     setItemTimes({ ...itemTimes, [name]: value });
   };
 

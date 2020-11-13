@@ -109,6 +109,7 @@ class BudgetDashboard extends React.Component {
     supportGroups: [],
     planCategories: {},
     planDates: {},
+    planName: null,
     planItemGroups: {},
     planItems: {},
     openSupports: false,
@@ -155,6 +156,7 @@ class BudgetDashboard extends React.Component {
   loadState = async () => {
     let planCategories = {};
     let planDates = {};
+    let planName = null;
     let planItemGroups = {};
     let planItems = {};
     let birthYear = null;
@@ -179,68 +181,141 @@ class BudgetDashboard extends React.Component {
                 startDate: plan.startDate,
                 endDate: plan.endDate,
               };
-              _.map(plan.planCategories, async (planCategory) => {
-                api.PlanItemGroups.list(
-                  planCategory.plan,
-                  planCategory.id
-                ).then((responsePlanItemGroup) => {
-                  let planItemGroups = [];
-                  // let indexPlanItemGroup = 0;
-                  if (responsePlanItemGroup.data.length !== 0) {
-                    planItemGroups = responsePlanItemGroup.data.map(
-                      (planItemGroup, index) => {
-                        if (planCategory.id === planItemGroup.planCategory) {
-                          api.PlanItems.list(
-                            planCategory.plan,
-                            planCategory.id,
-                            planItemGroup.id
-                          ).then((responsePlanItem) => {
-                            let planItems = [];
-                            // let indexPlanItem = 0;
-                            if (responsePlanItem.data.length !== 0) {
-                              planItems = responsePlanItem.data.map(
-                                (planItem, index) => {
-                                  if (
-                                    planItemGroup.id === planItem.planItemGroup
-                                  ) {
-                                    planItems[index] = {
-                                      ...planItem,
-                                    };
-                                    // index2++;
-                                    return {
-                                      ...planItem,
-                                    };
+              if (this.props.location.state === undefined) {
+                planName = plan.name;
+                _.map(plan.planCategories, async (planCategory) => {
+                  api.PlanItemGroups.list(
+                    planCategory.plan,
+                    planCategory.id
+                  ).then((responsePlanItemGroup) => {
+                    let planItemGroups = [];
+                    // let indexPlanItemGroup = 0;
+                    if (responsePlanItemGroup.data.length !== 0) {
+                      planItemGroups = responsePlanItemGroup.data.map(
+                        (planItemGroup, index) => {
+                          if (planCategory.id === planItemGroup.planCategory) {
+                            api.PlanItems.list(
+                              planCategory.plan,
+                              planCategory.id,
+                              planItemGroup.id
+                            ).then((responsePlanItem) => {
+                              let planItems = [];
+                              // let indexPlanItem = 0;
+                              if (responsePlanItem.data.length !== 0) {
+                                planItems = responsePlanItem.data.map(
+                                  (planItem, index) => {
+                                    if (
+                                      planItemGroup.id ===
+                                      planItem.planItemGroup
+                                    ) {
+                                      planItems[index] = {
+                                        ...planItem,
+                                      };
+                                      // index2++;
+                                      return {
+                                        ...planItem,
+                                      };
+                                    }
+                                    return {};
                                   }
-                                  return {};
+                                );
+                                planItemGroups[index] = {
+                                  ...planItemGroup,
+                                  planItems: planItems || [],
+                                };
+                                // index++;
+                              }
+                            });
+                            return {
+                              ...planItemGroup,
+                            };
+                          }
+                          return {};
+                        }
+                      );
+                      if (plan.id === planCategory.plan) {
+                        planCategories[planCategory.supportCategory] = {
+                          ...planCategory,
+                          planItemGroups: planItemGroups || [],
+                        };
+                      }
+                    }
+                  });
+                  planCategories[planCategory.supportCategory] = {
+                    ...planCategory,
+                    planItemGroups: [],
+                  };
+                });
+              } else {
+                if (this.props.location.state === plan.id) {
+                  planName = plan.name;
+                  _.map(plan.planCategories, async (planCategory) => {
+                    api.PlanItemGroups.list(
+                      planCategory.plan,
+                      planCategory.id
+                    ).then((responsePlanItemGroup) => {
+                      let planItemGroups = [];
+                      // let indexPlanItemGroup = 0;
+                      if (responsePlanItemGroup.data.length !== 0) {
+                        planItemGroups = responsePlanItemGroup.data.map(
+                          (planItemGroup, index) => {
+                            if (
+                              planCategory.id === planItemGroup.planCategory
+                            ) {
+                              api.PlanItems.list(
+                                planCategory.plan,
+                                planCategory.id,
+                                planItemGroup.id
+                              ).then((responsePlanItem) => {
+                                let planItems = [];
+                                // let indexPlanItem = 0;
+                                if (responsePlanItem.data.length !== 0) {
+                                  planItems = responsePlanItem.data.map(
+                                    (planItem, index) => {
+                                      if (
+                                        planItemGroup.id ===
+                                        planItem.planItemGroup
+                                      ) {
+                                        planItems[index] = {
+                                          ...planItem,
+                                        };
+                                        // index2++;
+                                        return {
+                                          ...planItem,
+                                        };
+                                      }
+                                      return {};
+                                    }
+                                  );
+                                  planItemGroups[index] = {
+                                    ...planItemGroup,
+                                    planItems: planItems || [],
+                                  };
+                                  // index++;
                                 }
-                              );
-                              planItemGroups[index] = {
+                              });
+                              return {
                                 ...planItemGroup,
-                                planItems: planItems || [],
                               };
-                              // index++;
                             }
-                          });
-                          return {
-                            ...planItemGroup,
+                            return {};
+                          }
+                        );
+                        if (plan.id === planCategory.plan) {
+                          planCategories[planCategory.supportCategory] = {
+                            ...planCategory,
+                            planItemGroups: planItemGroups || [],
                           };
                         }
-                        return {};
                       }
-                    );
-                    if (plan.id === planCategory.plan) {
-                      planCategories[planCategory.supportCategory] = {
-                        ...planCategory,
-                        planItemGroups: planItemGroups || [],
-                      };
-                    }
-                  }
-                });
-                planCategories[planCategory.supportCategory] = {
-                  ...planCategory,
-                  planItemGroups: [],
-                };
-              });
+                    });
+                    planCategories[planCategory.supportCategory] = {
+                      ...planCategory,
+                      planItemGroups: [],
+                    };
+                  });
+                }
+              }
             })
           );
         }
@@ -248,6 +323,7 @@ class BudgetDashboard extends React.Component {
       flag = true;
       this.setState({
         planDates,
+        planName,
         planCategories,
         birthYear,
         postcode,
@@ -255,20 +331,34 @@ class BudgetDashboard extends React.Component {
       });
     } else {
       let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
+      const cachedName = localStorage.getItem("name");
       const cachedBirthYear = localStorage.getItem("birthYear");
       const cachedPostcode = localStorage.getItem("postcode");
+      const cachedStartDate = localStorage.getItem("startDate");
+      const cachedEndDate = localStorage.getItem("endDate");
       if (
         cachedPostcode != null &&
         cachedBirthYear != null &&
+        cachedStartDate != null &&
+        cachedEndDate != null &&
         cachedPlanCategories != null
       ) {
         planCategories = JSON.parse(cachedPlanCategories);
         birthYear = parseInt(cachedBirthYear);
         postcode = parseInt(cachedPostcode);
+        planDates[0] = {
+          startDate: dateToString(cachedStartDate),
+          endDate: dateToString(cachedEndDate),
+        };
+        planName = cachedName;
+        flag = true;
         this.setState({
           planCategories,
           birthYear,
           postcode,
+          planDates,
+          planName,
+          flag,
         });
       } else {
         this.props.history.push("/budget/edit");
@@ -489,11 +579,11 @@ class BudgetDashboard extends React.Component {
     let total = 0;
     let allocated = 0;
     let events = [];
-    // Object.values(this.state.planCategories).forEach((planCategories) => {
-    //   planCategories.planItemGroups.forEach((planItemGroup) => {
-    //     events = events.concat(planItemGroupToEvents(planItemGroup));
-    //   });
-    // });
+    Object.values(this.state.planCategories).forEach((planCategories) => {
+      planCategories.planItemGroups.forEach((planItemGroup) => {
+        events = events.concat(planItemGroupToEvents(planItemGroup));
+      });
+    });
     _.map(this.state.planCategories, (planCategory) => {
       if (planCategory.budget !== 0) {
         total += parseFloat(planCategory.budget);
@@ -572,7 +662,7 @@ class BudgetDashboard extends React.Component {
         )}
 
         <Card>
-          <CardHeader title="Budget Summary" />
+          <CardHeader title={this.state.planName + ": Budget Summary"} />
           <CardContent>
             <Grid container justify="center">
               <Grid item>
@@ -717,40 +807,55 @@ class BudgetDashboard extends React.Component {
   };
 
   render() {
-    const { planDates, planCategories, birthYear, postcode, flag } = this.state;
+    const {
+      planDates,
+      planCategories,
+      supportGroups,
+      birthYear,
+      postcode,
+      flag,
+    } = this.state;
     return (
       <div className="root">
-        <Grid container justify="center">
-          {this.state.planCategories !== {} && (
-            <Grid item xs={12} md={11} xl={10}>
-              {this.renderSummary()}
+        {flag ? (
+          <Grid container justify="center">
+            <Grid container justify="center">
+              {this.state.planCategories !== {} && (
+                <Grid item xs={12} md={11} xl={10}>
+                  {this.renderSummary()}
 
-              {Object.keys(planCategories).length !== 0 &&
-                this.renderPlanCategories()}
+                  {Object.keys(planCategories).length !== 0 &&
+                    this.renderPlanCategories()}
 
-              <TwelveMonthCalendar
-                supportGroups={this.state.supportGroups}
-                planCategories={this.state.planCategories}
-                planDates={this.state.planDates}
-                onClick={this.handleSetMonthView}
-              />
+                  <TwelveMonthCalendar
+                    supportGroups={supportGroups}
+                    planCategories={planCategories}
+                    planDates={planDates}
+                    onClick={this.handleSetMonthView}
+                  />
+                </Grid>
+              )}
             </Grid>
-          )}
-        </Grid>
-        {this.state.openSupports && (
-          <SupportItemDialog
-            open={this.state.openSupports}
-            supportCategory={this.findSupportCategory()}
-            birthYear={birthYear}
-            postcode={postcode}
-            onClose={this.handleCloseSupports}
-            planCategory={this.state.planCategories[this.state.activeCategory]}
-            onEditPlanItemGroups={this.handleEditPlanItemGroups}
-            openAddSupports={this.state.openAddSupports}
-            registrationGroups={this.state.registrationGroups}
-            page={this.state.dialogPage}
-            setPage={(page) => this.setState({ dialogPage: page })}
-          />
+            {this.state.openSupports && (
+              <SupportItemDialog
+                open={this.state.openSupports}
+                supportCategory={this.findSupportCategory()}
+                birthYear={birthYear}
+                postcode={postcode}
+                onClose={this.handleCloseSupports}
+                planCategory={
+                  this.state.planCategories[this.state.activeCategory]
+                }
+                onEditPlanItemGroups={this.handleEditPlanItemGroups}
+                openAddSupports={this.state.openAddSupports}
+                registrationGroups={this.state.registrationGroups}
+                page={this.state.dialogPage}
+                setPage={(page) => this.setState({ dialogPage: page })}
+              />
+            )}
+          </Grid>
+        ) : (
+          <></>
         )}
       </div>
     );
