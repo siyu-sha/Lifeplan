@@ -73,7 +73,7 @@ export default function PlanItemEditView(props) {
   }, [editedPlanItem]);
 
   function handleChangeStart(startDate) {
-    console.log(startDate);
+    // console.log(startDate);
     setEditedPlanItem({ ...editedPlanItem, startDate });
   }
 
