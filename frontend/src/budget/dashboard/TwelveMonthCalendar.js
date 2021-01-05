@@ -122,7 +122,13 @@ export default function TwelveMonthCalendar(props) {
               <Typography display="inline">Show Budgets</Typography>
             </Grid>
             <Grid container item justify="center">
-              {renderCalendars(costs, year, showPreview, onClick, planDates)}
+              {renderCalendars(
+                costs,
+                year - 1,
+                showPreview,
+                onClick,
+                planDates
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -142,8 +148,12 @@ function renderCalendars(costs, year, showPreview, onClick, planDates) {
 
   let j = 0;
   for (let i = currentMonth; i < currentMonth + 12; i++) {
-    if (i > getMonth(new Date()) + 1) {
-      j = i - 12;
+    if (currentMonth != 0) {
+      if (i > getMonth(new Date()) + 1) {
+        j = i - 12;
+      } else {
+        j = i;
+      }
     } else {
       j = i;
     }
