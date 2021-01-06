@@ -174,7 +174,6 @@ export default function SupportItemDialog(props) {
       Promise.all([
         api.SupportItemGroups.get({ ...body, supportCategoryID: 3 }),
         api.SupportItemGroups.get({ ...body, supportCategoryID: 4 }),
-        api.SupportItemGroups.get({ ...body, supportCategoryID: 5 }),
         api.SupportItemGroups.get({ ...body, supportCategoryID: 6 }),
       ]).then((responses) => {
         _.map(responses, (response) => {
