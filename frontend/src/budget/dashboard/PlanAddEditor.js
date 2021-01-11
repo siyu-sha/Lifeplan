@@ -96,12 +96,8 @@ const useStyles = makeStyles((theme) => ({
 export default function PlanAddEditor(props) {
   const { supportItem } = props;
 
-  const planStartDate = new Date(
-    localStorage.getItem(localStorageKeys.PLAN_START_DATE)
-  );
-  const planEndDate = new Date(
-    localStorage.getItem(localStorageKeys.PLAN_END_DATE)
-  );
+  const planStartDate = new Date(localStorage.getItem("startDate"));
+  const planEndDate = new Date(localStorage.getItem("endDate"));
 
   const classes = useStyles();
 

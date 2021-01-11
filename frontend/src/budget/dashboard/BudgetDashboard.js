@@ -183,6 +183,9 @@ class BudgetDashboard extends React.Component {
               };
               if (this.props.location.state === undefined) {
                 planName = plan.name;
+                localStorage.setItem("startDate", plan.startDate);
+                localStorage.setItem("endDate", plan.endDate);
+
                 _.map(plan.planCategories, async (planCategory) => {
                   api.PlanItemGroups.list(
                     planCategory.plan,

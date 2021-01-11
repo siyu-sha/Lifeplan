@@ -365,6 +365,16 @@ class FormPersonalDetails extends React.Component {
           startDate: this.state.updatePlans[index].startDate,
           endDate: this.state.updatePlans[index].endDate,
         };
+
+        localStorage.setItem(
+          "startDate",
+          JSON.stringify(this.state.updatePlans[index].startDate)
+        );
+        localStorage.setItem(
+          "endDate",
+          JSON.stringify(this.state.updatePlans[index].endDate)
+        );
+
         const categories = _.map(
           this.state.updatePlans[index].planCategories,
           (planCategory, supportCategory) => {
