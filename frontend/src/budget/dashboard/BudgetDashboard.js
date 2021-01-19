@@ -81,16 +81,18 @@ export function calculateAllocated(planItemGroups) {
 }
 
 export function planItemGroupToEvents(planItemGroup) {
-  const events = planItemGroup.planItems.map((planItem) => {
-    const { allDay, endDate, name, startDate } = planItem;
-    return {
-      allDay,
-      start: new Date(startDate),
-      end: new Date(endDate),
-      title: name,
-      planItem,
-    };
-  });
+  const events =
+    planItemGroup.planItems &&
+    planItemGroup.planItems.map((planItem) => {
+      const { allDay, endDate, name, startDate } = planItem;
+      return {
+        allDay,
+        start: new Date(startDate),
+        end: new Date(endDate),
+        title: name,
+        planItem,
+      };
+    });
   return events;
 }
 
@@ -174,82 +176,89 @@ class BudgetDashboard extends React.Component {
           window.location.href = "/budget/edit";
         } else {
           const plans = response.data;
-          await Promise.all(
-            _.map(plans, async (plan) => {
-              this.state.planId = plan.id;
-              planDates[plan.id] = {
-                startDate: plan.startDate,
-                endDate: plan.endDate,
+          console.log(plans, "...plans...");
+          if (this.props.location.state === undefined) {
+            for (var i = 0; i < 1; i++) {
+              this.state.planId = plans[i].id;
+              planDates[plans[i].id] = {
+                startDate: plans[i].startDate,
+                endDate: plans[i].endDate,
               };
-              if (this.props.location.state === undefined) {
-                planName = plan.name;
-                localStorage.setItem("startDate", plan.startDate);
-                localStorage.setItem("endDate", plan.endDate);
+              planName = plans[i].name;
+              localStorage.setItem("startDate", plans[i].startDate);
+              localStorage.setItem("endDate", plans[i].endDate);
 
-                _.map(plan.planCategories, async (planCategory) => {
-                  api.PlanItemGroups.list(
-                    planCategory.plan,
-                    planCategory.id
-                  ).then((responsePlanItemGroup) => {
-                    let planItemGroups = [];
-                    // let indexPlanItemGroup = 0;
-                    if (responsePlanItemGroup.data.length !== 0) {
-                      planItemGroups = responsePlanItemGroup.data.map(
-                        (planItemGroup, index) => {
-                          if (planCategory.id === planItemGroup.planCategory) {
-                            api.PlanItems.list(
-                              planCategory.plan,
-                              planCategory.id,
-                              planItemGroup.id
-                            ).then((responsePlanItem) => {
-                              let planItems = [];
-                              // let indexPlanItem = 0;
-                              if (responsePlanItem.data.length !== 0) {
-                                planItems = responsePlanItem.data.map(
-                                  (planItem, index) => {
-                                    if (
-                                      planItemGroup.id ===
-                                      planItem.planItemGroup
-                                    ) {
-                                      planItems[index] = {
-                                        ...planItem,
-                                      };
-                                      // index2++;
-                                      return {
-                                        ...planItem,
-                                      };
-                                    }
-                                    return {};
+              _.map(plans[i].planCategories, async (planCategory) => {
+                api.PlanItemGroups.list(
+                  planCategory.plan,
+                  planCategory.id
+                ).then((responsePlanItemGroup) => {
+                  let planItemGroups = [];
+                  // let indexPlanItemGroup = 0;
+                  if (responsePlanItemGroup.data.length !== 0) {
+                    planItemGroups = responsePlanItemGroup.data.map(
+                      (planItemGroup, index) => {
+                        if (planCategory.id === planItemGroup.planCategory) {
+                          api.PlanItems.list(
+                            planCategory.plan,
+                            planCategory.id,
+                            planItemGroup.id
+                          ).then((responsePlanItem) => {
+                            let planItems = [];
+                            // let indexPlanItem = 0;
+                            if (responsePlanItem.data.length !== 0) {
+                              planItems = responsePlanItem.data.map(
+                                (planItem, index) => {
+                                  if (
+                                    planItemGroup.id === planItem.planItemGroup
+                                  ) {
+                                    planItems[index] = {
+                                      ...planItem,
+                                    };
+                                    // index2++;
+                                    return {
+                                      ...planItem,
+                                    };
                                   }
-                                );
-                                planItemGroups[index] = {
-                                  ...planItemGroup,
-                                  planItems: planItems || [],
-                                };
-                                // index++;
-                              }
-                            });
-                            return {
-                              ...planItemGroup,
-                            };
-                          }
-                          return {};
+                                  return {};
+                                }
+                              );
+                              planItemGroups[index] = {
+                                ...planItemGroup,
+                                planItems: planItems || [],
+                              };
+                              // index++;
+                            }
+                          });
+                          return {
+                            ...planItemGroup,
+                          };
                         }
-                      );
-                      if (plan.id === planCategory.plan) {
-                        planCategories[planCategory.supportCategory] = {
-                          ...planCategory,
-                          planItemGroups: planItemGroups || [],
-                        };
+                        return {};
                       }
-                    }
-                  });
-                  planCategories[planCategory.supportCategory] = {
-                    ...planCategory,
-                    planItemGroups: [],
-                  };
+                    );
+                    // if (plans[i].id === planCategory.plan) {
+                    planCategories[planCategory.supportCategory] = {
+                      ...planCategory,
+                      planItemGroups: planItemGroups || [],
+                    };
+                    // }
+                  }
                 });
-              } else {
+                planCategories[planCategory.supportCategory] = {
+                  ...planCategory,
+                  planItemGroups: [],
+                };
+              });
+            }
+          } else {
+            await Promise.all(
+              _.map(plans, async (plan) => {
+                this.state.planId = plan.id;
+                planDates[plan.id] = {
+                  startDate: plan.startDate,
+                  endDate: plan.endDate,
+                };
                 if (this.props.location.state === plan.id) {
                   planName = plan.name;
                   _.map(plan.planCategories, async (planCategory) => {
@@ -318,9 +327,9 @@ class BudgetDashboard extends React.Component {
                     };
                   });
                 }
-              }
-            })
-          );
+              })
+            );
+          }
         }
       });
       flag = true;

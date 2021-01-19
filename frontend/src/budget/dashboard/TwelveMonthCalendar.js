@@ -52,31 +52,32 @@ export default function TwelveMonthCalendar(props) {
     }
     // support group found, now find month of events
     value.planItemGroups.forEach((planItemGroup) => {
-      planItemGroup.planItems.forEach((planItem) => {
-        const startDate = new Date(planItem.startDate);
-        const itemMonth = getMonth(startDate);
-        const itemYear = getYear(startDate);
-        if (itemYear >= year) {
-          const currentMonth = getMonth(new Date());
-          const currentYear = getYear(new Date());
-          if (itemYear > year) {
-            if (itemMonth < currentMonth) {
-              if (year === currentYear) {
+      planItemGroup.planItems &&
+        planItemGroup.planItems.forEach((planItem) => {
+          const startDate = new Date(planItem.startDate);
+          const itemMonth = getMonth(startDate);
+          const itemYear = getYear(startDate);
+          if (itemYear >= year) {
+            const currentMonth = getMonth(new Date());
+            const currentYear = getYear(new Date());
+            if (itemYear > year) {
+              if (itemMonth < currentMonth) {
+                if (year === currentYear) {
+                  costs[itemMonth][supportGroupId] += calculatePlanItemCost(
+                    planItem
+                  );
+                }
+              }
+            }
+            if (itemYear == year) {
+              if (itemMonth >= currentMonth) {
                 costs[itemMonth][supportGroupId] += calculatePlanItemCost(
                   planItem
                 );
               }
             }
           }
-          if (itemYear == year) {
-            if (itemMonth >= currentMonth) {
-              costs[itemMonth][supportGroupId] += calculatePlanItemCost(
-                planItem
-              );
-            }
-          }
-        }
-      });
+        });
     });
   }
 
