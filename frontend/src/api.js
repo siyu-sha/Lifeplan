@@ -71,11 +71,16 @@ const Participants = {
   currentUser: () => {
     return axios.get("participant/current-user");
   },
-  update: (participantId, { firstName, lastName, email }) => {
+  update: (
+    participantId,
+    { firstName, lastName, email, postcode, birthYear }
+  ) => {
     return axios.patch(`/participant/${participantId}`, {
       firstName,
       lastName,
       email,
+      postcode,
+      birthYear,
     });
   },
 };

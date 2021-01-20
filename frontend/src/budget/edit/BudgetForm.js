@@ -132,6 +132,7 @@ class FormPersonalDetails extends React.Component {
     let planCategories = {};
     let allPlans = [];
     let updatePlans = [];
+    let participantId;
     let birthYear;
     let postcode;
     let name;
@@ -141,6 +142,7 @@ class FormPersonalDetails extends React.Component {
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
       await api.Participants.currentUser().then((response) => {
+        participantId = response.data.id;
         birthYear = response.data.birthYear;
         postcode = response.data.postcode;
         name = response.data.firstName + " " + response.data.lastName;
@@ -214,6 +216,7 @@ class FormPersonalDetails extends React.Component {
       planCategories,
       birthYear,
       postcode,
+      participantId,
       name,
       ndisNumber,
       startDate,
@@ -329,9 +332,13 @@ class FormPersonalDetails extends React.Component {
 
   // handle birth year input
   handleBirthYearChange = (input) => (e) => {
-    // if (BirthYearRegex.test(e.target.value)) {
-    //   this.setState({ [input]: e.target.value });
-    // }
+    if (
+      e.target.value == "" ||
+      e.target.value == 0 ||
+      BirthYearRegex.test(e.target.value)
+    ) {
+      this.setState({ [input]: e.target.value });
+    }
   };
 
   // handle NDIS number input by limiting it to 9 numeric value
@@ -391,13 +398,25 @@ class FormPersonalDetails extends React.Component {
             this.props.history.push("/budget/dashboard");
           });
         } else {
-          body.planCategories = categories;
-          api.Plans.update(planId, body).then(() => {
-            this.props.history.push({
-              pathname: "/budget/dashboard",
-              state: planId,
-            });
-          });
+          const participantBody = {
+            firstName: this.props.currentUser.firstName,
+            lastName: this.props.currentUser.lastName,
+            email: this.props.currentUser.email,
+            postcode: this.state.postcode,
+            birthYear: this.state.birthYear,
+          };
+          console.log(this.state.participantId, " : ...id...");
+          api.Participants.update(this.state.participantId, participantBody)
+            .then(() => {
+              body.planCategories = categories;
+              api.Plans.update(planId, body).then(() => {
+                this.props.history.push({
+                  pathname: "/budget/dashboard",
+                  state: planId,
+                });
+              });
+            })
+            .catch((err) => {});
         }
       } else {
         localStorage.setItem("postcode", this.state.postcode);
@@ -541,9 +560,7 @@ class FormPersonalDetails extends React.Component {
                     label="Postcode"
                     onChange={this.handlePostCodeChange("postcode")}
                     value={this.state.postcode}
-                    helperText={
-                      "Used to determine appropriate support item prices"
-                    }
+                    helperText={"Used to determine postcode"}
                     type="number"
                     error={showErrors}
                     errortext={errors.postcode}
