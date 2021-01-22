@@ -21,7 +21,7 @@ class ParticipantTest(TestCase):
         first_name="John",
         last_name="Smith",
         password="password123",
-        email="john.smith@example.com",
+        email="John.Smith@test.com",
         postcode="3000",
         birth_year="1945",
     ):

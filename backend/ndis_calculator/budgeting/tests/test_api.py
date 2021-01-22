@@ -28,7 +28,7 @@ STUB_PARTICIPANT_DATA = {
     "firstName": "John",
     "lastName": "Smith",
     "postcode": "3000",
-    "birthYear": "2019",
+    "birthYear": 2019,
 }
 
 FIXTURES = [
