@@ -21,7 +21,7 @@ class ParticipantTest(TestCase):
         first_name="John",
         last_name="Smith",
         password="password123",
-        email="John.Smith@test.com",
+        email="john.smith@example.com",
         postcode="3000",
         birth_year="1945",
     ):
@@ -196,8 +196,8 @@ class PlanTest(TestCase):
             start_date="2018-06-01",
             end_date="2019-06-01",
         )
-        self.categories = PlanContainsCategoriesTest.create_PlanContainsCategories(
-            plan=obj
+        self.categories = (
+            PlanContainsCategoriesTest.create_PlanContainsCategories(plan=obj)
         )
         self.item_groups = PlanItemGroupTest.create_PlanItemGroup(
             plan_category=self.categories
