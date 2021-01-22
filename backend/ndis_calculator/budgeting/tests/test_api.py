@@ -245,6 +245,8 @@ class ParticipantApiTests(APITestCase):
             "last_name": STUB_PARTICIPANT_DATA["lastName"],
             "username": STUB_PARTICIPANT_DATA["email"],
             "email": STUB_PARTICIPANT_DATA["email"],
+            "postcode": STUB_PARTICIPANT_DATA["postcode"],
+            "birth_year": STUB_PARTICIPANT_DATA["birthYear"],
         }
         response = self.client.post(URL_AUTH_LOGIN, data, format="json")
         # print(response.data)
