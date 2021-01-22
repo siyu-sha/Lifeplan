@@ -73,7 +73,7 @@ const isInArray = (array, value) => {
   return (
     (
       array.find((item) => {
-        return item == value;
+        return item === value;
       }) || []
     ).length > 0
   );
@@ -106,7 +106,7 @@ const renderDays = (date, planDates) => {
         </td>
       );
     }
-    if (isInArray(arrayPlanDates, DMY) == false) {
+    if (isInArray(arrayPlanDates, DMY) === false) {
       days.push(
         <td key={i - 1} className={styles.day}>
           {i}

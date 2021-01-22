@@ -192,7 +192,7 @@ class FormPersonalDetails extends React.Component {
       const cachedNDISNumber = localStorage.getItem("ndisNumber");
       const cachedStartDate = localStorage.getItem("startdate");
       const cachedEndDate = localStorage.getItem("endDate");
-      if (cachedPlanCategories == null) {
+      if (cachedPlanCategories === null) {
         _.map(supportGroups, (supportGroup) => {
           _.map(supportGroup.supportCategories, (supportCategory) => {
             planCategories[supportCategory.id] = {
@@ -229,7 +229,7 @@ class FormPersonalDetails extends React.Component {
   // handle money input
   handleChange = async (e, supportCategoryId, indexPlan, indexPlanCategory) => {
     // check if input string is the correct format for money
-    if (e.target.value == "" || moneyRegex.test(e.target.value)) {
+    if (e.target.value === "" || moneyRegex.test(e.target.value)) {
       // set new amount
       let new_amount;
       if (e.target.value === "") {
@@ -290,14 +290,14 @@ class FormPersonalDetails extends React.Component {
 
   // handle offline Name
   handleOfflineNameChange = (input) => (e) => {
-    if (e.target.value == "" || nameRegex.test(e.target.value)) {
+    if (e.target.value === "" || nameRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
     }
   };
 
   // handle offline NDIS NUmber
   handleOfflineNDISNumberChange = (input) => (e) => {
-    if (e.target.value == "" || NDISNumberRegex.test(e.target.value)) {
+    if (e.target.value === "" || NDISNumberRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
     }
   };
@@ -305,8 +305,8 @@ class FormPersonalDetails extends React.Component {
   // handle offline birth year input
   handleOfflineBirthYearChange = (input) => (e) => {
     if (
-      e.target.value == "" ||
-      e.target.value == 0 ||
+      e.target.value === "" ||
+      e.target.value === 0 ||
       BirthYearRegex.test(e.target.value)
     ) {
       this.setState({ [input]: e.target.value });
@@ -321,7 +321,7 @@ class FormPersonalDetails extends React.Component {
 
   // handle name input
   handleNameChange = (input, index) => async (e) => {
-    if (e.target.value == "" || nameRegex.test(e.target.value)) {
+    if (e.target.value === "" || nameRegex.test(e.target.value)) {
       let updatePlans = [...this.state.updatePlans];
       let updatePlan = { ...updatePlans[index] };
       updatePlan[input] = e.target.value;
@@ -333,8 +333,8 @@ class FormPersonalDetails extends React.Component {
   // handle birth year input
   handleBirthYearChange = (input) => (e) => {
     if (
-      e.target.value == "" ||
-      e.target.value == 0 ||
+      e.target.value === "" ||
+      e.target.value === 0 ||
       BirthYearRegex.test(e.target.value)
     ) {
       this.setState({ [input]: e.target.value });
@@ -343,7 +343,7 @@ class FormPersonalDetails extends React.Component {
 
   // handle NDIS number input by limiting it to 9 numeric value
   handleNDISNumberChange = (input, index) => async (e) => {
-    if (e.target.value == "" || NDISNumberRegex.test(e.target.value)) {
+    if (e.target.value === "" || NDISNumberRegex.test(e.target.value)) {
       let updatePlans = [...this.state.updatePlans];
       let updatePlan = { ...updatePlans[index] };
       updatePlan[input] = e.target.value;
@@ -392,7 +392,7 @@ class FormPersonalDetails extends React.Component {
             };
           }
         );
-        if (this.state.planId == null) {
+        if (this.state.planId === null) {
           body.supportCategories = categories;
           api.Plans.create(body).then(() => {
             this.props.history.push("/budget/dashboard");
@@ -405,7 +405,7 @@ class FormPersonalDetails extends React.Component {
             postcode: this.state.postcode,
             birthYear: this.state.birthYear,
           };
-          console.log(this.state.participantId, " : ...id...");
+          console.log("...id...");
           api.Participants.update(this.state.participantId, participantBody)
             .then(() => {
               body.planCategories = categories;
@@ -467,26 +467,26 @@ class FormPersonalDetails extends React.Component {
     let errors = {};
 
     if (
-      this.state.postcode == null ||
+      this.state.postcode === null ||
       this.state.postcode.toString().length !== 4
     ) {
       //this.log.console("postcode is not filled");
       errors.postcode = "Invalid Postcode";
     }
 
-    if (this.state.name == null || isEmpty(this.state.name)) {
+    if (this.state.name === null || isEmpty(this.state.name)) {
       errors.name = "Please Input Name";
     }
 
     if (
-      this.state.ndisNumber == null ||
+      this.state.ndisNumber === null ||
       this.state.ndisNumber.toString().length !== 9
     ) {
       errors.ndisNumber = "Invalid NDIS Number";
     }
 
     if (
-      this.state.birthYear == null ||
+      this.state.birthYear === null ||
       this.state.birthYear.toString().length !== 4 ||
       this.state.birthYear > today.getFullYear()
     ) {
@@ -610,6 +610,8 @@ class FormPersonalDetails extends React.Component {
             </ExpansionPanelDetails>
           </ExpansionPanel>
         );
+      } else {
+        return null;
       }
     });
   };
@@ -673,10 +675,10 @@ class FormPersonalDetails extends React.Component {
                           </Grid>
                         );
                       }
-                      return;
+                      return 0;
                     });
                   }
-                  return;
+                  return 0;
                 });
               })}
             </Grid>
@@ -725,7 +727,7 @@ class FormPersonalDetails extends React.Component {
   }
 
   renderAllPlans() {
-    const { allPlans } = this.state;
+    // const { allPlans } = this.state;
     return this.state.allPlans.map((plan, index) => {
       return (
         <ExpansionPanel key={index}>
@@ -835,7 +837,7 @@ class FormPersonalDetails extends React.Component {
   };
 
   renderOfflinePlanCategories = () => {
-    const { planCategories } = this.state;
+    // const { planCategories } = this.state;
     const { classes } = this.props;
     return this.state.supportGroups.map((group, index) => {
       return (
@@ -889,11 +891,11 @@ class FormPersonalDetails extends React.Component {
   render() {
     const { classes } = this.props;
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
-    if (access == null) {
+    if (access === null) {
       return (
         <Paper className={classes.outerPaper}>
-          {access == null ? this.renderOfflinePersonalDetailsForm() : ""}
-          {access == null ? this.renderOfflinePlanCategories() : ""}
+          {access === null ? this.renderOfflinePersonalDetailsForm() : ""}
+          {access === null ? this.renderOfflinePlanCategories() : ""}
           <Grid container justify="flex-end" className={classes.buttonMargin}>
             <Button
               className={classes.button}

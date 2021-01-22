@@ -159,8 +159,8 @@ class BudgetDashboard extends React.Component {
     let planCategories = {};
     let planDates = {};
     let planName = null;
-    let planItemGroups = {};
-    let planItems = {};
+    // let planItemGroups = {};
+    // let planItems = {};
     let birthYear = null;
     let postcode = null;
     let flag = false;
@@ -176,23 +176,21 @@ class BudgetDashboard extends React.Component {
           window.location.href = "/budget/edit";
         } else {
           const plans = response.data;
-          console.log(plans, "...plans...");
           if (this.props.location.state === undefined) {
-            for (var i = 0; i < 1; i++) {
-              this.state.planId = plans[i].id;
-              planDates[plans[i].id] = {
-                startDate: plans[i].startDate,
-                endDate: plans[i].endDate,
-              };
-              planName = plans[i].name;
-              localStorage.setItem("startDate", plans[i].startDate);
-              localStorage.setItem("endDate", plans[i].endDate);
+            // for (var i = 0; i < 1; i++) {
+            var i = 0;
+            this.state.planId = plans[i].id;
+            planDates[plans[i].id] = {
+              startDate: plans[i].startDate,
+              endDate: plans[i].endDate,
+            };
+            planName = plans[i].name;
+            localStorage.setItem("startDate", plans[i].startDate);
+            localStorage.setItem("endDate", plans[i].endDate);
 
-              _.map(plans[i].planCategories, async (planCategory) => {
-                api.PlanItemGroups.list(
-                  planCategory.plan,
-                  planCategory.id
-                ).then((responsePlanItemGroup) => {
+            _.map(plans[i].planCategories, async (planCategory) => {
+              api.PlanItemGroups.list(planCategory.plan, planCategory.id).then(
+                (responsePlanItemGroup) => {
                   let planItemGroups = [];
                   // let indexPlanItemGroup = 0;
                   if (responsePlanItemGroup.data.length !== 0) {
@@ -244,13 +242,14 @@ class BudgetDashboard extends React.Component {
                     };
                     // }
                   }
-                });
-                planCategories[planCategory.supportCategory] = {
-                  ...planCategory,
-                  planItemGroups: [],
-                };
-              });
-            }
+                }
+              );
+              planCategories[planCategory.supportCategory] = {
+                ...planCategory,
+                planItemGroups: [],
+              };
+            });
+            // }
           } else {
             await Promise.all(
               _.map(plans, async (plan) => {
@@ -446,9 +445,9 @@ class BudgetDashboard extends React.Component {
           let planId = 0;
           let planCategoryId = planItemGroups[i].planCategory;
           let planItemGroupId = planItemGroups[i].id;
-          const data = {
-            name: planItemGroups[i].name,
-          };
+          // const data = {
+          //   name: planItemGroups[i].name,
+          // };
           // api.PlanItemGroups.update(planId, planCategoryId, planItemGroupId, data).then((response) => {
           // let planItemGroupId = response.data.id;
           if (

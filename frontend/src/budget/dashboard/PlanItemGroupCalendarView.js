@@ -15,19 +15,19 @@ import CustomTimePicker from "./CustomTimePicker";
 import { addHours, endOfDay, getHours, getMinutes, startOfDay } from "date-fns";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { makeStyles } from "@material-ui/core/styles";
+// import { makeStyles } from "@material-ui/core/styles";
 import { PLAN_ITEM_GROUP_EDIT_ALL } from "./SupportItemDialog";
 import { planItemGroupToEvents } from "./BudgetDashboard";
 import PlanItemDeleteDialog from "./PlanItemDeleteDialog";
 
-const useStyles = makeStyles((theme) => ({
-  buttonContainer: {
-    bottom: 0,
-  },
-  root: {
-    height: "100%",
-  },
-}));
+// const useStyles = makeStyles((theme) => ({
+//   buttonContainer: {
+//     bottom: 0,
+//   },
+//   root: {
+//     height: "100%",
+//   },
+// }));
 
 const DELETE_ALL = true;
 
@@ -54,7 +54,7 @@ export default function PlanItemGroupCalendarView(props) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteMode, setDeleteMode] = useState(-1);
   const [selectedPlanItem, setSelectedPlanItem] = useState(null);
-  const classes = useStyles();
+  // const classes = useStyles();
 
   function handleSelectEvent(info) {
     setSelectedPlanItem(info.event.extendedProps.planItem);
@@ -76,12 +76,12 @@ export default function PlanItemGroupCalendarView(props) {
     onDeletePlanItemGroup,
   ]);
 
-  const handleEditAll = useCallback(() => {
-    onEditPlanItem({
-      editAll: PLAN_ITEM_GROUP_EDIT_ALL,
-      planItem: planItemGroup.planItems[0],
-    });
-  }, [planItemGroup, onEditPlanItem]);
+  // const handleEditAll = useCallback(() => {
+  //   onEditPlanItem({
+  //     editAll: PLAN_ITEM_GROUP_EDIT_ALL,
+  //     planItem: planItemGroup.planItems[0],
+  //   });
+  // }, [planItemGroup, onEditPlanItem]);
 
   const handleEdit = useCallback(() => {
     onEditPlanItem({

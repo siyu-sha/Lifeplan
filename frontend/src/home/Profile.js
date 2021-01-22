@@ -14,7 +14,7 @@ import api from "../api";
 import Button from "@material-ui/core/Button/index";
 import { Switch, FormLabel } from "@material-ui/core";
 import AlertMessage from "../common/AlertMessage";
-import _ from "lodash";
+// import _ from "lodash";
 import connect from "react-redux/es/connect/connect";
 import { LocalStorageKeys } from "../common/constants";
 
@@ -51,7 +51,7 @@ function mapStateToProps(state) {
 
 let nameRegex = new RegExp(/^[a-zA-Z ]+$/);
 let EmailRegex = new RegExp(
-  /^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/
+  /^([a-z0-9_]+)(\.[a-z0-9_]+)*@([a-z0-9]+\.)+[a-z]{2,6}$/
 );
 
 MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
@@ -192,15 +192,15 @@ class Profile extends React.Component {
   validate = () => {
     let errors = {};
 
-    if (this.state.firstName == null || this.state.firstName == "") {
+    if (this.state.firstName === null || this.state.firstName === "") {
       errors.firstName = "Invalid First Name";
     }
 
-    if (this.state.lastName == null || this.state.lastName == "") {
+    if (this.state.lastName === null || this.state.lastName === "") {
       errors.lastName = "Invalid Last Name";
     }
 
-    if (this.state.email == null || this.state.email == "") {
+    if (this.state.email === null || this.state.email === "") {
       errors.email = "Invalid Email";
     }
 

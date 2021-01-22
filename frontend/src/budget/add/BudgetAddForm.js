@@ -225,7 +225,7 @@ class BudgetAddForm extends React.Component {
   };
 
   renderPlanDetailsForm = () => {
-    const { classes } = this.props;
+    // const { classes } = this.props;
     const { errors, showErrors } = this.state;
     return (
       <ExpansionPanel defaultExpanded>
@@ -292,7 +292,7 @@ class BudgetAddForm extends React.Component {
   };
 
   renderPlanCategories = () => {
-    const { planCategories } = this.state;
+    // const { planCategories } = this.state;
     const { classes } = this.props;
     return this.state.supportGroups.map((group, index) => {
       return (

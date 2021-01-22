@@ -69,7 +69,7 @@ export default function TwelveMonthCalendar(props) {
                 }
               }
             }
-            if (itemYear == year) {
+            if (itemYear === year) {
               if (itemMonth >= currentMonth) {
                 costs[itemMonth][supportGroupId] += calculatePlanItemCost(
                   planItem
@@ -149,7 +149,7 @@ function renderCalendars(costs, year, showPreview, onClick, planDates) {
 
   let j = 0;
   for (let i = currentMonth; i < currentMonth + 12; i++) {
-    if (currentMonth != 0) {
+    if (currentMonth !== 0) {
       if (i > getMonth(new Date()) + 1) {
         j = i - 12;
       } else {
