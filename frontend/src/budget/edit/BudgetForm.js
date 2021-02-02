@@ -479,8 +479,9 @@ class FormPersonalDetails extends React.Component {
     }
 
     if (
-      this.state.ndisNumber === null ||
-      this.state.ndisNumber.toString().length !== 9
+      this.state.ndisNumber === null || this.state.ndisNumber !== undefined
+        ? this.state.ndisNumber.toString().length !== 9
+        : true
     ) {
       errors.ndisNumber = "Invalid NDIS Number";
     }

@@ -48,6 +48,17 @@ api_patterns = [
         name="auth_refresh",
     ),
     path("auth/register", Authentication.register, name="auth_register"),
+    # Reset Password
+    path(
+        "auth/forgot-password",
+        Authentication.forgotPassword,
+        name="auth_forgot_password",
+    ),
+    path(
+        "auth/reset-password",
+        Authentication.resetPassword,
+        name="auth_reset_password",
+    ),
     path(
         "participant/current-user",
         ParticipantView.current_user,

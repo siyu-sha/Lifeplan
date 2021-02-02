@@ -65,6 +65,12 @@ const Auth = {
   refresh: (refresh) => {
     return axios.post("/auth/refresh", { refresh });
   },
+  forgotPassword: (email) => {
+    return axios.post("/auth/forgot-password", { email });
+  },
+  resetPassword: (resetInfo) => {
+    return axios.post("/auth/reset-password", { resetInfo });
+  },
 };
 
 const Participants = {

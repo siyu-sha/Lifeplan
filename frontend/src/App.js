@@ -13,6 +13,8 @@ import { LocalStorageKeys } from "./common/constants";
 import api from "./api";
 import { connect } from "react-redux";
 import { loadUser } from "./redux/reducers/auth";
+import ForgotPassword from "./authentication/ForgotPassword";
+import ResetPassword from "./authentication/ResetPassword";
 
 const mapStateToProps = (state) => {
   return {};
@@ -78,6 +80,8 @@ function App(props) {
           <Route path="/budget/dashboard" component={BudgetDashboard} />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password/:token" component={ResetPassword} />
         </Switch>
       </main>
     </div>

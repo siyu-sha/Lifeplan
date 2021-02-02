@@ -716,40 +716,40 @@ class BudgetDashboard extends React.Component {
 
   renderPlanCategories = () => {
     return _.map(this.state.supportGroups, (supportGroup) => {
-      if (supportGroup.id === 1) {
-        let coreBudget = 0;
+      // if (supportGroup.id === 1) {
+      //   let coreBudget = 0;
 
-        _.forEach(supportGroup.supportCategories, (supportCategory) => {
-          const planCategory = this.state.planCategories[supportCategory.id];
-          if (planCategory != null) {
-            coreBudget += parseFloat(planCategory.budget);
-          }
-        });
-        if (coreBudget > 0) {
-          return (
-            <BudgetCategorySection
-              sectionName={supportGroup.name}
-              key={supportGroup.id}
-            >
-              <Grid key={"1"} item xs={12} sm={6} md={4} lg={3}>
-                <BudgetCategoryCard
-                  {...{
-                    category: "Core supports",
-                    total: coreBudget,
-                    allocated: this.calculateCoreAllocated(),
-                    totalColor: LIGHT_BLUE,
-                    allocatedColor: DARK_BLUE,
-                  }}
-                  openSupports={() => this.handleOpenSupports(3)}
-                  addSupports={() => this.handleAddSupports(3)}
-                />
-              </Grid>
-            </BudgetCategorySection>
-          );
-        } else {
-          return;
-        }
-      }
+      //   _.forEach(supportGroup.supportCategories, (supportCategory) => {
+      //     const planCategory = this.state.planCategories[supportCategory.id];
+      //     if (planCategory != null) {
+      //       coreBudget += parseFloat(planCategory.budget);
+      //     }
+      //   });
+      //   if (coreBudget > 0) {
+      //     return (
+      //       <BudgetCategorySection
+      //         sectionName={supportGroup.name}
+      //         key={supportGroup.id}
+      //       >
+      //         <Grid key={"1"} item xs={12} sm={6} md={4} lg={3}>
+      //           <BudgetCategoryCard
+      //             {...{
+      //               category: "Core supports",
+      //               total: coreBudget,
+      //               allocated: this.calculateCoreAllocated(),
+      //               totalColor: LIGHT_BLUE,
+      //               allocatedColor: DARK_BLUE,
+      //             }}
+      //             openSupports={() => this.handleOpenSupports(3)}
+      //             addSupports={() => this.handleAddSupports(3)}
+      //           />
+      //         </Grid>
+      //       </BudgetCategorySection>
+      //     );
+      //   } else {
+      //     return;
+      //   }
+      // }
 
       let renderedPlanCategories = [];
       _.forEach(supportGroup.supportCategories, (supportCategory) => {

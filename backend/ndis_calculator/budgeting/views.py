@@ -1,3 +1,9 @@
+import datetime
+
+import jwt
+from django.conf import settings
+from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -67,6 +73,76 @@ class Authentication(APIView):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
+
+    @api_view(["POST"])
+    @csrf_exempt
+    def forgotPassword(request):
+        if request.method == "POST":
+            try:
+                email = request.data.get("email")["email"]
+                participant = Participant.objects.filter(
+                    email=email, is_superuser="0", is_staff="0", is_active="1"
+                ).count()
+                if participant == 1:
+                    payload = {
+                        "exp": datetime.datetime.utcnow()
+                        + datetime.timedelta(days=0, seconds=600),
+                        "iat": datetime.datetime.utcnow(),
+                        "sub": email,
+                    }
+                    token = jwt.encode(
+                        payload, settings.SECRET_KEY, algorithm="HS256"
+                    )
+                    link = (
+                        settings.HOST_NAME
+                        + "/reset-password/"
+                        + token.decode("utf-8")
+                    )
+                    subject = "Reset Password"
+                    message = (
+                        "Hi, \nTo reset your password.\nClick on this link \n"
+                        + link
+                        + "\nNote : After 10 minutes link will be expired.\n"
+                    )
+                    email_from = settings.EMAIL_HOST_USER
+                    recipient_list = [email]
+                    send_mail(subject, message, email_from, recipient_list)
+                    return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            except Participant.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @api_view(["POST"])
+    @csrf_exempt
+    def resetPassword(request):
+        if request.method == "POST":
+            try:
+                token = request.data.get("reset_info")["token"]
+                password = request.data.get("reset_info")["password"]
+                payload = jwt.decode(
+                    token, settings.SECRET_KEY
+                )  # decode token
+                email = payload["sub"]
+                try:
+                    participant = Participant.objects.get(
+                        email=email,
+                        is_superuser="0",
+                        is_staff="0",
+                        is_active="1",
+                    )
+                    participant.password = make_password(password)
+                    participant.save(update_fields=["password"])
+                    return Response(email, status=status.HTTP_200_OK)
+                except Participant.DoesNotExist:
+                    return Response(email, status=status.HTTP_400_BAD_REQUEST)
+            except jwt.ExpiredSignatureError:
+                return Response(
+                    "Signature expired.", status=status.HTTP_400_BAD_REQUEST
+                )
+            except jwt.InvalidTokenError:
+                return Response(
+                    "Invalid token.", status=status.HTTP_400_BAD_REQUEST
+                )
 
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
