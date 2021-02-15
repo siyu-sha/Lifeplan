@@ -123,13 +123,7 @@ export default function TwelveMonthCalendar(props) {
               <Typography display="inline">Show Budgets</Typography>
             </Grid>
             <Grid container item justify="center">
-              {renderCalendars(
-                costs,
-                year - 1,
-                showPreview,
-                onClick,
-                planDates
-              )}
+              {renderCalendars(costs, year, showPreview, onClick, planDates)}
             </Grid>
           </Grid>
         </Grid>
