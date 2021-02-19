@@ -75,8 +75,8 @@ class ForgotPassword extends React.Component {
   state = {
     email: "",
     submitted: false,
-    resetSuccess: false,
-    resetFailure: false,
+    forgotFailure: false,
+    forgotSuccess: false,
     alertVariant: "",
     displayMessage: "",
   };
@@ -91,37 +91,77 @@ class ForgotPassword extends React.Component {
     });
   };
 
-  handleSubmit = (event) => {
+  validate() {
+    let email = this.state.email;
+    let eerrors = null;
+    let isValid = true;
+
     this.setState({
-      submitted: true,
-      forgotFailure: false,
-      forgotSuccess: false,
+      eerrors: eerrors,
     });
 
+    var pattern = new RegExp(
+      /^[a-z]+((\.|-|_|\+)?[a-z0-9]+)*@[a-z0-9]+((\.|-)[a-z]+)*(\.[a-z]{2,})$/i
+    );
+
+    if (!email) {
+      isValid = false;
+      eerrors = "Please enter your email.";
+    }
+    if (!pattern.test(email)) {
+      isValid = false;
+      eerrors = "Please provide a valid Email Address!";
+    }
+
+    this.setState({
+      eerrors: eerrors,
+    });
+
+    return isValid;
+  }
+
+  handleSubmit = (event) => {
     event.preventDefault();
 
-    const { email } = this.state;
-
-    const resetInfo = {
-      email,
-    };
-
-    Api.Auth.forgotPassword(resetInfo)
-      .then((response) => {
-        // console.log(response);
-        this.setState({
-          forgotSuccess: true,
-          displayMessage: "Success, Please check your Inbox!",
-          alertVariant: "success",
-        });
-      })
-      .catch((err) => {
-        this.setState({
-          forgotFailure: true,
-          displayMessage: "Incorrect email, Please provide valid one!",
-          alertVariant: "error",
-        });
+    if (this.validate()) {
+      this.setState({
+        submitted: true,
+        forgotFailure: false,
+        forgotSuccess: false,
       });
+
+      const { email } = this.state;
+
+      const resetInfo = {
+        email,
+      };
+
+      Api.Auth.forgotPassword(resetInfo)
+        .then((response) => {
+          if (response.data.code === 200) {
+            this.setState({
+              forgotSuccess: true,
+              displayMessage: response.data.message,
+              alertVariant: "success",
+            });
+          }
+          if (response.data.code === 404) {
+            this.setState({
+              forgotFailure: true,
+              displayMessage: response.data.message,
+              alertVariant: "error",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.setState({
+            forgotFailure: true,
+            displayMessage: "Oops! Something went wrong, Please try again!",
+            alertVariant: "error",
+          });
+        });
+    }
   };
 
   render() {
@@ -161,6 +201,7 @@ class ForgotPassword extends React.Component {
                 autoFocus
                 onChange={(e) => this.handleInput(e)}
               />
+              <div style={{ color: "#f44336" }}>{this.state.eerrors}</div>
             </FormControl>
 
             <Button

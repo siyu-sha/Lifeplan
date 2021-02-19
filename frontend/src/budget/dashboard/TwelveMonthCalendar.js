@@ -97,7 +97,7 @@ export default function TwelveMonthCalendar(props) {
               >
                 {"<"}
               </Button>
-              {getMonth(new Date()) > 1 ? (
+              {getMonth(new Date()) > 0 ? (
                 <Typography display="inline">
                   {year}
                   {"/"}
@@ -144,7 +144,7 @@ function renderCalendars(costs, year, showPreview, onClick, planDates) {
   let j = 0;
   for (let i = currentMonth; i < currentMonth + 12; i++) {
     if (currentMonth !== 0) {
-      if (i > getMonth(new Date()) + 1) {
+      if (i >= 12) {
         j = i - 12;
       } else {
         j = i;

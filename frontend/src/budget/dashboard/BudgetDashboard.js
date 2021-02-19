@@ -180,10 +180,12 @@ class BudgetDashboard extends React.Component {
             // for (var i = 0; i < 1; i++) {
             var i = 0;
             this.state.planId = plans[i].id;
-            planDates[plans[i].id] = {
-              startDate: plans[i].startDate,
-              endDate: plans[i].endDate,
-            };
+            for (var ind = 0; ind < plans.length; ind++) {
+              planDates[plans[ind].id] = {
+                startDate: plans[ind].startDate,
+                endDate: plans[ind].endDate,
+              };
+            }
             planName = plans[i].name;
             localStorage.setItem("startDate", plans[i].startDate);
             localStorage.setItem("endDate", plans[i].endDate);

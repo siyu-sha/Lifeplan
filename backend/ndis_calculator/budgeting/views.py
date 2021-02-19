@@ -79,6 +79,7 @@ class Authentication(APIView):
     def forgotPassword(request):
         if request.method == "POST":
             try:
+                data = {}
                 email = request.data.get("email")["email"]
                 participant = Participant.objects.filter(
                     email=email, is_superuser="0", is_staff="0", is_active="1"
@@ -107,16 +108,28 @@ class Authentication(APIView):
                     email_from = settings.EMAIL_HOST_USER
                     recipient_list = [email]
                     send_mail(subject, message, email_from, recipient_list)
-                    return Response(status=status.HTTP_200_OK)
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                    data["code"] = 200
+                    data[
+                        "message"
+                    ] = "Successfully sent, Please check your Inbox!"
+                    return Response(data, status=status.HTTP_200_OK)
+                else:
+                    data["code"] = 404
+                    data[
+                        "message"
+                    ] = "No User has associated with provided Email."
+                    return Response(data, status=status.HTTP_200_OK)
             except Participant.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                data["code"] = 404
+                data["message"] = "No User has associated with provided Email."
+                return Response(data, status=status.HTTP_200_OK)
 
     @api_view(["POST"])
     @csrf_exempt
     def resetPassword(request):
         if request.method == "POST":
             try:
+                data = {}
                 token = request.data.get("reset_info")["token"]
                 password = request.data.get("reset_info")["password"]
                 payload = jwt.decode(
@@ -132,17 +145,23 @@ class Authentication(APIView):
                     )
                     participant.password = make_password(password)
                     participant.save(update_fields=["password"])
-                    return Response(email, status=status.HTTP_200_OK)
+                    data["code"] = 200
+                    data["message"] = "Reset successful!"
+                    return Response(data, status=status.HTTP_200_OK)
                 except Participant.DoesNotExist:
-                    return Response(email, status=status.HTTP_400_BAD_REQUEST)
+                    data["code"] = 404
+                    data[
+                        "message"
+                    ] = "Oops! Something went wrong, Please try again!"
+                    return Response(data, status=status.HTTP_200_OK)
             except jwt.ExpiredSignatureError:
-                return Response(
-                    "Signature expired.", status=status.HTTP_400_BAD_REQUEST
-                )
+                data["code"] = 400
+                data["message"] = "Oops! Signature has expired!"
+                return Response(data, status=status.HTTP_200_OK)
             except jwt.InvalidTokenError:
-                return Response(
-                    "Invalid token.", status=status.HTTP_400_BAD_REQUEST
-                )
+                data["code"] = 400
+                data["message"] = "Oops! Invalid Token is provided!"
+                return Response(data, status=status.HTTP_200_OK)
 
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS

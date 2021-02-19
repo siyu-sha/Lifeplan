@@ -120,7 +120,7 @@ class ResetPassword extends React.Component {
     ) {
       if (password !== confirm_password) {
         isValid = false;
-        cperrors = "Passwords don't match.";
+        cperrors = "Confirm password does not match.";
       }
     }
 
@@ -147,8 +147,6 @@ class ResetPassword extends React.Component {
       const pathname = window.location.pathname;
       let split = pathname.split("/");
 
-      console.log(split[2]);
-
       const token = split[2];
 
       const resetInfo = {
@@ -158,20 +156,28 @@ class ResetPassword extends React.Component {
 
       Api.Auth.resetPassword(resetInfo)
         .then((response) => {
-          console.log(response);
-          this.setState({
-            resetSuccess: true,
-            displayMessage: "Reset successful!",
-            alertVariant: "success",
-          });
-          setTimeout(() => {
-            this.props.history.replace("/signin");
-          }, 1000);
+          if (response.data.code === 200) {
+            this.setState({
+              resetSuccess: true,
+              displayMessage: response.data.message,
+              alertVariant: "success",
+            });
+            setTimeout(() => {
+              this.props.history.replace("/signin");
+            }, 1000);
+          }
+          if (response.data.code === 404 || response.data.code === 400) {
+            this.setState({
+              resetFailure: true,
+              displayMessage: response.data.message,
+              alertVariant: "error",
+            });
+          }
         })
         .catch((err) => {
           this.setState({
             resetFailure: true,
-            displayMessage: "Reset Failed. Try again!",
+            displayMessage: "Oops! Something went wrong, Please try again!",
             alertVariant: "error",
           });
         });
