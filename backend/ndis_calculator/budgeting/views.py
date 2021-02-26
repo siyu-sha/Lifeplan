@@ -105,7 +105,7 @@ class Authentication(APIView):
                         + link
                         + "\nNote : After 10 minutes link will be expired.\n"
                     )
-                    email_from = settings.EMAIL_HOST_USER
+                    email_from = settings.EMAIL_SEND_FROM
                     recipient_list = [email]
                     send_mail(subject, message, email_from, recipient_list)
                     data["code"] = 200
