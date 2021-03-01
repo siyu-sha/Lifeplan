@@ -110,7 +110,7 @@ class SupportItemAdmin(admin.ModelAdmin):
                     (
                         support_item,
                         created,
-                    ) = SupportItem.objects.get_or_create(
+                    ) = SupportItem.objects.update_or_create(
                         number=column[4],
                         defaults={
                             "name": column[5],

@@ -676,10 +676,10 @@ class FormPersonalDetails extends React.Component {
                           </Grid>
                         );
                       }
-                      return 0;
+                      return;
                     });
                   }
-                  return 0;
+                  return;
                 });
               })}
             </Grid>
