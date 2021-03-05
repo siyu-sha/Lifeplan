@@ -15,9 +15,9 @@ import { calculatePlanItemCost } from "./BudgetDashboard";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 export default function TwelveMonthCalendar(props) {
-  const { onClick, planCategories, supportGroups } = props;
+  const { onClick, planDates, planCategories, supportGroups } = props;
   const [year, setYear] = useState(getYear(new Date()));
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   // each array in costs represents a month,
   // where month[0] is Core, month[1] is Capacity, month[2] is Capital
 
@@ -41,7 +41,7 @@ export default function TwelveMonthCalendar(props) {
     let supportGroupId = -1;
     for (const supportGroup of supportGroups) {
       for (const supportCategory of supportGroup.supportCategories) {
-        if (supportCategory.id === intKey) {
+        if (parseInt(supportCategory.id) === intKey) {
           supportGroupId = supportGroup.id - 1;
           break;
         }
@@ -52,14 +52,32 @@ export default function TwelveMonthCalendar(props) {
     }
     // support group found, now find month of events
     value.planItemGroups.forEach((planItemGroup) => {
-      planItemGroup.planItems.forEach((planItem) => {
-        const startDate = new Date(planItem.startDate);
-        const itemMonth = getMonth(startDate);
-        const itemYear = getYear(startDate);
-        if (itemYear === year) {
-          costs[itemMonth][supportGroupId] += calculatePlanItemCost(planItem);
-        }
-      });
+      planItemGroup.planItems &&
+        planItemGroup.planItems.forEach((planItem) => {
+          const startDate = new Date(planItem.startDate);
+          const itemMonth = getMonth(startDate);
+          const itemYear = getYear(startDate);
+          if (itemYear >= year) {
+            const currentMonth = getMonth(new Date());
+            const currentYear = getYear(new Date());
+            if (itemYear > year) {
+              if (itemMonth < currentMonth) {
+                if (year === currentYear) {
+                  costs[itemMonth][supportGroupId] += calculatePlanItemCost(
+                    planItem
+                  );
+                }
+              }
+            }
+            if (itemYear === year) {
+              if (itemMonth >= currentMonth) {
+                costs[itemMonth][supportGroupId] += calculatePlanItemCost(
+                  planItem
+                );
+              }
+            }
+          }
+        });
     });
   }
 
@@ -79,7 +97,15 @@ export default function TwelveMonthCalendar(props) {
               >
                 {"<"}
               </Button>
-              <Typography display="inline">{year}</Typography>
+              {getMonth(new Date()) > 0 ? (
+                <Typography display="inline">
+                  {year}
+                  {"/"}
+                  {year + 1}
+                </Typography>
+              ) : (
+                <Typography display="inline">{year}</Typography>
+              )}
               <Button
                 onClick={() => {
                   setYear(year + 1);
@@ -97,7 +123,7 @@ export default function TwelveMonthCalendar(props) {
               <Typography display="inline">Show Budgets</Typography>
             </Grid>
             <Grid container item justify="center">
-              {renderCalendars(costs, year, showPreview, onClick)}
+              {renderCalendars(costs, year, showPreview, onClick, planDates)}
             </Grid>
           </Grid>
         </Grid>
@@ -106,10 +132,37 @@ export default function TwelveMonthCalendar(props) {
   );
 }
 
-function renderCalendars(costs, year, showPreview, onClick) {
+function renderCalendars(costs, year, showPreview, onClick, planDates) {
   const calendars = [];
-  for (let i = 0; i < 12; i++) {
-    const date = setYear(setMonth(new Date(), i), year);
+  const currentMonth = getMonth(new Date());
+
+  let revcounter = 0;
+  if (currentMonth !== 0) {
+    revcounter = 13 - currentMonth;
+  }
+
+  let j = 0;
+  for (let i = currentMonth; i < currentMonth + 12; i++) {
+    if (currentMonth !== 0) {
+      if (i >= 12) {
+        j = i - 12;
+      } else {
+        j = i;
+      }
+    } else {
+      j = i;
+    }
+
+    let date = "";
+    if (revcounter !== 0 || revcounter > 0) {
+      revcounter--;
+    }
+
+    if (revcounter === 0) {
+      date = setYear(setMonth(new Date(), i), year + 1);
+    } else {
+      date = setYear(setMonth(new Date(), i), year);
+    }
 
     calendars.push(
       <Grid
@@ -120,7 +173,8 @@ function renderCalendars(costs, year, showPreview, onClick) {
         <PreviewCalendar
           showPreview={showPreview}
           startDate={date}
-          costs={costs[i]}
+          costs={costs[j]}
+          planDates={planDates}
         />
       </Grid>
     );

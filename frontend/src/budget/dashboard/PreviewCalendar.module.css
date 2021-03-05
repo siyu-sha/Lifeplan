@@ -3,16 +3,22 @@
     width: 200px;
 } */
 
-/* .day {
-    text-align: right;
-    width:26px;
+.shading {
+  text-align: center;
+  width: 26px;
+  color: white;
+  background-color: #173e6c;
+}
+
+.day {
+  text-align: center;
+  width: 26px;
 }
 
 .weekday {
-    text-align: right;
-    width:26px;
-
-} */
+  text-align: center;
+  width: 26px;
+}
 
 .calendarContainer {
   width: 200px;
@@ -42,6 +48,6 @@ table {
 th,
 td {
   width: 26px;
-  text-align: right;
+  text-align: center;
   overflow: hidden;
 }

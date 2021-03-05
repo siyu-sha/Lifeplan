@@ -5,12 +5,16 @@ import BudgetEdit from "./budget/edit/BudgetEdit.js";
 import "./App.css";
 import NavBar from "./common/NavBar";
 import BudgetDashboard from "./budget/dashboard/BudgetDashboard";
+import BudgetAdd from "./budget/add/BudgetAdd";
 import SignIn from "./authentication/SignIn";
 import SignUp from "./authentication/SignUp";
+import Profile from "./home/Profile";
 import { LocalStorageKeys } from "./common/constants";
 import api from "./api";
 import { connect } from "react-redux";
 import { loadUser } from "./redux/reducers/auth";
+import ForgotPassword from "./authentication/ForgotPassword";
+import ResetPassword from "./authentication/ResetPassword";
 
 const mapStateToProps = (state) => {
   return {};
@@ -70,10 +74,14 @@ function App(props) {
       <main>
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route path="/profile" component={Profile} />
+          <Route path="/budget/add" component={BudgetAdd} />
           <Route path="/budget/edit" component={BudgetEdit} />
           <Route path="/budget/dashboard" component={BudgetDashboard} />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password/:token" component={ResetPassword} />
         </Switch>
       </main>
     </div>

@@ -47,7 +47,7 @@ import {
   addHours,
 } from "date-fns";
 import CustomCalendar from "../CustomCalendar";
-import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
+// import { LocalStorageKeys as localStorageKeys } from "../../common/constants";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -96,12 +96,8 @@ const useStyles = makeStyles((theme) => ({
 export default function PlanAddEditor(props) {
   const { supportItem } = props;
 
-  const planStartDate = new Date(
-    localStorage.getItem(localStorageKeys.PLAN_START_DATE)
-  );
-  const planEndDate = new Date(
-    localStorage.getItem(localStorageKeys.PLAN_END_DATE)
-  );
+  const planStartDate = new Date(localStorage.getItem("startDate"));
+  const planEndDate = new Date(localStorage.getItem("endDate"));
 
   const classes = useStyles();
 
@@ -118,7 +114,6 @@ export default function PlanAddEditor(props) {
       supportItemGroup,
       events
     );
-    console.log(planItemGroup);
     props.save(planItemGroup);
     props.redirectSupports();
   }
@@ -139,7 +134,6 @@ export default function PlanAddEditor(props) {
   }
 
   function createNewPlanItemGroup(values, supportItemGroup, events) {
-    console.log(events);
     const planItems = events.map((event) => {
       return {
         startDate: event.start,
@@ -585,7 +579,6 @@ export default function PlanAddEditor(props) {
   };
 
   const handleTimeChange = (name) => (value) => {
-    console.log(value);
     setItemTimes({ ...itemTimes, [name]: value });
   };
 

@@ -196,8 +196,8 @@ class PlanTest(TestCase):
             start_date="2018-06-01",
             end_date="2019-06-01",
         )
-        self.categories = PlanContainsCategoriesTest.create_PlanContainsCategories(
-            plan=obj
+        self.categories = (
+            PlanContainsCategoriesTest.create_PlanContainsCategories(plan=obj)
         )
         self.item_groups = PlanItemGroupTest.create_PlanItemGroup(
             plan_category=self.categories

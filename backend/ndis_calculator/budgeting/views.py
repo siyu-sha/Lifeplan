@@ -1,3 +1,9 @@
+import datetime
+
+import jwt
+from django.conf import settings
+from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -28,6 +34,7 @@ from .serializers import (
     PlanItemSerializer,
     PlanSerializer,
     RegistrationGroupSerializer,
+    SupportCategorySerializer,
     SupportGroupSerializer,
     SupportItemGroupSerializer,
     SupportItemSerializer,
@@ -67,6 +74,95 @@ class Authentication(APIView):
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
+    @api_view(["POST"])
+    @csrf_exempt
+    def forgotPassword(request):
+        if request.method == "POST":
+            try:
+                data = {}
+                email = request.data.get("email")["email"]
+                participant = Participant.objects.filter(
+                    email=email, is_superuser="0", is_staff="0", is_active="1"
+                ).count()
+                if participant == 1:
+                    payload = {
+                        "exp": datetime.datetime.utcnow()
+                        + datetime.timedelta(days=0, seconds=600),
+                        "iat": datetime.datetime.utcnow(),
+                        "sub": email,
+                    }
+                    token = jwt.encode(
+                        payload, settings.SECRET_KEY, algorithm="HS256"
+                    )
+                    link = (
+                        settings.HOST_NAME
+                        + "/reset-password/"
+                        + token.decode("utf-8")
+                    )
+                    subject = "Reset Password"
+                    message = (
+                        "Hi, \nTo reset your password.\nClick on this link \n"
+                        + link
+                        + "\nNote : After 10 minutes link will be expired.\n"
+                    )
+                    email_from = settings.EMAIL_HOST_USER
+                    recipient_list = [email]
+                    send_mail(subject, message, email_from, recipient_list)
+                    data["code"] = 200
+                    data[
+                        "message"
+                    ] = "Successfully sent, Please check your Inbox!"
+                    return Response(data, status=status.HTTP_200_OK)
+                else:
+                    data["code"] = 404
+                    data[
+                        "message"
+                    ] = "No User has associated with provided Email."
+                    return Response(data, status=status.HTTP_200_OK)
+            except Participant.DoesNotExist:
+                data["code"] = 404
+                data["message"] = "No User has associated with provided Email."
+                return Response(data, status=status.HTTP_200_OK)
+
+    @api_view(["POST"])
+    @csrf_exempt
+    def resetPassword(request):
+        if request.method == "POST":
+            try:
+                data = {}
+                token = request.data.get("reset_info")["token"]
+                password = request.data.get("reset_info")["password"]
+                payload = jwt.decode(
+                    token, settings.SECRET_KEY
+                )  # decode token
+                email = payload["sub"]
+                try:
+                    participant = Participant.objects.get(
+                        email=email,
+                        is_superuser="0",
+                        is_staff="0",
+                        is_active="1",
+                    )
+                    participant.password = make_password(password)
+                    participant.save(update_fields=["password"])
+                    data["code"] = 200
+                    data["message"] = "Reset successful!"
+                    return Response(data, status=status.HTTP_200_OK)
+                except Participant.DoesNotExist:
+                    data["code"] = 404
+                    data[
+                        "message"
+                    ] = "Oops! Something went wrong, Please try again!"
+                    return Response(data, status=status.HTTP_200_OK)
+            except jwt.ExpiredSignatureError:
+                data["code"] = 400
+                data["message"] = "Oops! Signature has expired!"
+                return Response(data, status=status.HTTP_200_OK)
+            except jwt.InvalidTokenError:
+                data["code"] = 400
+                data["message"] = "Oops! Invalid Token is provided!"
+                return Response(data, status=status.HTTP_200_OK)
+
 
 # DO NOT COPY THE STRUCTURE OF THE FOLLOWING CLASS
 class ParticipantView(APIView):
@@ -97,6 +193,28 @@ class ParticipantView(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors)
+
+
+class ParticipantViewSet(viewsets.ModelViewSet):
+    """
+    This viewset provides `update`
+    action to manipulate the Participant model.
+    """
+
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def update(self, request, participant_id):
+        participant = get_object_or_404(self.queryset, pk=participant_id)
+        request.data["username"] = request.data.get("email")
+        serializer = self.serializer_class(
+            participant, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PlanViewSet(viewsets.ModelViewSet):
@@ -220,7 +338,15 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         )
         return self.is_plan_category_owner(request, plan_category)
 
-    def list(self, request, plan_category_id):
+    def is_plan_item_owner(self, request, plan_item):
+        print("plan item owner called")
+        plan_item_group = get_object_or_404(
+            PlanItemGroup.objects.all(), pk=plan_item
+        )
+        print(plan_item_group)
+        return self.is_plan_item_group_owner(request, plan_item_group)
+
+    def list(self, request, plan_id, plan_category_id):
         plan_category = get_object_or_404(
             PlanCategory.objects.all(), pk=plan_category_id
         )
@@ -231,7 +357,7 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def create(self, request, plan_category_id):
+    def create(self, request, plan_id, plan_category_id):
         # check if plan category and corresponding plan exists
         plan_category = get_object_or_404(
             PlanCategory.objects.all(), pk=plan_category_id
@@ -258,23 +384,20 @@ class PlanItemGroupViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def update(self, request, plan_item_group_id):
+    def update(self, request, plan_id, plan_category_id, plan_item_group_id):
         plan_item_group = get_object_or_404(
             self.queryset, pk=plan_item_group_id
         )
-        if self.is_plan_item_owner(request, plan_item_group):
-
-            serializer = self.serializer_class(
-                plan_item_group, data=request.data, partial=True
-            )
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status.HTTP_200_OK)
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        # if self.is_plan_item_owner(request, plan_item_group):
+        serializer = self.serializer_class(
+            plan_item_group, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # else:
+        #     return Response(status=status.HTTP_403_FORBIDDEN)
 
     def destroy(self, request, plan_item_group_id):
         plan_item_group = get_object_or_404(
@@ -313,7 +436,7 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         )
         return self.is_plan_item_group_owner(request, plan_item_group)
 
-    def list(self, request, plan_item_group_id):
+    def list(self, request, plan_id, plan_category_id, plan_item_group_id):
         plan_item_group = get_object_or_404(
             PlanItemGroup.objects.all(), pk=plan_item_group_id
         )
@@ -326,7 +449,7 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def create(self, request, plan_item_group_id):
+    def create(self, request, plan_id, plan_category_id, plan_item_group_id):
         # check if plan item group, plan category, and corresponding plan exists
         plan_item_group = get_object_or_404(
             PlanItemGroup.objects.all(), pk=plan_item_group_id
@@ -352,7 +475,14 @@ class PlanItemViewSet(viewsets.ModelViewSet):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def update(self, request, plan_item_id):
+    def update(
+        self,
+        request,
+        plan_id,
+        plan_category_id,
+        plan_item_group_id,
+        plan_item_id,
+    ):
         plan_item = get_object_or_404(self.queryset, pk=plan_item_id)
         if self.is_plan_item_owner(request, plan_item):
             serializer = self.serializer_class(
@@ -383,6 +513,15 @@ class SupportGroupViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SupportGroup.objects.all()
     serializer_class = SupportGroupSerializer
+
+
+class SupportCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all support caegories
+    """
+
+    queryset = SupportCategory.objects.all()
+    serializer_class = SupportCategorySerializer
 
 
 class SupportItemGroupViewSet(viewsets.ReadOnlyModelViewSet):

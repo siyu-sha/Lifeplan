@@ -107,7 +107,10 @@ class SupportItemAdmin(admin.ModelAdmin):
                         },
                     )
 
-                    _, created = SupportItem.objects.update_or_create(
+                    (
+                        support_item,
+                        created,
+                    ) = SupportItem.objects.update_or_create(
                         number=column[4],
                         defaults={
                             "name": column[5],
@@ -122,6 +125,11 @@ class SupportItemAdmin(admin.ModelAdmin):
                             "registration_group": registration_group,
                             "support_category": support_category,
                         },
+                    )
+
+                    _, created = SupportItemGroup.objects.update_or_create(
+                        name=column[5],
+                        base_item_id=support_item.id,
                     )
 
                     if created:

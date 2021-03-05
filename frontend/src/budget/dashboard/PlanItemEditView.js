@@ -20,7 +20,6 @@ export default function PlanItemEditView(props) {
     startDate: new Date(planItem.startDate),
     endDate: new Date(planItem.endDate),
   });
-  console.log(editedPlanItem);
   const dateRef = useRef({
     startDate: new Date(editedPlanItem.startDate),
     endDate: new Date(editedPlanItem.endDate),
@@ -38,6 +37,7 @@ export default function PlanItemEditView(props) {
       ...editedPlanItem,
       priceActual: parseFloat(editedPlanItem.priceActual),
     });
+    props.back();
   }
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function PlanItemEditView(props) {
   }, [editedPlanItem]);
 
   function handleChangeStart(startDate) {
-    console.log(startDate);
+    // console.log(startDate);
     setEditedPlanItem({ ...editedPlanItem, startDate });
   }
 
@@ -144,6 +144,7 @@ export default function PlanItemEditView(props) {
       </DialogContent>
 
       <DialogActions>
+        <Button onClick={props.back}>Back</Button>
         <Button onClick={handleSave}>Save</Button>
       </DialogActions>
     </>

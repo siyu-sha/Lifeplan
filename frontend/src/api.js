@@ -65,11 +65,29 @@ const Auth = {
   refresh: (refresh) => {
     return axios.post("/auth/refresh", { refresh });
   },
+  forgotPassword: (email) => {
+    return axios.post("/auth/forgot-password", { email });
+  },
+  resetPassword: (resetInfo) => {
+    return axios.post("/auth/reset-password", { resetInfo });
+  },
 };
 
 const Participants = {
   currentUser: () => {
-    return axios.get("participants/current-user");
+    return axios.get("participant/current-user");
+  },
+  update: (
+    participantId,
+    { firstName, lastName, email, postcode, birthYear }
+  ) => {
+    return axios.patch(`/participant/${participantId}`, {
+      firstName,
+      lastName,
+      email,
+      postcode,
+      birthYear,
+    });
   },
 };
 
@@ -106,15 +124,32 @@ const SupportGroups = {
   },
 };
 
+const SupportCategories = {
+  list: () => {
+    return axios.get("/support-categories");
+  },
+};
+
 const Plans = {
   list: () => {
     return axios.get("/plans");
   },
-  create: ({ startDate, endDate, supportCategories }) => {
-    return axios.post("/plans", { startDate, endDate, supportCategories });
+  create: ({ name, ndisNumber, startDate, endDate, supportCategories }) => {
+    return axios.post("/plans", {
+      name,
+      ndisNumber,
+      startDate,
+      endDate,
+      supportCategories,
+    });
   },
-  update: (planId, { startDate, endDate, planCategories }) => {
+  update: (
+    planId,
+    { name, ndisNumber, startDate, endDate, planCategories }
+  ) => {
     return axios.patch(`/plans/${planId}`, {
+      name,
+      ndisNumber,
       startDate,
       endDate,
       planCategories,
@@ -123,31 +158,74 @@ const Plans = {
 };
 
 const PlanItems = {
-  list: (planCategoryId) => {
-    return axios.get(`/plan-categories/${planCategoryId}/plan-items`);
+  list: (planId, planCategoryId, planItemGroupId) => {
+    return axios.get(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items`
+    );
   },
   create: (
+    planId,
     planCategoryId,
-    { supportItemGroup, quantity, priceActual, name, frequencyPerYear }
+    planItemGroupId,
+    { planitemGroup, name, priceActual, startDate, endDate, allDay }
   ) => {
-    return axios.post(`/plan-categories/${planCategoryId}/plan-items`, {
-      supportItemGroup,
-      quantity,
-      priceActual,
-      name,
-      frequencyPerYear,
-    });
+    return axios.post(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items`,
+      {
+        planitemGroup,
+        name,
+        priceActual,
+        startDate,
+        endDate,
+        allDay,
+      }
+    );
   },
   delete: (planItemId) => {
     return axios.delete(`/plan-items/${planItemId}`);
   },
-  update: (planItemId, { quantity, priceActual, name, frequencyPerYear }) => {
-    return axios.patch(`/plan-items/${planItemId}`, {
-      quantity,
-      priceActual,
+  update: (
+    planId,
+    planCategoryId,
+    planItemGroupId,
+    planItemId,
+    { name, priceActual, startDate, endDate, allDay }
+  ) => {
+    return axios.patch(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}/items/${planItemId}`,
+      {
+        name,
+        priceActual,
+        startDate,
+        endDate,
+        allDay,
+      }
+    );
+  },
+};
+
+const PlanItemGroups = {
+  list: (planId, planCategoryId) => {
+    return axios.get(`/plans/${planId}/categories/${planCategoryId}/groups`);
+  },
+  create: (
+    planId,
+    planCategoryId,
+    { planCategory, supportItemGroup, name }
+  ) => {
+    return axios.post(`/plans/${planId}/categories/${planCategoryId}/groups`, {
+      planCategory,
+      supportItemGroup,
       name,
-      frequencyPerYear,
     });
+  },
+  update: (planId, planCategoryId, planItemGroupId, { name }) => {
+    return axios.patch(
+      `/plans/${planId}/categories/${planCategoryId}/groups/${planItemGroupId}`,
+      {
+        name,
+      }
+    );
   },
 };
 
@@ -161,10 +239,12 @@ export default {
   Auth,
   Participants,
   SupportGroups,
+  SupportCategories,
   SupportItems,
   SupportItemGroups,
   Plans,
   PlanItems,
+  PlanItemGroups,
   RegistrationGroups,
   setAccess,
   set401Interceptor,
