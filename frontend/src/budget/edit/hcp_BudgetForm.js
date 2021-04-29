@@ -62,12 +62,12 @@ function mapStateToProps(state) {
   };
 }
 
-const PLAN_CATEGORIES = "planCategories";
+const PLAN_CATEGORIES = "hcpPlanCategories";
 
 let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let postcodeRegex = new RegExp(/^\d{0,4}$/);
 let nameRegex = new RegExp(/^[a-zA-Z ]+$/);
-let NDISNumberRegex = new RegExp(/^\d{0,9}$/);
+//let NDISNumberRegex = new RegExp(/^\d{0,9}$/);
 let BirthYearRegex = new RegExp(/^\d{0,4}$/);
 
 const today = new Date();
@@ -92,14 +92,14 @@ MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 
 class FormPersonalDetails extends React.Component {
   state = {
-    supportGroups: [],
+    hcpSupportGroups: [],
     name: "",
-    ndisNumber: "",
-    postcode: "",
-    birthYear: "",
+//    ndisNumber: "",
+//    postcode: "",
+//    birthYear: "",
     startDate: null,
     endDate: null,
-    planCategories: {},
+    hcpPlanCategories: {},
     showErrors: false,
     errors: {},
     planId: null,
@@ -108,7 +108,7 @@ class FormPersonalDetails extends React.Component {
   };
 
   componentDidMount() {
-    api.SupportGroups.all()
+    api.Hcp_SupportGroups.all()
       .then((response) => {
         this.loadState(response.data);
       })
@@ -117,42 +117,37 @@ class FormPersonalDetails extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (
-      this.state.name !== prevState.name ||
-      this.state.ndisNumber !== prevState.ndisNumber ||
-      this.state.postcode !== prevState.postcode ||
-      this.state.birthYear !== prevState.birthYear
+      this.state.name !== prevState.name
+//      || this.state.ndisNumber !== prevState.ndisNumber ||
+//      this.state.postcode !== prevState.postcode ||
+//      this.state.birthYear !== prevState.birthYear
     ) {
       const errors = this.validate();
       this.setState({ errors: errors });
     }
   }
 
-  loadState = async (supportGroups) => {
-    this.setState({ supportGroups: [...supportGroups] });
-    let planCategories = {};
+  loadState = async (hcpSupportGroups) => {
+    this.setState({ hcpSupportGroups: [...hcpSupportGroups] });
+    let hcpPlanCategories = {};
     let allPlans = [];
     let updatePlans = [];
     let participantId;
-    let birthYear;
-    let postcode;
     let name;
-    let ndisNumber;
     let startDate;
     let endDate;
     const access = localStorage.getItem(LocalStorageKeys.ACCESS);
     if (access != null) {
       await api.Participants.currentUser().then((response) => {
         participantId = response.data.id;
-        birthYear = response.data.birthYear;
-        postcode = response.data.postcode;
         name = response.data.firstName + " " + response.data.lastName;
       });
       // TODO: refactor into reusable function
-      await api.Plans.list().then((response) => {
+      await api.Hcp_Plans.list().then((response) => {
         if (response.data.length === 0) {
-          _.map(supportGroups, (supportGroup) => {
-            _.map(supportGroup.supportCategories, (supportCategory) => {
-              planCategories[supportCategory.id] = {
+          _.map(hcpSupportGroups, (hcpSupportGroup) => {
+            _.map(hcpSupportGroup.hcpSupportCategories, (hcpSupportCategory) => {
+              hcpPlanCategories[hcpSupportCategory.id] = {
                 budget: 0,
               };
             });
@@ -164,7 +159,6 @@ class FormPersonalDetails extends React.Component {
           console.log(plans)
           _.map(plans, (plan, index) => {
             this.setState({ planId: plan.id });
-            ndisNumber = plan.ndisNumber;
             startDate = new Date(plan.startDate);
             endDate = new Date(plan.endDate);
             allPlans[index] = {
@@ -172,13 +166,12 @@ class FormPersonalDetails extends React.Component {
             };
             updatePlans[index] = {
               name: plan.name,
-              ndisNumber: plan.ndisNumber,
               startDate: plan.startDate,
               endDate: plan.endDate,
-              planCategories: plan.planCategories,
+              hcpPlanCategories: plan.hcpPlanCategories,
             };
-            _.map(plan.planCategories, (planCategory) => {
-              planCategories[planCategory.supportCategory] = {
+            _.map(plan.hcpPlanCategories, (planCategory) => {
+              hcpPlanCategories[planCategory.hcpSupportCategory] = {
                 ...planCategory,
               };
             });
@@ -186,40 +179,32 @@ class FormPersonalDetails extends React.Component {
         }
       });
     } else {
-      let cachedPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
-      const cachedBirthYear = localStorage.getItem("birthYear");
-      const cachedPostcode = localStorage.getItem("postcode");
+      let cachedhcpPlanCategories = localStorage.getItem(PLAN_CATEGORIES);
       const cachedName = localStorage.getItem("name");
-      const cachedNDISNumber = localStorage.getItem("ndisNumber");
       const cachedStartDate = localStorage.getItem("startdate");
       const cachedEndDate = localStorage.getItem("endDate");
-      if (cachedPlanCategories === null) {
-        _.map(supportGroups, (supportGroup) => {
-          _.map(supportGroup.supportCategories, (supportCategory) => {
-            planCategories[supportCategory.id] = {
+      if (cachedhcpPlanCategories === null) {
+      // if(true){
+        _.map(hcpSupportGroups, (hcpSupportGroup) => {
+          _.map(hcpSupportGroup.hcpSupportCategories, (hcpSupportCategory) => {
+            hcpPlanCategories[hcpSupportCategory.id] = {
               budget: 0,
-              planItemGroups: [],
+              hcpPlanItemGroups: [],
             };
           });
         });
       } else {
-        planCategories = JSON.parse(cachedPlanCategories);
+        hcpPlanCategories = JSON.parse(cachedhcpPlanCategories);
       }
-      birthYear = cachedBirthYear ? parseInt(cachedBirthYear) : "";
-      postcode = cachedPostcode ? parseInt(cachedPostcode) : "";
       name = cachedName ? cachedName : "";
-      ndisNumber = cachedNDISNumber ? parseInt(cachedNDISNumber) : "";
       startDate = cachedStartDate ? new Date(cachedStartDate) : today;
       endDate = cachedEndDate ? new Date(cachedEndDate) : getYearFromToday();
     }
 
     this.setState({
-      planCategories,
-      birthYear,
-      postcode,
+      hcpPlanCategories,
       participantId,
       name,
-      ndisNumber,
       startDate,
       endDate,
       allPlans,
@@ -228,7 +213,7 @@ class FormPersonalDetails extends React.Component {
   };
 
   // handle money input
-  handleChange = async (e, supportCategoryId, indexPlan, indexPlanCategory) => {
+  handleChange = async (e, hcpSupportCategoryId, indexPlan, indexPlanCategory) => {
     // check if input string is the correct format for money
     if (e.target.value === "" || moneyRegex.test(e.target.value)) {
       // set new amount
@@ -239,16 +224,16 @@ class FormPersonalDetails extends React.Component {
         new_amount = parseFloat(e.target.value);
       }
       const updatePlans = this.state.updatePlans;
-      const planCategories = this.state.updatePlans[indexPlan].planCategories;
+      const hcpPlanCategories = this.state.updatePlans[indexPlan].hcpPlanCategories;
       await this.setState({
         updatePlans: {
           ...updatePlans,
           [indexPlan]: {
             ...updatePlans[indexPlan],
-            planCategories: {
-              ...planCategories,
+            hcpPlanCategories: {
+              ...hcpPlanCategories,
               [indexPlanCategory]: {
-                ...planCategories[indexPlanCategory],
+                ...hcpPlanCategories[indexPlanCategory],
                 budget: new_amount,
               },
             },
@@ -259,7 +244,7 @@ class FormPersonalDetails extends React.Component {
   };
 
   // handle money input
-  handleChangeOffline = (e, supportCategoryId) => {
+  handleChangeOffline = (e, hcpSupportCategoryId) => {
     // check if input string is the correct format for money
     if (moneyRegex.test(e.target.value)) {
       // set new amount
@@ -269,12 +254,12 @@ class FormPersonalDetails extends React.Component {
       } else {
         new_amount = parseFloat(e.target.value);
       }
-      const planCategories = this.state.planCategories;
+      const hcpPlanCategories = this.state.hcpPlanCategories;
       this.setState({
-        planCategories: {
-          ...planCategories,
-          [supportCategoryId]: {
-            ...planCategories[supportCategoryId],
+        hcpPlanCategories: {
+          ...hcpPlanCategories,
+          [hcpSupportCategoryId]: {
+            ...hcpPlanCategories[hcpSupportCategoryId],
             budget: new_amount,
           },
         },
@@ -282,34 +267,9 @@ class FormPersonalDetails extends React.Component {
     }
   };
 
-  // handle postcode input by limiting it to 4 digits (also works for year)
-  handlePostCodeChange = (input) => (e) => {
-    if (postcodeRegex.test(e.target.value)) {
-      this.setState({ [input]: e.target.value });
-    }
-  };
-
   // handle offline Name
   handleOfflineNameChange = (input) => (e) => {
     if (e.target.value === "" || nameRegex.test(e.target.value)) {
-      this.setState({ [input]: e.target.value });
-    }
-  };
-
-  // handle offline NDIS NUmber
-  handleOfflineNDISNumberChange = (input) => (e) => {
-    if (e.target.value === "" || NDISNumberRegex.test(e.target.value)) {
-      this.setState({ [input]: e.target.value });
-    }
-  };
-
-  // handle offline birth year input
-  handleOfflineBirthYearChange = (input) => (e) => {
-    if (
-      e.target.value === "" ||
-      e.target.value === 0 ||
-      BirthYearRegex.test(e.target.value)
-    ) {
       this.setState({ [input]: e.target.value });
     }
   };
@@ -323,28 +283,6 @@ class FormPersonalDetails extends React.Component {
   // handle name input
   handleNameChange = (input, index) => async (e) => {
     if (e.target.value === "" || nameRegex.test(e.target.value)) {
-      let updatePlans = [...this.state.updatePlans];
-      let updatePlan = { ...updatePlans[index] };
-      updatePlan[input] = e.target.value;
-      updatePlans[index] = updatePlan;
-      await this.setState({ updatePlans });
-    }
-  };
-
-  // handle birth year input
-  handleBirthYearChange = (input) => (e) => {
-    if (
-      e.target.value === "" ||
-      e.target.value === 0 ||
-      BirthYearRegex.test(e.target.value)
-    ) {
-      this.setState({ [input]: e.target.value });
-    }
-  };
-
-  // handle NDIS number input by limiting it to 9 numeric value
-  handleNDISNumberChange = (input, index) => async (e) => {
-    if (e.target.value === "" || NDISNumberRegex.test(e.target.value)) {
       let updatePlans = [...this.state.updatePlans];
       let updatePlan = { ...updatePlans[index] };
       updatePlan[input] = e.target.value;
@@ -369,7 +307,6 @@ class FormPersonalDetails extends React.Component {
       if (this.props.currentUser != null) {
         const body = {
           name: this.state.updatePlans[index].name,
-          ndisNumber: this.state.updatePlans[index].ndisNumber,
           startDate: this.state.updatePlans[index].startDate,
           endDate: this.state.updatePlans[index].endDate,
         };
@@ -384,36 +321,36 @@ class FormPersonalDetails extends React.Component {
         );
 
         const categories = _.map(
-          this.state.updatePlans[index].planCategories,
-          (planCategory, supportCategory) => {
+          this.state.updatePlans[index].hcpPlanCategories,
+          (planCategory, hcpSupportCategory) => {
             return {
               ...planCategory,
-              supportCategory: supportCategory,
+              hcpSupportCategory: hcpSupportCategory,
               budget: planCategory.budget,
             };
           }
         );
         if (this.state.planId === null) {
-          body.supportCategories = categories;
-          api.Plans.create(body).then(() => {
-            this.props.history.push("/ndis/budget/dashboard");
+          body.hcpSupportCategories = categories;
+          api.Hcp_Plans.create(body).then(() => {
+            this.props.history.push("/hcp/budget/dashboard");
           });
-        console.log(body);
         } else {
           const participantBody = {
             firstName: this.props.currentUser.firstName,
             lastName: this.props.currentUser.lastName,
             email: this.props.currentUser.email,
-            postcode: this.state.postcode,
-            birthYear: this.state.birthYear,
+            birthYear :2000,
+            postcode: 3000,
           };
-          console.log("...id...");
+          console.log("...id..."+this.state.planId);
           api.Participants.update(this.state.participantId, participantBody)
             .then(() => {
-              body.planCategories = categories;
-              api.Plans.update(planId, body).then(() => {
+              body.hcpPlanCategories = categories;
+              console.log(body);
+              api.Hcp_Plans.update(planId, body).then(() => {
                 this.props.history.push({
-                  pathname: "/ndis/budget/dashboard",
+                  pathname: "/hcp/budget/dashboard",
                   state: planId,
                 });
               });
@@ -421,17 +358,14 @@ class FormPersonalDetails extends React.Component {
             .catch((err) => {});
         }
       } else {
-        localStorage.setItem("postcode", this.state.postcode);
         localStorage.setItem("name", this.state.name);
-        localStorage.setItem("ndisNumber", this.state.ndisNumber);
-        localStorage.setItem("birthYear", this.state.birthYear);
         localStorage.setItem("startDate", this.state.startDate);
         localStorage.setItem("endDate", this.state.endDate);
         localStorage.setItem(
           PLAN_CATEGORIES,
-          JSON.stringify(this.state.planCategories)
+          JSON.stringify(this.state.hcpPlanCategories)
         );
-        this.props.history.push("/ndis/budget/dashboard");
+        this.props.history.push("/hcp/budget/dashboard");
       }
     } else {
       console.log(errors);
@@ -444,16 +378,13 @@ class FormPersonalDetails extends React.Component {
     const errors = this.validate();
     if (Object.keys(errors).length === 0) {
       localStorage.setItem("name", this.state.name);
-      localStorage.setItem("ndisNumber", this.state.ndisNumber);
-      localStorage.setItem("postcode", this.state.postcode);
-      localStorage.setItem("birthYear", this.state.birthYear);
       localStorage.setItem("startDate", this.state.startDate);
       localStorage.setItem("endDate", this.state.endDate);
       localStorage.setItem(
         PLAN_CATEGORIES,
-        JSON.stringify(this.state.planCategories)
+        JSON.stringify(this.state.hcpPlanCategories)
       );
-      this.props.history.push("/ndis/budget/dashboard");
+      this.props.history.push("/hcp/budget/dashboard");
     } else {
       console.log(errors);
       this.setState({ errors: errors });
@@ -462,57 +393,26 @@ class FormPersonalDetails extends React.Component {
   };
 
   handleAddNew = () => {
-    this.props.history.push("/ndis/budget/add");
+    this.props.history.push("/hcp/budget/add");
   };
 
   validate = () => {
     let errors = {};
 
-    if (
-      this.state.postcode === null ||
-      this.state.postcode.toString().length !== 4
-    ) {
-      errors.postcode = "Invalid Postcode";
-    }
-
     if (this.state.name === null || isEmpty(this.state.name)) {
       errors.name = "Please Input Name";
     }
 
-    if (
-      this.state.ndisNumber === null || this.state.ndisNumber !== undefined
-        ? this.state.ndisNumber.toString().length !== 9
-        : true
-    ) {
-      errors.ndisNumber = "Invalid NDIS Number";
-    }
-
-    if (
-      this.state.birthYear === null ||
-      this.state.birthYear.toString().length !== 4 ||
-      this.state.birthYear > today.getFullYear()
-    ) {
-      errors.birthYear = "Invalid Birth Year";
-    }
-
-    // if(this.state.start_date === null){
-    //  errors.start_date = "Invalid Start Date";
-    //}
-
-    // this.setState({
-    //   ...this.state,
-    //   ...errors
-    // })
     return errors;
   };
 
   generateStateProperties = () => {
-    for (let i in this.state.supportGroups) {
-      let group = this.state.supportGroups[i];
+    for (let i in this.state.hcpSupportGroups) {
+      let group = this.state.hcpSupportGroups[i];
       this.setState({ [group.name]: 0 });
 
-      for (let j in group.supportCategories) {
-        const category = group.supportCategories[j];
+      for (let j in group.hcpSupportCategories) {
+        const category = group.hcpSupportCategories[j];
         this.setState({ [category.name]: "" });
       }
     }
@@ -540,45 +440,6 @@ class FormPersonalDetails extends React.Component {
                     type="text"
                     error={showErrors}
                     errortext={errors.name}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ValidatedTextField
-                    className={classes.number}
-                    required
-                    label="NDIS #"
-                    onChange={this.handleNDISNumberChange("ndisNumber", index)}
-                    value={this.state.updatePlans[index].ndisNumber}
-                    helperText={"Used to determine NDIS Number"}
-                    type="number"
-                    error={showErrors}
-                    errortext={errors.ndisNumber}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ValidatedTextField
-                    className={classes.number}
-                    required
-                    label="Postcode"
-                    onChange={this.handlePostCodeChange("postcode")}
-                    value={this.state.postcode}
-                    helperText={"Used to determine postcode"}
-                    type="number"
-                    error={showErrors}
-                    errortext={errors.postcode}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <ValidatedTextField
-                    className={classes.number}
-                    required
-                    label="Year of Birth"
-                    onChange={this.handleBirthYearChange("birthYear")}
-                    value={this.state.birthYear}
-                    helperText={"Used to determine birth year"}
-                    type="number"
-                    error={showErrors}
-                    errortext={errors.birthYear}
                   />
                 </Grid>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -618,9 +479,9 @@ class FormPersonalDetails extends React.Component {
     });
   };
 
-  renderPlanCategories = (planId) => {
+  renderhcpPlanCategories = (planId) => {
     const { classes } = this.props;
-    return this.state.supportGroups.map((group, index) => {
+    return this.state.hcpSupportGroups.map((group, index) => {
       return (
         <ExpansionPanel key={index}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -636,15 +497,15 @@ class FormPersonalDetails extends React.Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={3}>
-              {group.supportCategories.map((category, index) => {
+              {group.hcpSupportCategories.map((category, index) => {
                 return this.state.allPlans.map((plan, index) => {
                   if (plan.id === planId) {
                     const indexPlan = index;
-                    return plan.planCategories.map((planCategory, index) => {
+                    return plan.hcpPlanCategories.map((planCategory, index) => {
                       const indexPlanCategory = index;
                       if (
                         planCategory.plan === planId &&
-                        category.id === planCategory.supportCategory
+                        category.id === planCategory.hcpSupportCategory
                       ) {
                         return (
                           <Grid item xs={12} key={index}>
@@ -663,7 +524,7 @@ class FormPersonalDetails extends React.Component {
                               }
                               value={
                                 this.state.updatePlans[indexPlan]
-                                  .planCategories[indexPlanCategory].budget ||
+                                  .hcpPlanCategories[indexPlanCategory].budget ||
                                 ""
                               }
                               InputProps={{
@@ -713,7 +574,7 @@ class FormPersonalDetails extends React.Component {
     return (
       <Paper className={classes.paper}>
         {this.renderPersonalDetailsForm(planId)}
-        {this.renderPlanCategories(planId)}
+        {/*{this.renderhcpPlanCategories(planId)}*/}
         <Grid container justify="flex-end" className={classes.buttonMargin}>
           <Button
             className={classes.button}
@@ -766,45 +627,6 @@ class FormPersonalDetails extends React.Component {
                 errortext={errors.name}
               />
             </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.number}
-                required
-                label="NDIS #"
-                onChange={this.handleOfflineNDISNumberChange("ndisNumber")}
-                value={this.state.ndisNumber}
-                helperText={"Used to determine NDIS Number"}
-                type="number"
-                error={showErrors}
-                errortext={errors.ndisNumber}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.number}
-                required
-                label="Postcode"
-                onChange={this.handlePostCodeChange("postcode")}
-                value={this.state.postcode}
-                helperText={"Used to determine appropriate support item prices"}
-                type="number"
-                error={showErrors}
-                errortext={errors.postcode}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                className={classes.number}
-                required
-                label="Year of Birth"
-                onChange={this.handleOfflineBirthYearChange("birthYear")}
-                value={this.state.birthYear}
-                helperText={"Used to determine birth year"}
-                type="number"
-                error={showErrors}
-                errortext={errors.birthYear}
-              />
-            </Grid>
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <Grid item xs={12}>
                 <DatePicker
@@ -838,10 +660,10 @@ class FormPersonalDetails extends React.Component {
     );
   };
 
-  renderOfflinePlanCategories = () => {
-    // const { planCategories } = this.state;
+  renderOfflinehcpPlanCategories = () => {
+    // const { hcpPlanCategories } = this.state;
     const { classes } = this.props;
-    return this.state.supportGroups.map((group, index) => {
+    return this.state.hcpSupportGroups.map((group, index) => {
       return (
         <ExpansionPanel key={index}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -857,7 +679,7 @@ class FormPersonalDetails extends React.Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={3}>
-              {group.supportCategories.map((category, index) => {
+              {group.hcpSupportCategories.map((category, index) => {
                 return (
                   <Grid item xs={12} key={index}>
                     <Typography variant="body1">
@@ -869,8 +691,8 @@ class FormPersonalDetails extends React.Component {
                         this.handleChangeOffline(event, category.id)
                       }
                       value={
-                        this.state.planCategories[category.id]
-                          ? this.state.planCategories[category.id].budget
+                        this.state.hcpPlanCategories[category.id]
+                          ? this.state.hcpPlanCategories[category.id].budget
                           : ""
                       }
                       InputProps={{
@@ -897,7 +719,7 @@ class FormPersonalDetails extends React.Component {
       return (
         <Paper className={classes.outerPaper}>
           {access === null ? this.renderOfflinePersonalDetailsForm() : ""}
-          {access === null ? this.renderOfflinePlanCategories() : ""}
+          {/*{access === null ? this.renderOfflinehcpPlanCategories() : ""}*/}
           <Grid container justify="flex-end" className={classes.buttonMargin}>
             <Button
               className={classes.button}
@@ -907,31 +729,20 @@ class FormPersonalDetails extends React.Component {
             >
               View
             </Button>
-
-          <div>
-            PlanCategories<br/>
-              {
-                 console.log(this.state.planCategories)
-              }<br/>
-            PlanCategory<br/>
-            {
-              console.log(this.state.planCategories['3'])
-            }<br/>
-            PlanItemGroups<br/>
-            {
-              // console.log(this.state.planCategories['3'].planItemGroups)
-            }<br/>
-          </div>
-            <ValidatedTextField
-                value={
-                  this.state.planCategories[1]
-                      ? this.state.planCategories[4].budget
-                      : ""
-                }
-            />
-            <div>supportGroup<br/>{
-              JSON.stringify(this.state.supportGroups[0])
-            }</div>
+          {/*<div>*/}
+          {/*    hcpPlanCategories<br/>*/}
+          {/*    {JSON.stringify(this.state.hcpPlanCategories)}<br/>*/}
+          {/*    hcpPlanCategory<br/>*/}
+          {/*    {JSON.stringify(this.state.hcpPlanCategories['1'])}<br/>*/}
+          {/*    hcpSupportGroups <br/>*/}
+          {/*    {JSON.stringify(this.state.hcpSupportGroups)}<br/>*/}
+          {/*    hcpSupportGroup <br/>*/}
+          {/*    {JSON.stringify(this.state.hcpSupportGroups[0])}<br/>*/}
+          {/*    hcpSupportCategories <br/>*/}
+          {/*    {*/}
+          {/*      // JSON.stringify(this.state.hcpSupportGroups[0].hcpSupportCategories)*/}
+          {/*    }*/}
+          {/*</div>*/}
           </Grid>
         </Paper>
       );

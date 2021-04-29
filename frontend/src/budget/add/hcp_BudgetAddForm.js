@@ -54,7 +54,6 @@ function mapStateToProps(state) {
 
 let moneyRegex = new RegExp(/^-?\d*\.?\d{0,2}$/);
 let nameRegex = new RegExp(/^[a-zA-Z ]+$/);
-let NDISNumberRegex = new RegExp(/^\d{0,9}$/);
 
 const today = new Date();
 
@@ -78,32 +77,31 @@ MomentUtils.prototype.getStartOfMonth = MomentUtils.prototype.startOfMonth;
 
 class BudgetAddForm extends React.Component {
   state = {
-    supportGroups: [],
-    supportCategories: [],
+    hcpSupportGroups: [],
+    hcpSupportCategories: [],
     name: null,
-    ndisNumber: null,
     startDate: null,
     endDate: null,
     showErrors: false,
     errors: {},
     flag: false,
-    planCategories: {},
+    hcpPlanCategories: {},
   };
 
   componentDidMount() {
-    api.SupportGroups.all()
+    api.Hcp_SupportGroups.all()
       .then((response) => {
         this.loadState(response.data);
       })
       .catch((err) => console.log(err));
   }
 
-  loadState = async (supportGroups) => {
-    this.setState({ supportGroups: [...supportGroups] });
-    _.map(supportGroups, (supportGroup) => {
-      _.map(supportGroup.supportCategories, (supportCategory) => {
-        this.state.planCategories[supportCategory.id] = {
-          supportCategory: supportCategory.id,
+  loadState = async (hcpSupportGroups) => {
+    this.setState({ hcpSupportGroups: [...hcpSupportGroups] });
+    _.map(hcpSupportGroups, (hcpSupportGroup) => {
+      _.map(hcpSupportGroup.hcpSupportCategories, (hcpSupportCategory) => {
+        this.state.hcpPlanCategories[hcpSupportCategory.id] = {
+          hcpSupportCategory: hcpSupportCategory.id,
           budget: 0,
         };
       });
@@ -117,13 +115,6 @@ class BudgetAddForm extends React.Component {
   // handle name input
   handleNameChange = (input) => (e) => {
     if (nameRegex.test(e.target.value)) {
-      this.setState({ [input]: e.target.value });
-    }
-  };
-
-  // handle NDIS number input by limiting it to 9 numeric value
-  handleNDISNumberChange = (input) => (e) => {
-    if (NDISNumberRegex.test(e.target.value)) {
       this.setState({ [input]: e.target.value });
     }
   };
@@ -149,12 +140,12 @@ class BudgetAddForm extends React.Component {
       } else {
         new_amount = parseFloat(e.target.value);
       }
-      const planCategories = this.state.planCategories;
+      const hcpPlanCategories = this.state.hcpPlanCategories;
       this.setState({
-        planCategories: {
-          ...planCategories,
+        hcpPlanCategories: {
+          ...hcpPlanCategories,
           [supportCategoryId]: {
-            ...planCategories[supportCategoryId],
+            ...hcpPlanCategories[supportCategoryId],
             budget: new_amount,
           },
         },
@@ -168,27 +159,30 @@ class BudgetAddForm extends React.Component {
       if (this.props.currentUser != null) {
         const body = {
           name: this.state.name,
-          ndisNumber: this.state.ndisNumber,
           startDate: dateToString(this.state.startDate),
           endDate: dateToString(this.state.endDate),
         };
-        const categories = _.map(
-          this.state.planCategories,
-          (planCategory, supportCategory) => {
+        const hcpCategories = _.map(
+          this.state.hcpPlanCategories,
+          (hcpPlanCategory, hcpSupportCategory) => {
             return {
-              ...planCategory,
-              supportCategory: supportCategory,
-              budget: planCategory.budget,
+              ...hcpPlanCategory,
+              name:'',
+              hcpSupportCategory: hcpSupportCategory,
+              budget: hcpPlanCategory.budget,
+              hcpPlanItemGroups:[]
             };
           }
         );
-        body.supportCategories = categories;
-        api.Plans.create(body).then(() => {
-          window.location.href = "/ndis/budget/edit";
+        console.log('123');
+        // body.hcpSupportCategories = hcpCategories;
+        body.hcpSupportCategories = hcpCategories;
+        console.log(body);
+        api.Hcp_Plans.create(body).then(() => {
+          window.location.href = "/hcp/budget/edit";
         });
       } else {
         localStorage.setItem("name", this.state.name);
-        localStorage.setItem("ndisNumber", this.state.ndisNumber);
         localStorage.setItem("startDate", this.state.startDate);
         localStorage.setItem("endDate", this.state.endDate);
       }
@@ -204,13 +198,6 @@ class BudgetAddForm extends React.Component {
 
     if (this.state.name == null) {
       errors.name = "Invalid Name";
-    }
-
-    if (
-      this.state.ndisNumber == null ||
-      this.state.ndisNumber.toString().length !== 9
-    ) {
-      errors.ndisNumber = "Invalid NDIS Number";
     }
 
     // if (this.state.startDate === null) {
@@ -246,18 +233,18 @@ class BudgetAddForm extends React.Component {
                 errortext={errors.name}
               />
             </Grid>
-            <Grid item xs={12}>
-              <ValidatedTextField
-                label="NDIS Number"
-                required
-                fullWidth
-                onChange={this.handleNDISNumberChange("ndisNumber")}
-                value={this.state.ndisNumber}
-                type="number"
-                error={showErrors}
-                errortext={errors.ndisNumber}
-              />
-            </Grid>
+            {/* <Grid item xs={12}>*/}
+            {/*  <ValidatedTextField*/}
+            {/*    label="NDIS Number"*/}
+            {/*    required*/}
+            {/*    fullWidth*/}
+            {/*    onChange={this.handleNDISNumberChange("ndisNumber")}*/}
+            {/*    value={this.state.ndisNumber}*/}
+            {/*    type="number"*/}
+            {/*    error={showErrors}*/}
+            {/*    errortext={errors.ndisNumber}*/}
+            {/*  />*/}
+            {/*</Grid>*/}
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <Grid item xs={12}>
                 <DatePicker
@@ -292,9 +279,9 @@ class BudgetAddForm extends React.Component {
   };
 
   renderPlanCategories = () => {
-    // const { planCategories } = this.state;
+    // const { hcpPlanCategories } = this.state;
     const { classes } = this.props;
-    return this.state.supportGroups.map((group, index) => {
+    return this.state.hcpSupportGroups.map((group, index) => {
       return (
         <ExpansionPanel key={index}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -310,7 +297,7 @@ class BudgetAddForm extends React.Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={3}>
-              {group.supportCategories.map((category, index) => {
+              {group.hcpSupportCategories.map((category, index) => {
                 return (
                   <Grid item xs={12} key={index}>
                     <Typography variant="body1">
@@ -321,7 +308,7 @@ class BudgetAddForm extends React.Component {
                       onChange={(event) =>
                         this.handleChange(event, category.id)
                       }
-                      // value={planCategories[category.id] || ""}
+                      // value={hcpPlanCategories[category.id] || ""}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">$</InputAdornment>
@@ -344,7 +331,7 @@ class BudgetAddForm extends React.Component {
     return (
       <Paper className={classes.paper}>
         {this.renderPlanDetailsForm()}
-        {this.renderPlanCategories()}
+        {/*{this.renderPlanCategories()}*/}
         <Grid container justify="flex-end" className={classes.buttonMargin}>
           <Button
             className={classes.button}

@@ -33,7 +33,7 @@ function NavBar(props) {
     <AppBar position="static">
       <Toolbar className={classes.navBar}>
         <Typography variant="h6" color="inherit">
-          Capital Guardian
+          NDIS Planner
         </Typography>
         <div className={classes.grow}>
           <Button href="/" color="inherit">

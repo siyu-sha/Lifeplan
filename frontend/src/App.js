@@ -1,14 +1,21 @@
 import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
+import Home_index from "./home/Home_index";
 import Home from "./home/Home";
 import BudgetEdit from "./budget/edit/BudgetEdit.js";
+import hcp_BudgetEdit from "./budget/edit/hcp_BudgetEdit.js";
 import "./App.css";
 import NavBar from "./common/NavBar";
+import Ndis_NavBar from "./common/ndis_NavBar";
+import Hcp_NavBar from "./common/hcp_NavBar";
 import BudgetDashboard from "./budget/dashboard/BudgetDashboard";
+import hcp_BudgetDashboard from "./budget/dashboard/hcp_BudgetDashboard";
 import BudgetAdd from "./budget/add/BudgetAdd";
+import hcp_BudgetAdd from "./budget/add/hcp_BudgetAdd";
 import SignIn from "./authentication/SignIn";
 import SignUp from "./authentication/SignUp";
 import Profile from "./home/Profile";
+import hcp_Profile from "./home/hcp_Profile";
 import { LocalStorageKeys } from "./common/constants";
 import api from "./api";
 import { connect } from "react-redux";
@@ -67,21 +74,32 @@ function App(props) {
 
   return (
     <div>
-      <nav>
-        <NavBar />
-      </nav>
+
+        <Switch>
+          <Route path="/hcp" component={Hcp_NavBar} />
+          <Route path="/ndis" component={Ndis_NavBar} />
+          <Route exact component={NavBar} />
+        </Switch>
 
       <main>
         <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/budget/add" component={BudgetAdd} />
-          <Route path="/budget/edit" component={BudgetEdit} />
-          <Route path="/budget/dashboard" component={BudgetDashboard} />
+          <Route exact path="/" component={Home_index} />
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password/:token" component={ResetPassword} />
+
+          <Route path="/hcp/profile" component={hcp_Profile} />
+          <Route path="/hcp/budget/edit" component={hcp_BudgetEdit} />
+          <Route path="/hcp/budget/add" component={hcp_BudgetAdd} />
+          <Route path="/hcp/budget/dashboard" component={hcp_BudgetDashboard} />
+
+
+          <Route path="/profile" component={Profile} />
+          <Route path="/ndis/home" component={Home} />
+          <Route path="/ndis/budget/add" component={BudgetAdd} />
+          <Route path="/ndis/budget/edit" component={BudgetEdit} />
+          <Route path="/ndis/budget/dashboard" component={BudgetDashboard} />
         </Switch>
       </main>
     </div>

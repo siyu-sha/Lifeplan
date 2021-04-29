@@ -104,6 +104,19 @@ const SupportItems = {
   },
 };
 
+const Hcp_SupportItems = {
+  get: ({
+    // birthYear,
+    // postcode,
+    hcpsupportCategoryID,
+    // hcpregistrationGroupID = null,
+  }) => {
+    return axios.get(
+      `/hcp-support-items?hcp-support-category-id=${hcpsupportCategoryID}`
+    );
+  },
+};
+
 const SupportItemGroups = {
   get: ({
     // todo: involve the following in the filter
@@ -117,7 +130,19 @@ const SupportItemGroups = {
     );
   },
 };
-
+const Hcp_SupportItemGroups = {
+  get: ({
+    // todo: involve the following in the filter
+    // birthYear,
+    // postcode,
+    supportCategoryID,
+    registrationGroupID = null,
+  }) => {
+    return axios.get(
+      `/hcp-support-item-groups?hcp-support-category-id=${supportCategoryID}&hcp-registration-groupid=${registrationGroupID}`
+    );
+  },
+};
 const SupportGroups = {
   all: () => {
     return axios.get("/support-groups");
@@ -127,6 +152,19 @@ const SupportGroups = {
 const SupportCategories = {
   list: () => {
     return axios.get("/support-categories");
+  },
+};
+
+
+const Hcp_SupportGroups = {
+  all: () => {
+    return axios.get("/hcp-support-groups");
+  },
+};
+
+const Hcp_SupportCategories = {
+  list: () => {
+    return axios.get("/hcp-support-categories");
   },
 };
 
@@ -153,6 +191,31 @@ const Plans = {
       startDate,
       endDate,
       planCategories,
+    });
+  },
+};
+
+const Hcp_Plans = {
+  list: () => {
+    return axios.get("/hcpplans");
+  },
+  create: ({ name, startDate, endDate, hcpSupportCategories }) => {
+    return axios.post("/hcpplans", {
+      name,
+      startDate,
+      endDate,
+      hcpSupportCategories,
+    });
+  },
+  update: (
+    hcpPlanId,
+    { name, startDate, endDate, hcpPlanCategories }
+  ) => {
+    return axios.patch(`/hcpplans/${hcpPlanId}`, {
+      name,
+      startDate,
+      endDate,
+      hcpPlanCategories,
     });
   },
 };
@@ -204,6 +267,53 @@ const PlanItems = {
   },
 };
 
+const Hcp_PlanItems = {
+  list: (planId, planCategoryId, planItemGroupId) => {
+    return axios.get(
+      `/hcpplans/${planId}/hcpcategories/${planCategoryId}/hcpgroups/${planItemGroupId}/hcpitems`
+    );
+  },
+  create: (
+    planId,
+    planCategoryId,
+    planItemGroupId,
+    { planItemGroup, name, priceActual, startDate, endDate, allDay }
+  ) => {
+    return axios.post(
+      `/hcpplans/${planId}/hcpcategories/${planCategoryId}/hcpgroups/${planItemGroupId}/hcpitems`,
+      {
+        planItemGroup,
+        name,
+        priceActual,
+        startDate,
+        endDate,
+        allDay,
+      }
+    );
+  },
+  delete: (planItemId) => {
+    return axios.delete(`/hcp-plan-items/${planItemId}`);
+  },
+  update: (
+    planId,
+    planCategoryId,
+    planItemGroupId,
+    planItemId,
+    { name, priceActual, startDate, endDate, allDay }
+  ) => {
+    return axios.patch(
+      `/hcpplans/${planId}/hcpcategories/${planCategoryId}/hcpgroups/${planItemGroupId}/hcpitems/${planItemId}`,
+      {
+        name,
+        priceActual,
+        startDate,
+        endDate,
+        allDay,
+      }
+    );
+  },
+};
+
 const PlanItemGroups = {
   list: (planId, planCategoryId) => {
     return axios.get(`/plans/${planId}/categories/${planCategoryId}/groups`);
@@ -228,24 +338,95 @@ const PlanItemGroups = {
     );
   },
 };
+const Hcp_PlanItemGroups = {
+  list: (planId, planCategoryId) => {
+    return axios.get(`/hcpplans/${planId}/hcpcategories/${planCategoryId}/hcpgroups`);
+  },
+  create: (
+    planId,
+    planCategoryId,
+    { hcpPlanCategory, hcpSupportItemGroup, name,nickname }
+  ) => {
+    return axios.post(`/hcpplans/${planId}/hcpcategories/${planCategoryId}/hcpgroups`, {
+      hcpPlanCategory,
+      hcpSupportItemGroup,
+      name,
+      nickname,
+    });
+  },
+  update: (planId, planCategoryId, planItemGroupId, { name }) => {
+    return axios.patch(
+      `/hcpplans/${planId}/hcpcategories/${planCategoryId}/hcpgroups/${planItemGroupId}`,
+      {
+        name,
+      }
+    );
+  },
+};
+
+const Hcp_PlanCategory = {
+  list: (planId) => {
+    return axios.get(`/hcpplans/${planId}/hcpcategories`);
+  },
+  create: (
+      budget,
+      planId,
+      planCategoryId,
+      name,
+  ) => {
+    return axios.post(`/hcpplans/${planId}/hcpcategories`, {
+      budget,
+      planId,
+      planCategoryId,
+      name,
+    });
+  },
+  update: (
+      planId,
+      planCategoryId,
+      name
+  ) => {
+    return axios.patch(
+      `/hcpplans/${planId}/hcpcategories/${planCategoryId}`,
+      {
+        name
+      }
+    );
+  },
+};
+
+
 
 const RegistrationGroups = {
   list: () => {
     return axios.get("/registration-groups");
   },
 };
-
+const Hcp_RegistrationGroups = {
+  list: () => {
+    return axios.get("/hcp-registration-groups");
+  },
+};
 export default {
   Auth,
   Participants,
   SupportGroups,
+  Hcp_SupportGroups,
   SupportCategories,
+  Hcp_PlanCategory,
+  Hcp_SupportCategories,
   SupportItems,
+  Hcp_SupportItems,
   SupportItemGroups,
+  Hcp_SupportItemGroups,
   Plans,
+  Hcp_Plans,
   PlanItems,
+  Hcp_PlanItems,
   PlanItemGroups,
+  Hcp_PlanItemGroups,
   RegistrationGroups,
+  Hcp_RegistrationGroups,
   setAccess,
   set401Interceptor,
 };

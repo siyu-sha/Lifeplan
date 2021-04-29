@@ -120,11 +120,7 @@ class SignIn extends React.Component {
         Api.setAccess(response.data.access);
         Api.Participants.currentUser().then((response) => {
           Api.Plans.list().then((plans) => {
-            if (plans.data.length === 0) {
-              this.props.history.replace("/budget/edit");
-            } else {
-              this.props.history.replace("/budget/dashboard");
-            }
+              this.props.history.replace("/");
           });
           this.props.loadUser(response.data);
         });

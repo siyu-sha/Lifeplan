@@ -21,7 +21,7 @@ function mapStateToProps(state) {
   };
 }
 
-function NavBar(props) {
+function Hcp_NavBar(props) {
   function handleSignOut() {
     localStorage.removeItem(LocalStorageKeys.ACCESS);
     localStorage.removeItem(LocalStorageKeys.REFRESH);
@@ -33,7 +33,7 @@ function NavBar(props) {
     <AppBar position="static">
       <Toolbar className={classes.navBar}>
         <Typography variant="h6" color="inherit">
-          Capital Guardian
+          Home Care Package Budget
         </Typography>
         <div className={classes.grow}>
           <Button href="/" color="inherit">
@@ -68,4 +68,4 @@ function NavBar(props) {
   );
 }
 
-export default connect(mapStateToProps)(NavBar);
+export default connect(mapStateToProps)(Hcp_NavBar);

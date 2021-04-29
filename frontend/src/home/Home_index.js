@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function Home_index() {
   const classes = useStyles();
   return (
     <Grid container alignItems="center" className={classes.home}>
@@ -37,18 +37,20 @@ export default function Home() {
               {/* welcome text */}
               <Grid item xs={12}>
                 <Typography variant="h5" align="center">
-                  Welcome to NDIS Financial Planner.
-                  <br />I want to:
+                      Welcome to Capital Guardian Budget Planner.
+                  <br />I want to use:
                 </Typography>
               </Grid>
 
               {/*page navigation buttons */}
               <Grid item xs={12}>
-                <Grid container justify="space-evenly">
-                  <Grid item>
+                <Grid container justify="space-evenly"  >
+                  <Grid item >
                     <Card
                       raised
-                      onClick={() => (window.location.href = "/ndis/budget/edit")}
+                      onClick={() =>
+                        (window.location.href = "/hcp/budget/edit")
+                      }
                     >
                       <CardActionArea
                         className={classNames(
@@ -62,7 +64,7 @@ export default function Home() {
                             align="center"
                             color="inherit"
                           >
-                            Add/Edit My Plan
+                            Home Care Package Budget
                           </Typography>
                         </CardContent>
                       </CardActionArea>
@@ -73,7 +75,7 @@ export default function Home() {
                     <Card
                       raised
                       onClick={() =>
-                        (window.location.href = "/ndis/budget/dashboard")
+                        (window.location.href = "/ndis/home")
                       }
                     >
                       <CardActionArea
@@ -88,7 +90,7 @@ export default function Home() {
                             align="center"
                             color="inherit"
                           >
-                            View My Plan
+                            NDIS Budget
                           </Typography>
                         </CardContent>
                       </CardActionArea>

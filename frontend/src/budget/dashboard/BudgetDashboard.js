@@ -173,7 +173,7 @@ class BudgetDashboard extends React.Component {
       });
       await api.Plans.list().then(async (response) => {
         if (response.data.length === 0) {
-          window.location.href = "/budget/edit";
+          window.location.href = "/ndis/budget/edit";
         } else {
           const plans = response.data;
           if (this.props.location.state === undefined) {
@@ -374,7 +374,7 @@ class BudgetDashboard extends React.Component {
           flag,
         });
       } else {
-        this.props.history.push("/budget/edit");
+        this.props.history.push("/ndis/budget/edit");
       }
     }
     this.updateState();
@@ -695,7 +695,7 @@ class BudgetDashboard extends React.Component {
             <Grid container justify="flex-end">
               <Grid item>
                 <Button
-                  onClick={() => (window.location.href = "/budget/edit")}
+                  onClick={() => (window.location.href = "/ndis/budget/edit")}
                   size="small"
                 >
                   <EditIcon />

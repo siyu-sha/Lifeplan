@@ -9,7 +9,7 @@ export default function DoughnutBody(props) {
   return (
     <Doughnut
       legend={{
-        position: "right",
+        AlignmentVertical: "right",
         onClick: () => {},
       }}
       data={{
